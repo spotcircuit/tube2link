@@ -1,0 +1,122 @@
+{
+  "name": "Tube2Link",
+  "nodes": [
+    {
+      "id": "webhook-1",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/tube2link"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "id": "extract-video-id-2",
+      "parameters": {
+        "functionCode": "const url = $node['Webhook'].json.body.videoUrl;\nconst videoId = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)[1];\nreturn [{ json: { videoId } }];"
+      },
+      "name": "Extract Video ID",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "id": "youtube-api-3",
+      "parameters": {
+        "url": "=https://www.googleapis.com/youtube/v3/videos",
+        "options": {},
+        "queryParameters": {
+          "part": "snippet",
+          "id": "={{ $node['Extract Video ID'].json.videoId }}",
+          "key": "={{ $env.YOUTUBE_API_KEY }}"
+        },
+        "authentication": "oAuth2",
+        "clientId": "778476329160-2mlncv04kil6lp4jcpr1agoe44abuuks.apps.googleusercontent.com",
+        "clientSecret": "{{ $env.GOOGLE_CLIENT_SECRET }}",
+        "accessTokenUrl": "https://oauth2.googleapis.com/token",
+        "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+        "scope": "https://www.googleapis.com/auth/youtube.readonly",
+        "authQueryParameters": "access_type=offline&prompt=consent"
+      },
+      "name": "YouTube Data API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "id": "fetch-transcript-4",
+      "parameters": {
+        "url": "https://youtube-transcript-api.some-service.com/transcript",
+        "options": {},
+        "queryParameters": {
+          "videoId": "={{ $node['Extract Video ID'].json.videoId }}"
+        }
+      },
+      "name": "Fetch Transcript",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [750, 300]
+    },
+    {
+      "id": "ai-summarization-5",
+      "parameters": {
+        "model": "gpt-3.5-turbo",
+        "messages": {
+          "role": "system",
+          "content": "Summarize this transcript into a LinkedIn post. Highlight key insights and include a call-to-action."
+        },
+        "messageProperty": "transcript",
+        "useAutoParseInput": true
+      },
+      "name": "AI Summarization",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "id": "linkedin-template-6",
+      "parameters": {
+        "template": "**{{ $node['YouTube Data API'].json.items[0].snippet.title }}**\n\n{{ $node['AI Summarization'].json.choices[0].message.content }}\n\n🔗 Watch full video: https://youtu.be/{{ $node['Extract Video ID'].json.videoId }}"
+      },
+      "name": "LinkedIn Template",
+      "type": "n8n-nodes-base.template",
+      "typeVersion": 1,
+      "position": [950, 300]
+    },
+    {
+      "id": "webhook-response-7",
+      "parameters": {
+        "operation": "respondToWebhook",
+        "responseMode": "lastNode"
+      },
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "webhook-1": {
+      "main": [["extract-video-id-2"]]
+    },
+    "extract-video-id-2": {
+      "main": [["youtube-api-3"]]
+    },
+    "youtube-api-3": {
+      "main": [["fetch-transcript-4"]]
+    },
+    "fetch-transcript-4": {
+      "main": [["ai-summarization-5"]]
+    },
+    "ai-summarization-5": {
+      "main": [["linkedin-template-6"]]
+    },
+    "linkedin-template-6": {
+      "main": [["webhook-response-7"]]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

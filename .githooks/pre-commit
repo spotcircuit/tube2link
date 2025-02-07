@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Check for sensitive files
+git diff --cached --name-only | grep -E '(\.env|\.secrets)'
+if [ $? -eq 0 ]; then
+  echo 'Error: Attempting to commit sensitive files'
+  exit 1
+fi
+
+# Check for secrets in files
+git diff --cached | grep -E '("|\')(key|secret|password|token)("|\')\s*:\s*\"[^\"]+\"'
+if [ $? -eq 0 ]; then
+  echo 'Error: Potential secrets detected in commit'
+  exit 1
+fi
+
+# Check for accidental API key exposure
+if git diff --cached --name-only | xargs grep -n 'NEXT_PUBLIC_YT_API_KEY'; then
+  echo 'ERROR: Potential API key exposure detected!'
+  exit 1
+fi
+
+# Check for accidental API key exposure
+if git diff --cached --name-only | xargs grep -n 'NEXT_PUBLIC_YT_API_KEY'; then
+  echo 'ERROR: Potential API key exposure detected!'
+  exit 1
+fi

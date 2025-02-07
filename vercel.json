@@ -1,0 +1,25 @@
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "maxLambdaSize": "10mb",
+        "includeFiles": ["lib/**", "workflows/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    }
+  ],
+  "env": {
+    "CLOUD_PROVIDER": "vercel",
+    "STORAGE_BUCKET": "@tube2link-bucket"
+  }
+}
