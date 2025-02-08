@@ -2,33 +2,41 @@
 
 A Next.js application that converts YouTube videos into engaging LinkedIn posts using AI-powered transcription and content generation.
 
-## Current Features
+## Current Development Status
+**IMPORTANT: DO NOT MODIFY THE CONVERT ENDPOINT**
+- ✅ Video metadata fetching and preview (working)
+- ✅ OAuth authentication flow (working)
+- ✅ Initial video loading and UI (working)
+- ❌ Transcription generation (in progress)
+  - Currently implementing Google Cloud Speech-to-Text fallback
+  - Need to fix transcription file writing
+  - Need to improve error handling
 
-- 🔐 Google OAuth Authentication
-- 📺 YouTube Video Metadata Extraction
-- ⌚ Duration Formatting
-- 🖼️ Thumbnail Display
-- 🎯 Modern, Responsive UI
+## Features
 
-## Upcoming Features
+### 1. Two-Step Content Generation
+- **Step 1: Video Details** (✅ Working)
+  - Fetch video metadata (title, duration, thumbnail)
+  - Quick preview before transcription
+  - Validate video accessibility
 
-1. **Transcription & Processing**
-   - Google Cloud Speech-to-Text integration
-   - Audio extraction and processing
-   - Multi-language support
-   - Transcript segmentation
+- **Step 2: Transcription & Post Generation** (🚧 In Progress)
+  - Automatic YouTube caption extraction
+  - Fallback to Google Cloud Speech-to-Text
+  - AI-powered LinkedIn post generation
 
-2. **Content Generation**
-   - Key points extraction
-   - Template-based post generation
-   - Custom formatting options
-   - Call-to-action generation
+### 2. Authentication & Security
+- Secure OAuth 2.0 authentication with Google
+- Automatic token refresh
+- Persistent session management
+- Secure credential storage
 
-3. **N8N Integration**
-   - Webhook setup for video processing
-   - Template management system
-   - Error handling and logging
-   - LinkedIn API integration
+### 3. User Interface
+- Modern, responsive design with TailwindCSS
+- Smooth animations and transitions
+- Real-time loading states
+- Error handling with user-friendly messages
+- Copy-to-clipboard functionality
 
 ## Setup
 
@@ -45,20 +53,15 @@ npm install
 
 3. Set up environment variables in `.env.local`:
 ```env
-# Google OAuth
+N8N_WEBHOOK_URL=your_webhook_url
+NEXT_PUBLIC_YT_API_KEY=your_youtube_api_key
+GOOGLE_PROJECT_ID=your_project_id
+GOOGLE_CLIENT_EMAIL=your_client_email
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/oauth/callback
+SESSION_SECRET=your_session_secret
 GOOGLE_CLIENT_ID=your_client_id
 GOOGLE_CLIENT_SECRET=your_client_secret
-GOOGLE_REDIRECT_URI=http://localhost:3000/api/oauth/callback
-
-# Session
-SESSION_SECRET=your_32_character_session_secret
-
-# Google Cloud (Coming Soon)
-GOOGLE_PROJECT_ID=your_project_id
-STORAGE_BUCKET=your_bucket_name
-
-# N8N (Coming Soon)
-N8N_WEBHOOK_URL=your_n8n_webhook_url
+GOOGLE_PRIVATE_KEY=your_private_key
 ```
 
 4. Run the development server
@@ -66,54 +69,66 @@ N8N_WEBHOOK_URL=your_n8n_webhook_url
 npm run dev
 ```
 
-## Next Steps
+## Project Structure
+```
+tube2link/
+├── app/
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── route.ts         # Authentication endpoints
+│   │   │   └── callback/
+│   │   │       └── route.ts     # OAuth callback handler
+│   │   └── convert/
+│   │       └── route.ts         # Video processing endpoint
+│   ├── layout.tsx
+│   └── page.tsx                 # Main application page
+├── lib/
+│   ├── auth.ts                  # OAuth configuration
+│   ├── config.ts               # Environment configuration
+│   └── transcription.ts        # Transcription utilities
+└── public/
+    └── images/
+        └── tube2linkedin.png   # Application logo
+```
 
-### Phase 1: Transcription Setup
-- [ ] Set up Google Cloud project
-- [ ] Configure Speech-to-Text API
-- [ ] Implement audio extraction and processing
-- [ ] Add transcription progress tracking
+## API Endpoints
 
-### Phase 2: Content Generation
-- [ ] Design LinkedIn post templates
-- [ ] Implement key points extraction
-- [ ] Add customization options for posts
-- [ ] Create preview functionality
+### 1. `/api/auth`
+- **GET**: Check authentication status or initiate OAuth flow
+- Returns: Authentication status or OAuth URL
 
-### Phase 3: N8N Integration
-- [ ] Set up N8N instance
-- [ ] Create workflow for video processing
-- [ ] Implement template management
-- [ ] Add LinkedIn API integration
+### 2. `/api/auth/callback`
+- **GET**: Handle OAuth callback
+- Stores tokens in secure cookies
+- Redirects to main application
 
-### Phase 4: UI/UX Improvements
-- [ ] Add progress indicators
-- [ ] Implement error handling
-- [ ] Add template selection interface
-- [ ] Create post preview/edit interface
+### 3. `/api/convert`
+- **POST**: Process YouTube videos
+- Parameters:
+  - `videoUrl`: YouTube video URL
+  - `getDetailsOnly`: Boolean to fetch only metadata
+  - `useSpeechToText`: Boolean to enable Speech-to-Text fallback
+- Returns: Video details, transcription, and LinkedIn post
 
-## Architecture
+## Tech Stack
+- Next.js 13+ (App Router)
+- Google Cloud APIs
+  - YouTube Data API
+  - Speech-to-Text API
+  - OAuth 2.0
+- TailwindCSS
+- Axios
 
-### Current Stack
-- Next.js (Frontend & API)
-- Iron Session (Authentication)
-- YouTube Data API
-- TailwindCSS (Styling)
+## Known Issues & TODO
+**NOTE: The /api/convert endpoint is working correctly for video metadata. DO NOT MODIFY IT.**
 
-### Upcoming Integrations
-- Google Cloud Speech-to-Text
-- N8N Workflow Engine
-- LinkedIn API
-- FFmpeg (Audio Processing)
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Current focus is on transcription generation:
+- [ ] Fix transcription error handling in frontend (page.tsx)
+- [ ] Complete Speech-to-Text integration with Google Cloud
+- [ ] Fix file writing for transcriptions
+- [ ] Add proper error logging and monitoring
+- [ ] Add retry mechanism for failed transcriptions
+- [ ] Add progress indicator for Speech-to-Text processing
 
 ## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT
