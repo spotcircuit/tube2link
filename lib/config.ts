@@ -1,57 +1,58 @@
 import { z } from 'zod';
 
+interface Config {
+  youtubeApiKey: string;
+  openaiApiKey: string;
+  openaiOrganizationId: string;
+  googleClientId: string;
+  googleClientSecret: string;
+  googleRedirectUri: string;
+  sessionSecret: string;
+}
+
+let config: Config | null = null;
+
+export function getConfig(): Config {
+  if (config) return config;
+
+  config = {
+    youtubeApiKey: process.env.NEXT_PUBLIC_YT_API_KEY || '',
+    openaiApiKey: process.env.OPENAI_API_KEY || '',
+    openaiOrganizationId: process.env.OPENAI_ORGANIZATION_ID || '',
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    googleRedirectUri: process.env.GOOGLE_REDIRECT_URI || '',
+    sessionSecret: process.env.SESSION_SECRET || ''
+  };
+
+  return config;
+}
+
 export const envSchema = z.object({
   // Required for YouTube API
   NEXT_PUBLIC_YT_API_KEY: z.string().min(1, 'YouTube API Key is required'),
-
-  // Required for OAuth
   GOOGLE_CLIENT_ID: z.string().min(1, 'Google Client ID is required'),
   GOOGLE_CLIENT_SECRET: z.string().min(1, 'Google Client Secret is required'),
-  GOOGLE_REDIRECT_URI: z.string().url('Invalid redirect URI'),
+  GOOGLE_REDIRECT_URI: z.string().min(1, 'Google Redirect URI is required'),
 
-  // Required for Google Cloud Speech-to-Text
-  GOOGLE_PROJECT_ID: z.string().min(1, 'Google Project ID is required'),
-  GOOGLE_CLIENT_EMAIL: z.string().email('Invalid service account email'),
-  GOOGLE_PRIVATE_KEY: z.string().min(1, 'Google Private Key is required'),
+  // Required for OpenAI API
+  OPENAI_API_KEY: z.string().min(1, 'OpenAI API Key is required'),
+  OPENAI_ORGANIZATION_ID: z.string().min(1, 'OpenAI Organization ID is required'),
 
-  // Optional configurations
-  N8N_WEBHOOK_URL: z.string().url().optional(),
-  SESSION_SECRET: z.string().min(32).optional(),
-  KMS_KEY_ID: z.string().optional(),
-  AWS_REGION: z.string().optional(),
-  CLOUD_PROVIDER: z.string().optional(),
-  STORAGE_BUCKET: z.string().optional(),
+  // Required for session management
+  SESSION_SECRET: z.string().min(1, 'Session Secret is required'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
 
 // Validate environment variables
 export function validateEnv(): EnvConfig {
-  try {
-    const config = envSchema.parse({
-      NEXT_PUBLIC_YT_API_KEY: process.env.NEXT_PUBLIC_YT_API_KEY,
-      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-      GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-      GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
-      GOOGLE_PROJECT_ID: process.env.GOOGLE_PROJECT_ID,
-      GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL,
-      GOOGLE_PRIVATE_KEY: process.env.GOOGLE_PRIVATE_KEY,
-      N8N_WEBHOOK_URL: process.env.N8N_WEBHOOK_URL,
-      SESSION_SECRET: process.env.SESSION_SECRET,
-      KMS_KEY_ID: process.env.KMS_KEY_ID,
-      AWS_REGION: process.env.AWS_REGION,
-      CLOUD_PROVIDER: process.env.CLOUD_PROVIDER,
-      STORAGE_BUCKET: process.env.STORAGE_BUCKET,
-    });
+  const parsed = envSchema.safeParse(process.env);
 
-    return config;
-  } catch (error) {
-    console.error('❌ Invalid environment variables:', error);
+  if (!parsed.success) {
+    console.error('❌ Invalid environment variables:', parsed.error.flatten().fieldErrors);
     throw new Error('Invalid environment variables');
   }
-}
 
-// Get validated config
-export function getConfig(): EnvConfig {
-  return validateEnv();
+  return parsed.data;
 }

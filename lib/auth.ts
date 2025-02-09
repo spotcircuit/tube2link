@@ -4,9 +4,9 @@ import { getConfig } from './config';
 const config = getConfig();
 
 export const oauth2Client = new OAuth2Client(
-  config.GOOGLE_CLIENT_ID,
-  config.GOOGLE_CLIENT_SECRET,
-  config.GOOGLE_REDIRECT_URI
+  config.googleClientId,
+  config.googleClientSecret,
+  config.googleRedirectUri
 );
 
 // Removed defaultScopes assignment since OAuth2Client does not support it
@@ -32,4 +32,9 @@ export async function setTokens(tokens: any) {
 
 export function getOAuth2Client() {
   return oauth2Client;
+}
+
+export async function getAccessToken(code: string) {
+  const { tokens } = await oauth2Client.getToken(code);
+  return tokens;
 }

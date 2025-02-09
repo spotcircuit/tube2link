@@ -2,7 +2,7 @@ import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { getConfig } from './config';
 
 const config = getConfig();
-const ENCRYPTION_KEY = config.SESSION_SECRET || randomBytes(32).toString('hex');
+const ENCRYPTION_KEY = config.sessionSecret || randomBytes(32).toString('hex');
 const ALGORITHM = 'aes-256-cbc';
 
 export async function encrypt(text: string): Promise<string> {

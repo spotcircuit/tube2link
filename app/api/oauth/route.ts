@@ -1,13 +1,13 @@
-import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { getConfig } from '@/lib/config';
+import { NextResponse } from 'next/server';
 
 const config = getConfig();
 
 const oauth2Client = new google.auth.OAuth2(
-  config.GOOGLE_CLIENT_ID,
-  config.GOOGLE_CLIENT_SECRET,
-  config.GOOGLE_REDIRECT_URI
+  config.googleClientId,
+  config.googleClientSecret,
+  config.googleRedirectUri
 );
 
 // Scopes we need for both YouTube and Speech-to-Text

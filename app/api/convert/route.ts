@@ -1,9 +1,25 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import { transcribeYouTubeVideo, generateLinkedInPost, oauth2Client } from '@/lib/transcription';
+import { transcribeYouTubeVideo, generateLinkedInPost, oauth2Client, getTranscriptFast } from '@/lib/transcription';
 import { getConfig } from '@/lib/config';
 import { cookies } from 'next/headers';
 import { URL } from 'url';
+
+interface VideoMetadata {
+  id: string;
+  title: string;
+  description: string;
+  channelTitle: string;
+  thumbnails: {
+    default?: { url: string; width: number; height: number };
+    medium?: { url: string; width: number; height: number };
+    high?: { url: string; width: number; height: number };
+    standard?: { url: string; width: number; height: number };
+    maxres?: { url: string; width: number; height: number };
+  };
+  tags?: string[];
+  transcription?: string | null;
+}
 
 export async function POST(request: Request) {
   try {
@@ -23,8 +39,7 @@ export async function POST(request: Request) {
         scope: [
           'https://www.googleapis.com/auth/youtube.force-ssl',
           'https://www.googleapis.com/auth/youtube.readonly',
-          'https://www.googleapis.com/auth/youtube.download',
-          'https://www.googleapis.com/auth/cloud-platform'
+          'https://www.googleapis.com/auth/youtube.download'
         ],
         include_granted_scopes: true
       });
@@ -45,24 +60,33 @@ export async function POST(request: Request) {
     });
     oauth2Client.setCredentials(tokens);
 
-    const { videoUrl, getDetailsOnly = false, useSpeechToText = false, forceTranscribe = false } = await request.json();
+    const { videoUrl, getDetailsOnly = false, forceTranscribe = false } = await request.json();
     console.log('Processing URL:', videoUrl, 'Force Transcribe:', forceTranscribe);
 
     // Extract video ID from URL (including Shorts)
     let videoId: string | null = null;
     try {
-      const url = new URL(videoUrl);
-      if (url.pathname.includes('/shorts/')) {
-        // Handle YouTube Shorts URL
-        videoId = url.pathname.split('/shorts/')[1].split('/')[0];
-        console.log('Detected YouTube Short:', videoId);
+      // Handle direct video IDs first
+      if (!videoUrl.includes('http') && !videoUrl.includes('/')) {
+        videoId = videoUrl.trim();
       } else {
-        // Handle regular YouTube URL
-        videoId = url.searchParams.get('v') || url.pathname.split('/').pop() || null;
+        const url = new URL(videoUrl);
+        if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
+          if (url.pathname.includes('/shorts/')) {
+            // Handle YouTube Shorts URL
+            videoId = url.pathname.split('/shorts/')[1].split('/')[0];
+            console.log('Detected YouTube Short:', videoId);
+          } else if (url.hostname === 'youtu.be') {
+            // Handle youtu.be URLs
+            videoId = url.pathname.slice(1);
+          } else {
+            // Handle regular YouTube URL
+            videoId = url.searchParams.get('v');
+          }
+        }
       }
     } catch (error) {
-      // Handle direct video IDs
-      videoId = videoUrl.trim();
+      console.error('URL parsing error:', error);
     }
 
     if (!videoId) {
@@ -111,37 +135,34 @@ export async function POST(request: Request) {
       });
       
       // Keep original structure from YouTube API
-      const videoMetadata = {
+      const videoMetadata: VideoMetadata = {
         id: videoId,
-        snippet: videoDetails.snippet,
-        contentDetails: videoDetails.contentDetails,
-        statistics: videoDetails.statistics,
+        title: videoDetails.snippet.title,
+        description: videoDetails.snippet.description,
+        channelTitle: videoDetails.snippet.channelTitle,
+        thumbnails: videoDetails.snippet.thumbnails,
+        tags: videoDetails.snippet.tags,
         transcription: null // Will be set later if requested
       };
 
-      // If only getting details, return early
-      if (getDetailsOnly) {
-        return NextResponse.json(videoMetadata);
-      }
-
-      // Generate new transcription if requested
-      if (forceTranscribe) {
-        videoMetadata.transcription = await transcribeYouTubeVideo(videoId, useSpeechToText);
+      // Always get transcription with metadata
+      try {
+        console.log('Getting transcription for video:', videoId);
+        const transcription = await transcribeYouTubeVideo(videoId);
+        videoMetadata.transcription = transcription;
+        
         if (!videoMetadata.transcription) {
-          // Check if captions are available
-          const hasCaption = videoMetadata.contentDetails.caption === 'true';
-          if (!hasCaption && !useSpeechToText) {
-            return NextResponse.json({
-              error: 'Transcription Failed',
-              details: 'No captions available. Enable Speech-to-Text to transcribe the audio.',
-              needsSpeechToText: true
-            }, { status: 400 });
-          }
           return NextResponse.json({
             error: 'Transcription Failed',
-            details: 'Failed to transcribe video. Please try again.'
-          }, { status: 400 });
+            details: 'Failed to generate transcription'
+          }, { status: 500 });
         }
+      } catch (error: any) {
+        console.error('Transcription error:', error);
+        return NextResponse.json({
+          error: 'Transcription Failed',
+          details: error.message
+        }, { status: 400 });
       }
 
       return NextResponse.json(videoMetadata);

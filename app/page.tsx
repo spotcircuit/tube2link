@@ -4,60 +4,22 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { RefreshCw } from 'react-feather';
+import Link from 'next/link';
 
 interface VideoData {
   id: string;
-  snippet: {
-    publishedAt: string;
-    channelId: string;
-    title: string;
-    description: string;
-    thumbnails: {
-      default?: { url: string; width: number; height: number };
-      medium?: { url: string; width: number; height: number };
-      high?: { url: string; width: number; height: number };
-      standard?: { url: string; width: number; height: number };
-      maxres?: { url: string; width: number; height: number };
-    };
-    channelTitle: string;
-    tags?: string[];
-    categoryId: string;
-    liveBroadcastContent: 'none' | 'upcoming' | 'live';
-    defaultLanguage?: string;
-    localized?: {
-      title: string;
-      description: string;
-    };
-    defaultAudioLanguage?: string;
-    // Shorts specific fields
-    shorts?: {
-      isShort: boolean;
-    };
+  title: string;
+  description: string;
+  channelTitle: string;
+  thumbnails: {
+    default?: { url: string; width: number; height: number };
+    medium?: { url: string; width: number; height: number };
+    high?: { url: string; width: number; height: number };
+    standard?: { url: string; width: number; height: number };
+    maxres?: { url: string; width: number; height: number };
   };
-  contentDetails: {
-    duration: string;
-    dimension: string;
-    definition: string;
-    caption: string;
-    licensedContent: boolean;
-    projection: string;
-    contentRating?: {
-      ytRating?: string;
-    };
-  };
-  statistics: {
-    viewCount: string;
-    likeCount: string;
-    commentCount: string;
-    favoriteCount: string;
-  };
-  transcription?: string;
-}
-
-interface GeneratedContent {
-  summary: string;
-  template: string;
-  segmented: string;
+  tags?: string[];
+  transcription?: string | null;
 }
 
 // Convert ISO 8601 duration to readable format
@@ -77,16 +39,123 @@ const formatDuration = (duration: string): string => {
   }
 };
 
+const PROMPT_TEMPLATES = {
+  summary: `
+Create a LinkedIn post based on the video "{title}" by {channel}. The video is about {description}. The main topics covered are {tags}. The video's transcription is: {transcription}. The video ID is {videoId}.
+
+Write a concise summary of the video in 2-3 paragraphs, focusing on the key points and takeaways. Use a professional tone and avoid any promotional language.
+`,
+  story: `
+Create a LinkedIn post based on the video "{title}" by {channel}. The video is about {description}. The main topics covered are {tags}. The video's transcription is: {transcription}. The video ID is {videoId}.
+
+Write a narrative-driven post that tells a story related to the video's content. Use a conversational tone and include personal anecdotes or examples that illustrate the key points.
+`,
+  value: `
+Create a LinkedIn post based on the video "{title}" by {channel}. The video is about {description}. The main topics covered are {tags}. The video's transcription is: {transcription}. The video ID is {videoId}.
+
+Write a post that focuses on the practical benefits and value that viewers can gain from watching the video. Use a clear and concise tone and include specific examples or tips that viewers can apply to their own work or lives.
+`,
+  question: `
+Create a LinkedIn post based on the video "{title}" by {channel}. The video is about {description}. The main topics covered are {tags}. The video's transcription is: {transcription}. The video ID is {videoId}.
+
+Write a post that asks a thought-provoking question related to the video's content. Use a curious tone and encourage viewers to share their thoughts and opinions in the comments.
+`,
+  action: `
+Create a LinkedIn post based on the video "{title}" by {channel}. The video is about {description}. The main topics covered are {tags}. The video's transcription is: {transcription}. The video ID is {videoId}.
+
+Write a post that encourages viewers to take action based on the video's content. Use a motivational tone and include a clear call-to-action that viewers can follow.
+`,
+};
+
+const LENGTH_SETTINGS = {
+  brief: {
+    label: "Brief",
+    icon: "📝",
+    description: "Quick, punchy post",
+    charRange: "300-500 characters",
+    bestFor: "Quick insights, busy feeds",
+    example: "🎯 Key takeaway from [Video]\n\n💡 Main insight explained in 1-2 sentences\n\n🔗 Watch more: [link]"
+  },
+  standard: {
+    label: "Standard",
+    icon: "📄",
+    description: "Balanced length",
+    charRange: "800-1200 characters",
+    bestFor: "Most content types",
+    example: "🎯 Main topic from [Video]\n\n💡 Key point 1\n💡 Key point 2\n\n🤔 Why this matters...\n\n🔗 Full video: [link]"
+  },
+  detailed: {
+    label: "Detailed",
+    icon: "📚",
+    description: "In-depth coverage",
+    charRange: "1500-2000 characters",
+    bestFor: "Complex topics, deep dives",
+    example: "🎯 Comprehensive look at [Topic]\n\n💡 Background\n💡 Key points (3-4)\n💡 Analysis\n\n🤔 Implications\n\n🔗 Watch here: [link]"
+  }
+} as const;
+
+const getToneLabel = (value: number) => {
+  if (value <= 33) return 'Conversational';
+  if (value <= 66) return 'Balanced';
+  return 'Formal';
+};
+
+const getTemplateGuide = (template: string, length: 'brief' | 'standard' | 'detailed') => {
+  const guides = {
+    summary: {
+      brief: "Create a quick overview focusing only on the 2-3 most important points. Be direct and concise.",
+      standard: "Provide a balanced summary with key points and brief context. Include supporting details where valuable.",
+      detailed: "Create an extended summary that thoroughly explains each key point. Include background context, examples, and implications."
+    },
+    story: {
+      brief: "Tell a focused micro-story highlighting one key moment or insight.",
+      standard: "Develop a narrative with clear beginning, middle, and end. Balance story elements with key takeaways.",
+      detailed: "Create a rich narrative with character development, detailed scenes, and multiple learning points woven throughout."
+    },
+    value: {
+      brief: "Focus on one primary benefit or takeaway that provides immediate value.",
+      standard: "Present 2-3 key benefits with practical applications and examples.",
+      detailed: "Deep dive into multiple benefits, including implementation details, case examples, and long-term implications."
+    },
+    question: {
+      brief: "Pose one thought-provoking question with minimal context to spark discussion.",
+      standard: "Present a main question with 2-3 follow-up points to guide the discussion.",
+      detailed: "Explore a complex question from multiple angles, with supporting questions and discussion prompts throughout."
+    },
+    action: {
+      brief: "Single, clear call-to-action with immediate next step.",
+      standard: "Main call-to-action with 2-3 supporting steps or reasons.",
+      detailed: "Comprehensive action plan with preparation steps, implementation guide, and expected outcomes."
+    }
+  };
+
+  return guides[template as keyof typeof guides][length];
+};
+
 export default function Home() {
   const [url, setUrl] = useState('');
   const [videoData, setVideoData] = useState<VideoData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [transcriptionStatus, setTranscriptionStatus] = useState<'idle' | 'loading' | 'error' | 'success'>('idle');
-  const [useSpeechToText, setUseSpeechToText] = useState(false);
+  const [showTemplateOptions, setShowTemplateOptions] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<'summary' | 'story' | 'value' | 'question' | 'action'>('summary');
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [currentPrompt, setCurrentPrompt] = useState<string | null>(null);
+  const [postSettings, setPostSettings] = useState({
+    tone: 50,
+    length: 'standard' as 'brief' | 'standard' | 'detailed',
+    personality: {
+      charm: 0,
+      wit: 0,
+      humor: 0,
+      sarcasm: 0
+    }
+  });
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -104,33 +173,31 @@ export default function Home() {
     checkAuth();
   }, []);
 
-  useEffect(() => {
-    const savedUrl = localStorage.getItem('lastVideoUrl');
-    if (savedUrl) {
-      setUrl(savedUrl);
-      localStorage.removeItem('lastVideoUrl');
-      
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('code')) {
-        handleSubmit(null, savedUrl);
-      }
-    }
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent | null, savedUrl?: string) => {
     if (e) e.preventDefault();
     
     const videoUrl = savedUrl || url;
+    if (!videoUrl) {
+      setError('Please enter a YouTube URL');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setVideoData(null);
 
     try {
-      const response = await axios.post('/api/convert', { videoUrl });
+      // Normalize URL to handle various YouTube URL formats
+      let normalizedUrl = videoUrl;
+      if (!videoUrl.startsWith('http')) {
+        // If it's just a video ID, convert it to a full URL
+        normalizedUrl = `https://www.youtube.com/watch?v=${videoUrl}`;
+      }
+
+      const response = await axios.post('/api/convert', { videoUrl: normalizedUrl });
       
       // Check if we need OAuth
       if (response.data.needsAuth) {
-        localStorage.setItem('lastVideoUrl', videoUrl);
         window.location.href = response.data.authUrl;
         return;
       }
@@ -138,14 +205,15 @@ export default function Home() {
       // Update to match API response format
       setVideoData({
         id: response.data.id,
-        snippet: response.data.snippet,
-        contentDetails: response.data.contentDetails,
-        statistics: response.data.statistics,
+        title: response.data.title,
+        description: response.data.description,
+        channelTitle: response.data.channelTitle,
+        thumbnails: response.data.thumbnails,
+        tags: response.data.tags,
         transcription: response.data.transcription
       });
     } catch (error: any) {
       if (error.response?.data?.needsAuth) {
-        localStorage.setItem('lastVideoUrl', videoUrl);
         window.location.href = error.response.data.authUrl;
         return;
       }
@@ -158,27 +226,8 @@ export default function Home() {
     }
   };
 
-  const handleCopy = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy text:', err);
-    }
-  };
-
   const handleFocusInput = () => {
     inputRef.current?.focus();
-  };
-
-  const handleGenerateContent = async (type: keyof GeneratedContent) => {
-    try {
-      const response = await axios.post('/api/generate-content', { type, transcription: videoData?.transcription });
-      setGeneratedContent(response.data);
-    } catch (error: any) {
-      console.error('Failed to generate content:', error);
-    }
   };
 
   const handleTranscribe = async () => {
@@ -194,34 +243,147 @@ export default function Home() {
       
       const response = await axios.post('/api/convert', { 
         videoUrl,
-        forceTranscribe: true,
-        useSpeechToText
+        forceTranscribe: true
       });
       
       if (response.data.transcription) {
-        setVideoData(prev => ({
-          ...prev,
-          transcription: response.data.transcription
-        }));
+        setVideoData(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            transcription: response.data.transcription
+          };
+        });
         setTranscriptionStatus('success');
-      } else {
-        setError('No transcription received. Please try again.');
+      } else if (response.data.error) {
+        setError(response.data.error);
         setTranscriptionStatus('error');
       }
     } catch (error: any) {
-      let errorMessage = error.response?.data?.error || 'Failed to transcribe video. Please try again.';
-      if (error.response?.data?.needsSpeechToText) {
-        errorMessage = error.response?.data?.details;
-        setUseSpeechToText(true); // Auto-enable Speech-to-Text
-      }
-      setError(errorMessage);
+      setError(error.response?.data?.error || 'Failed to transcribe video');
       setTranscriptionStatus('error');
-      console.error('Transcription error:', {
-        error: error.response?.data || error,
-        status: error.response?.status,
-        details: error.response?.data?.details
-      });
     }
+  };
+
+  const getToneHint = (tone: number) => {
+    if (tone <= 33) {
+      return {
+        message: "💡 Conversational posts work well with higher charm and humor",
+        suggestions: {
+          charm: "Try 60-80%",
+          humor: "Try 50-70%",
+          wit: "Try 40-60%",
+          sarcasm: "Keep under 40%"
+        }
+      };
+    }
+    if (tone <= 66) {
+      return {
+        message: "💡 Balanced tone works best with moderate personality traits",
+        suggestions: {
+          charm: "Try 40-60%",
+          humor: "Try 30-50%",
+          wit: "Try 30-50%",
+          sarcasm: "Keep under 30%"
+        }
+      };
+    }
+    return {
+      message: "💡 Formal tone typically uses minimal personality traits",
+      suggestions: {
+        charm: "Try 20-40%",
+        humor: "Keep under 30%",
+        wit: "Try 20-40%",
+        sarcasm: "Best at 0%"
+      }
+    };
+  };
+
+  const handleShowPrompt = () => {
+    const prompt = generatePrompt();
+    if (prompt) {
+      setCurrentPrompt(prompt);
+      setShowPrompt(true);
+    }
+  };
+
+  const handleGenerateContent = async () => {
+    try {
+      setGenerating(true);
+      setError('');
+      
+      console.log('Sending request with:', {
+        videoData,
+        mode: selectedTemplate,
+        settings: postSettings
+      });
+
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          videoData,
+          mode: selectedTemplate,
+          settings: postSettings
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || 'Failed to generate content');
+      }
+
+      const data = await response.json();
+      setGeneratedContent(data.content);
+      setShowPrompt(false);
+    } catch (error: any) {
+      console.error('Generation error:', error);
+      setError(error.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const generatePrompt = () => {
+    if (!videoData) return null;
+
+    const templateGuide = getTemplateGuide(selectedTemplate, postSettings.length);
+
+    const basePrompt = PROMPT_TEMPLATES[selectedTemplate]
+      .replace('{title}', videoData.title)
+      .replace('{channel}', videoData.channelTitle)
+      .replace('{description}', videoData.description || 'No description available')
+      .replace('{tags}', videoData.tags?.join(', ') || 'No tags')
+      .replace('{transcription}', videoData.transcription || 'No transcription available')
+      .replace('{videoId}', videoData.id);
+
+    const contentGuide = `
+Content Strategy:
+${templateGuide}`;
+
+    const lengthGuide = `
+Post Length: ${LENGTH_SETTINGS[postSettings.length].label}
+Target Length: ${LENGTH_SETTINGS[postSettings.length].charRange}
+Style: ${LENGTH_SETTINGS[postSettings.length].description}`;
+
+    const toneGuide = `
+Tone Setting: ${getToneLabel(postSettings.tone)} (${postSettings.tone}%)
+- Conversational (0-33%): Friendly, approachable, like talking to a friend
+- Balanced (34-66%): Mix of formal and casual, like a friendly colleague
+- Formal (67-100%): Professional, structured, business-appropriate`;
+
+    const personalityGuide = `
+Personality Settings:
+- Charm: ${postSettings.personality.charm}% (Add warmth and appeal to the writing)
+- Wit: ${postSettings.personality.wit}% (Include clever observations and insights)
+- Humor: ${postSettings.personality.humor}% (Add light, fun elements where appropriate)
+- Sarcasm: ${postSettings.personality.sarcasm}% (Include subtle irony if it fits)
+
+Adjust the writing style based on these personality levels while maintaining the selected tone.`;
+
+    return basePrompt + '\n\n' + contentGuide + '\n\n' + lengthGuide + '\n\n' + toneGuide + '\n\n' + personalityGuide;
   };
 
   if (!isAuthenticated) {
@@ -299,88 +461,36 @@ export default function Home() {
         )}
 
         <div className="w-full max-w-3xl mx-auto backdrop-blur-lg bg-white/10 rounded-2xl p-8 shadow-2xl border border-white/20">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="relative">
-              <input
-                ref={inputRef}
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste your YouTube video URL here"
-                className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-              />
-              <div className="mt-4 md:mt-0 md:absolute md:right-2 md:top-2 flex gap-2">
-                <button
-                  onClick={async () => {
-                    const videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i)?.[1];
-                    if (!videoId) {
-                      setError('Invalid YouTube URL');
-                      return;
-                    }
-                    
-                    try {
-                      const response = await axios.post('/api/load-transcription', { videoId });
-                      if (response.data.success) {
-                        setVideoData({
-                          id: videoId,
-                          snippet: {
-                            title: 'Loaded from file',
-                            thumbnails: {
-                              maxres: {
-                                url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-                                width: 1280,
-                                height: 720
-                              }
-                            }
-                          },
-                          contentDetails: {
-                            duration: 'N/A',
-                            dimension: '2d',
-                            definition: 'hd',
-                            caption: 'true',
-                            licensedContent: false,
-                            projection: 'rectangular'
-                          },
-                          statistics: {
-                            viewCount: '0',
-                            likeCount: '0',
-                            commentCount: '0',
-                            favoriteCount: '0'
-                          },
-                          transcription: response.data.transcription
-                        });
-                      }
-                    } catch (error: any) {
-                      if (error.response?.data?.needsTranscription) {
-                        // If no transcription exists, proceed with normal conversion
-                        handleSubmit(null);
-                      } else {
-                        setError('Failed to load transcription');
-                      }
-                    }
-                  }}
-                  type="button"
-                  className="px-4 py-2 bg-purple-600/80 hover:bg-purple-500 rounded-lg transition-colors text-white text-sm"
-                >
-                  Load Existing
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-8 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                      Converting...
-                    </div>
-                  ) : (
-                    'Convert New'
-                  )}
-                </button>
+          {!videoData ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="relative">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Paste your YouTube video URL here"
+                  className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                />
+                <div className="mt-4 md:mt-0 md:absolute md:right-2 md:top-2 flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-8 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
+                        Converting...
+                      </div>
+                    ) : (
+                      'Convert'
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          ) : null}
 
           {error && (
             <div className="mt-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
@@ -398,11 +508,11 @@ export default function Home() {
                   <h3 className="text-xl font-semibold text-white mb-4">Video Details</h3>
                   <div className="aspect-video relative rounded-lg overflow-hidden mb-4">
                     <Image
-                      src={videoData.snippet.thumbnails.maxres?.url || 
-                           videoData.snippet.thumbnails.high?.url || 
-                           videoData.snippet.thumbnails.medium?.url || 
+                      src={videoData.thumbnails.maxres?.url || 
+                           videoData.thumbnails.high?.url || 
+                           videoData.thumbnails.medium?.url || 
                            `https://img.youtube.com/vi/${videoData.id}/maxresdefault.jpg`}
-                      alt={videoData.snippet.title}
+                      alt={videoData.title}
                       layout="fill"
                       objectFit="cover"
                     />
@@ -411,217 +521,298 @@ export default function Home() {
                   {/* Snippet Information */}
                   <div className="space-y-3">
                     <h4 className="text-xl font-semibold text-white">Video Info</h4>
-                    <p className="text-white font-medium text-lg">{videoData.snippet.title}</p>
-                    {videoData.snippet.localized && videoData.snippet.localized.title !== videoData.snippet.title && (
-                      <p className="text-purple-300">Localized Title: {videoData.snippet.localized.title}</p>
-                    )}
+                    <p className="text-white font-medium text-lg">{videoData.title}</p>
                     
                     <div className="bg-white/10 rounded-lg p-4 space-y-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-purple-300 block">Channel:</span>
-                        <span className="text-white">{videoData.snippet.channelTitle}</span>
-                        <span className="text-purple-400 text-sm">({videoData.snippet.channelId})</span>
+                        <span className="text-white">{videoData.channelTitle}</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-purple-300 block">Published:</span>
-                        <span className="text-white">{new Date(videoData.snippet.publishedAt).toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-purple-300 block">Language:</span>
-                        <span className="text-white">{videoData.snippet.defaultLanguage || 'Not specified'}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-purple-300 block">Audio:</span>
-                        <span className="text-white">{videoData.snippet.defaultAudioLanguage || 'Not specified'}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-purple-300 block">Status:</span>
-                        <span className={`font-medium ${
-                          videoData.snippet.liveBroadcastContent === 'live' 
-                            ? 'text-red-400' 
-                            : videoData.snippet.liveBroadcastContent === 'upcoming'
-                            ? 'text-yellow-400'
-                            : 'text-green-400'
-                        }`}>
-                          {videoData.snippet.liveBroadcastContent.toUpperCase()}
-                        </span>
+                        <span className="text-purple-300 block">Description:</span>
+                        <span className="text-white">{videoData.description}</span>
                       </div>
                     </div>
                     
                     <div className="mt-6">
-                      <h5 className="text-lg font-medium text-white mb-3">Description</h5>
-                      {videoData.snippet.description ? (
-                        <div className="bg-white/10 rounded-lg p-4 max-h-40 overflow-y-auto">
-                          <p className="text-white text-sm whitespace-pre-wrap">
-                            {videoData.snippet.description}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-yellow-400 text-sm italic">No description available</p>
-                      )}
-                    </div>
-
-                    {videoData.snippet.tags && videoData.snippet.tags.length > 0 && (
-                      <div className="mt-6">
-                        <h5 className="text-lg font-medium text-white mb-3">Tags</h5>
+                      <h5 className="text-lg font-medium text-white mb-3">Tags</h5>
+                      {videoData.tags && videoData.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2">
-                          {videoData.snippet.tags.map((tag, index) => (
+                          {videoData.tags.map((tag, index) => (
                             <span key={index} className="px-3 py-1 bg-purple-500/30 border border-purple-500/50 rounded-full text-white text-sm">
                               {tag}
                             </span>
                           ))}
                         </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content Details */}
-                  <div className="mt-8 space-y-3">
-                    <h4 className="text-xl font-semibold text-white">Content Details</h4>
-                    <div className="bg-white/10 rounded-lg p-4 grid grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-purple-300 block">Duration</span>
-                        <span className="text-white">{formatDuration(videoData.contentDetails.duration)}</span>
-                      </div>
-                      <div>
-                        <span className="text-purple-300 block">Quality</span>
-                        <span className="text-white">{videoData.contentDetails.definition.toUpperCase()}</span>
-                      </div>
-                      <div>
-                        <span className="text-purple-300 block">Dimension</span>
-                        <span className="text-white">{videoData.contentDetails.dimension}</span>
-                      </div>
-                      <div>
-                        <span className="text-purple-300 block">Captions</span>
-                        <span className={videoData.contentDetails.caption === 'true' ? 'text-green-400' : 'text-yellow-400'}>
-                          {videoData.contentDetails.caption === 'true' ? 'Available' : 'Not Available'}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-purple-300 block">Projection</span>
-                        <span className="text-white">{videoData.contentDetails.projection}</span>
-                      </div>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Statistics */}
-                  <div className="mt-8 space-y-3">
-                    <h4 className="text-xl font-semibold text-white">Statistics</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white/10 p-4 rounded-lg">
-                        <p className="text-purple-300 text-sm">Views</p>
-                        <p className="text-2xl font-bold text-white">{parseInt(videoData.statistics.viewCount).toLocaleString()}</p>
-                      </div>
-                      <div className="bg-white/10 p-4 rounded-lg">
-                        <p className="text-purple-300 text-sm">Likes</p>
-                        <p className="text-2xl font-bold text-white">{parseInt(videoData.statistics.likeCount).toLocaleString()}</p>
-                      </div>
-                      <div className="bg-white/10 p-4 rounded-lg">
-                        <p className="text-purple-300 text-sm">Comments</p>
-                        <p className="text-2xl font-bold text-white">{parseInt(videoData.statistics.commentCount).toLocaleString()}</p>
-                      </div>
-                      <div className="bg-white/10 p-4 rounded-lg">
-                        <p className="text-purple-300 text-sm">Favorites</p>
-                        <p className="text-2xl font-bold text-white">{parseInt(videoData.statistics.favoriteCount).toLocaleString()}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Transcription Section */}
-                {!videoData.transcription ? (
-                  <div className="mt-8 text-center">
-                    <div className="mb-4 flex items-center justify-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="useSpeechToText"
-                        checked={useSpeechToText}
-                        onChange={(e) => setUseSpeechToText(e.target.checked)}
-                        className="form-checkbox h-4 w-4 text-purple-600 transition duration-150 ease-in-out"
-                      />
-                      <label htmlFor="useSpeechToText" className="text-sm text-gray-300">
-                        Use Speech-to-Text if captions are not available
-                      </label>
-                    </div>
-                    <button 
-                      onClick={handleTranscribe} 
-                      disabled={transcriptionStatus === 'loading'}
-                      className={`bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${transcriptionStatus === 'loading' ? 'opacity-75' : ''}`}
-                    >
-                      {transcriptionStatus === 'loading' ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          {useSpeechToText ? 'Converting Speech to Text...' : 'Loading Captions...'}
-                        </>
-                      ) : 'Transcribe Video'}
-                    </button>
-                    {error && (
-                      <div className="mt-4 text-red-400 text-sm">
-                        {error}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
-                      <h3 className="text-xl font-semibold text-white mb-4">Transcription</h3>
+                    {/* Transcription */}
+                    <div className="mt-8 space-y-3">
+                      <h4 className="text-xl font-semibold text-white">Transcription</h4>
                       <pre className="text-gray-300 whitespace-pre-wrap font-sans text-sm bg-black/20 rounded-lg p-4 max-h-60 overflow-y-auto">
                         {videoData.transcription}
                       </pre>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {videoData.transcription && (
-                <div className="space-y-6">
-                  <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
-                    <h3 className="text-xl font-semibold text-white mb-4">Generate Content</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <button
-                        onClick={() => handleGenerateContent('summary')}
-                        className="p-4 bg-gradient-to-br from-purple-600/30 to-blue-600/30 hover:from-purple-600/40 hover:to-blue-600/40 rounded-lg border border-white/10 transition-all transform hover:scale-105"
+                  {/* Generate LinkedIn Post Section */}
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm mt-8">
+                    <h3 className="text-xl font-semibold text-white mb-4">Generate LinkedIn Post</h3>
+                    
+                    {!showTemplateOptions ? (
+                      <button 
+                        onClick={() => setShowTemplateOptions(true)}
+                        className="block w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold text-lg text-center hover:opacity-90 transition-opacity"
                       >
-                        <h4 className="text-lg font-semibold text-white mb-2">Summarization & Highlights</h4>
-                        <p className="text-sm text-gray-300">Extract key insights and generate a concise, engaging summary</p>
+                        Generate LinkedIn Post
                       </button>
+                    ) : (
+                      <div className="space-y-8">
+                        {/* Template Selection */}
+                        <div>
+                          <h4 className="text-lg font-semibold text-white mb-4">Choose Template</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {[
+                              {
+                                type: 'summary',
+                                title: 'Summary',
+                                description: 'Concise overview with key insights',
+                                icon: '📝'
+                              },
+                              {
+                                type: 'story',
+                                title: 'Story-Based',
+                                description: 'Narrative-driven content',
+                                icon: '📖'
+                              },
+                              {
+                                type: 'value',
+                                title: 'Value-First',
+                                description: 'Focus on practical benefits',
+                                icon: '💎'
+                              },
+                              {
+                                type: 'question',
+                                title: 'Question-Based',
+                                description: 'Drive engagement & discussion',
+                                icon: '💭'
+                              },
+                              {
+                                type: 'action',
+                                title: 'Call-to-Action',
+                                description: 'Guide readers to take action',
+                                icon: '🎯'
+                              }
+                            ].map((template) => (
+                              <button
+                                key={template.type}
+                                onClick={() => setSelectedTemplate(template.type as typeof selectedTemplate)}
+                                className={`p-4 ${
+                                  selectedTemplate === template.type
+                                    ? 'bg-gradient-to-br from-purple-600 to-blue-600'
+                                    : 'bg-gradient-to-br from-purple-600/30 to-blue-600/30 hover:from-purple-600/40 hover:to-blue-600/40'
+                                } rounded-lg border border-white/10 transition-all transform hover:scale-105`}
+                              >
+                                <div className="text-3xl mb-2">{template.icon}</div>
+                                <h4 className="text-lg font-semibold text-white mb-2">{template.title}</h4>
+                                <p className="text-sm text-gray-300">{template.description}</p>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
 
-                      <button
-                        onClick={() => handleGenerateContent('template')}
-                        className="p-4 bg-gradient-to-br from-purple-600/30 to-blue-600/30 hover:from-purple-600/40 hover:to-blue-600/40 rounded-lg border border-white/10 transition-all transform hover:scale-105"
-                      >
-                        <h4 className="text-lg font-semibold text-white mb-2">Template-Based Content</h4>
-                        <p className="text-sm text-gray-300">Use industry-specific templates for professional formatting</p>
-                      </button>
+                        {/* Length Selection */}
+                        <div className="mb-8">
+                          <h4 className="text-lg font-semibold text-white mb-4">Post Length</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {(Object.keys(LENGTH_SETTINGS) as Array<keyof typeof LENGTH_SETTINGS>).map((length) => (
+                              <button
+                                key={length}
+                                onClick={() => setPostSettings(prev => ({ ...prev, length }))}
+                                className={`p-4 ${
+                                  postSettings.length === length
+                                    ? 'bg-gradient-to-br from-purple-600 to-blue-600'
+                                    : 'bg-gradient-to-br from-purple-600/30 to-blue-600/30 hover:from-purple-600/40 hover:to-blue-600/40'
+                                } rounded-lg border border-white/10 transition-all`}
+                              >
+                                <div className="text-3xl mb-2">{LENGTH_SETTINGS[length].icon}</div>
+                                <h4 className="text-lg font-semibold text-white mb-1">{LENGTH_SETTINGS[length].label}</h4>
+                                <p className="text-sm text-gray-300 mb-2">{LENGTH_SETTINGS[length].description}</p>
+                                <p className="text-xs text-gray-400 mb-1">{LENGTH_SETTINGS[length].charRange}</p>
+                                <p className="text-xs text-blue-400">Best for: {LENGTH_SETTINGS[length].bestFor}</p>
+                              </button>
+                            ))}
+                          </div>
+                          <div className="mt-4 p-4 bg-black/20 rounded-lg">
+                            <p className="text-sm text-white mb-2">Example Structure:</p>
+                            <pre className="text-xs text-gray-400 whitespace-pre-wrap">
+                              {LENGTH_SETTINGS[postSettings.length].example}
+                            </pre>
+                          </div>
+                        </div>
 
-                      <button
-                        onClick={() => handleGenerateContent('segmented')}
-                        className="p-4 bg-gradient-to-br from-purple-600/30 to-blue-600/30 hover:from-purple-600/40 hover:to-blue-600/40 rounded-lg border border-white/10 transition-all transform hover:scale-105"
-                      >
-                        <h4 className="text-lg font-semibold text-white mb-2">Segmented Strategy</h4>
-                        <p className="text-sm text-gray-300">Process content in meaningful segments with context-specific commentary</p>
-                      </button>
-                    </div>
-                  </div>
+                        {/* Tone Slider */}
+                        <div className="mb-8">
+                          <h4 className="text-lg font-semibold text-white mb-4">Tone</h4>
+                          <div className="space-y-4">
+                            <div className="relative">
+                              <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={postSettings.tone}
+                                onChange={(e) => setPostSettings(prev => ({
+                                  ...prev,
+                                  tone: parseInt(e.target.value)
+                                }))}
+                                className="w-full"
+                              />
+                              <div className="flex justify-between text-sm text-gray-400 mt-2">
+                                <span>Conversational</span>
+                                <span>Balanced</span>
+                                <span>Formal</span>
+                              </div>
+                            </div>
+                            <div className="flex justify-between text-white">
+                              <div>
+                                <p className="font-medium">Current: {getToneLabel(postSettings.tone)}</p>
+                                <p className="text-sm text-gray-400">
+                                  {postSettings.tone <= 33 && "Friendly and approachable, like talking to a friend"}
+                                  {postSettings.tone > 33 && postSettings.tone <= 66 && "Mix of formal and casual, like a friendly colleague"}
+                                  {postSettings.tone > 66 && "Professional and structured, business-appropriate"}
+                                </p>
+                                <p className="text-sm text-blue-400 mt-2">
+                                  {getToneHint(postSettings.tone).message}
+                                </p>
+                              </div>
+                              <span>{postSettings.tone}%</span>
+                            </div>
+                          </div>
+                        </div>
 
-                  {generatedContent && (
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xl font-semibold text-white">Generated Content</h3>
-                        <button
-                          onClick={() => handleCopy(generatedContent.summary)}
-                          className="px-4 py-2 bg-purple-600/80 hover:bg-purple-500 rounded-lg transition-colors text-white text-sm"
-                        >
-                          {copied ? 'Copied!' : 'Copy'}
-                        </button>
+                        {/* Personality Sliders */}
+                        <div>
+                          <h4 className="text-lg font-semibold text-white mb-4">Personality</h4>
+                          <div className="space-y-4">
+                            {[
+                              { key: 'charm', label: '✨ Charm', description: 'Warmth and appeal' },
+                              { key: 'wit', label: '💭 Wit', description: 'Clever observations' },
+                              { key: 'humor', label: '😊 Humor', description: 'Fun and light' },
+                              { key: 'sarcasm', label: '😏 Sarcasm', description: 'Ironic edge' }
+                            ].map((trait) => (
+                              <div key={trait.key} className="space-y-2">
+                                <div className="flex justify-between text-white">
+                                  <div>
+                                    <label>{trait.label}</label>
+                                    <p className="text-sm text-gray-400">{trait.description}</p>
+                                    <p className="text-xs text-blue-400">
+                                      {getToneHint(postSettings.tone).suggestions[trait.key as keyof typeof postSettings.personality]}
+                                    </p>
+                                  </div>
+                                  <span>{postSettings.personality[trait.key as keyof typeof postSettings.personality]}%</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="100"
+                                  value={postSettings.personality[trait.key as keyof typeof postSettings.personality]}
+                                  onChange={(e) => setPostSettings(prev => ({
+                                    ...prev,
+                                    personality: {
+                                      ...prev.personality,
+                                      [trait.key]: parseInt(e.target.value)
+                                    }
+                                  }))}
+                                  className="w-full"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Preview and Generate Buttons */}
+                        <div className="space-y-4">
+                          <button
+                            onClick={handleShowPrompt}
+                            className="w-full py-3 bg-gray-600 text-white rounded-xl font-semibold text-lg text-center hover:bg-gray-500 transition-colors"
+                          >
+                            Preview Prompt
+                          </button>
+                          
+                          <button
+                            onClick={handleGenerateContent}
+                            disabled={generating}
+                            className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold text-lg text-center hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {generating ? (
+                              <div className="flex items-center justify-center">
+                                <RefreshCw className="animate-spin -ml-1 mr-3 h-5 w-5" />
+                                Generating...
+                              </div>
+                            ) : (
+                              'Generate Post'
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Prompt Preview Modal */}
+                        {showPrompt && currentPrompt && (
+                          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+                            <div className="bg-gray-800 rounded-xl p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+                              <h3 className="text-xl font-semibold text-white mb-4">Generated Prompt</h3>
+                              <pre className="text-gray-300 whitespace-pre-wrap font-sans text-sm bg-black/20 rounded-lg p-4">
+                                {currentPrompt}
+                              </pre>
+                              <div className="flex justify-end gap-4 mt-6">
+                                <button
+                                  onClick={() => setShowPrompt(false)}
+                                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors"
+                                >
+                                  Close
+                                </button>
+                                <button
+                                  onClick={handleGenerateContent}
+                                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:opacity-90 transition-opacity"
+                                >
+                                  Generate with this Prompt
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Generated Content */}
+                        {generatedContent && (
+                          <div className="mt-6">
+                            <div className="flex justify-between items-center mb-4">
+                              <h4 className="text-lg font-semibold text-white">Generated Post</h4>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(generatedContent);
+                                  // Show temporary "Copied!" message
+                                  const button = event?.target as HTMLButtonElement;
+                                  const originalText = button.textContent;
+                                  button.textContent = 'Copied!';
+                                  setTimeout(() => {
+                                    button.textContent = originalText;
+                                  }, 2000);
+                                }}
+                                className="px-4 py-2 bg-purple-600/80 hover:bg-purple-500 rounded-lg transition-colors text-white text-sm"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <pre className="text-gray-300 whitespace-pre-wrap font-sans text-sm bg-black/20 rounded-lg p-4">
+                              {generatedContent}
+                            </pre>
+                          </div>
+                        )}
                       </div>
-                      <pre className="text-gray-300 whitespace-pre-wrap font-sans text-sm bg-black/20 rounded-lg p-4">
-                        {generatedContent.summary}
-                      </pre>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           )}
         </div>
