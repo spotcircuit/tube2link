@@ -110,3 +110,9 @@ coverage/
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# Generated files
+/scripts/output/
+/transcriptions/
+*.txt
+available_models.json
