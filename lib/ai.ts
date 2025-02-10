@@ -1,263 +1,314 @@
+import 'openai/shims/node';
 import { z } from 'zod';
+import OpenAI from 'openai';
+import { VideoData } from '@/types/video';
+import { PostSettings } from '@/types/post';
 import { getOpenAIClient } from './openai';
+import { PreprocessedData } from './preprocessor';
+import { getConfig } from './config';
+import { getVideoType, VIDEO_CONTEXTS } from './video_context';
+import * as path from 'path';
+import * as fs from 'fs/promises';
 
-export type PostGenerationMode = 'summary' | 'story' | 'value' | 'question' | 'action';
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-interface VideoData {
-  id: string;
-  title: string;
-  description: string;
-  channelTitle: string;
-  tags?: string[];
-  transcription: string;
+export type PostGenerationMode = keyof typeof POST_TEMPLATES;
+
+const POST_TEMPLATES = {
+  question: {
+    name: 'Question-Based',
+    structure: `
+1. Open with an intriguing industry question
+2. Share context from your experience
+3. Present the video's perspective
+4. Highlight key supporting evidence
+5. Invite thoughtful responses
+6. Include video URL
+7. Add relevant hashtags`
+  },
+  story: {
+    name: 'Story-Based',
+    structure: `
+1. Start with a relatable situation
+2. Share the learning journey
+3. Present key discoveries
+4. Connect to broader principles
+5. End with earned wisdom
+6. Include video URL
+7. Add relevant hashtags`
+  },
+  action: {
+    name: 'Action-Oriented',
+    structure: `
+1. State the goal clearly
+2. Explain why it matters now
+3. Present concrete steps
+4. Share a practical example
+5. Call to action
+6. Include video URL
+7. Add relevant hashtags`
+  },
+  insight: {
+    name: 'Insight-Based',
+    structure: `
+1. Lead with surprising data
+2. Explain the significance
+3. Reveal deeper understanding
+4. Support with evidence
+5. Challenge assumptions
+6. Include video URL
+7. Add relevant hashtags`
+  },
+  problem_solution: {
+    name: 'Problem-Solution',
+    structure: `
+1. Identify the pain point clearly
+2. Explain its impact
+3. Present the solution approach
+4. Share implementation details
+5. Highlight the benefits
+6. Include video URL
+7. Add relevant hashtags`
+  },
+  comparison: {
+    name: 'Comparison',
+    structure: `
+1. Introduce the approaches
+2. Compare key aspects
+3. Highlight innovations
+4. Present evidence
+5. Guide decision making
+6. Include video URL
+7. Add relevant hashtags`
+  }
+} as const;
+
+function getToneLabel(tone: number): string {
+  if (tone <= 0.33) return 'Casual';
+  if (tone <= 0.66) return 'Balanced';
+  return 'Formal';
 }
 
-interface PostSettings {
-  tone: number;
-  personality: {
-    charm: number;
-    wit: number;
-    humor: number;
-    sarcasm: number;
-  };
-  length: 'brief' | 'standard' | 'detailed';
-}
+export async function generatePrompt(data: VideoData, template: keyof typeof POST_TEMPLATES, settings: PostSettings): Promise<string> {
+  const videoType = await getVideoType(data);
+  const videoContext = VIDEO_CONTEXTS[videoType];
+  const selectedTemplate = POST_TEMPLATES[template];
 
-const PROMPT_TEMPLATES = {
-  summary: `You are a professional content creator specializing in LinkedIn posts. Create a concise, engaging summary of this YouTube video that highlights the key insights.
+  // Ensure all data properties exist with defaults
+  const {
+    metadata = {
+      title: 'No title available',
+      channelTitle: 'No channel available',
+      description: 'No description available',
+      videoId: ''
+    },
+    quick_summary = 'No summary available',
+    patterns = {},
+    semantic = {},
+    roles = {}
+  } = data;
 
-Video Title: {title}
-Channel: {channel}
-Description: {description}
-Tags: {tags}
-Transcription:
-{transcription}
+  const topActions = semantic?.actions
+    ?.sort((a, b) => b.importance - a.importance)
+    .slice(0, 3)
+    .map(a => `• ${a.content}`)
+    .join('\n') || 'No key actions available';
 
-Guidelines:
-1. Start with a compelling hook
-2. Extract 3-5 key insights or takeaways
-3. Include relevant statistics or data points if available
-4. End with a thought-provoking question or call-to-action
-5. Add appropriate hashtags based on the content
-6. Keep the total length between 1000-1300 characters
-7. Format for LinkedIn's style (use line breaks effectively)
-8. Include the YouTube video link at the end
+  const topKeyPoints = patterns?.key_points
+    ?.slice(0, 3)
+    .map(p => `• ${p.content}`)
+    .join('\n') || 'No key points available';
 
-Video Link: https://youtu.be/{videoId}`,
+  const examples = patterns?.examples
+    ?.map(e => `• ${e.content}`)
+    .join('\n') || 'No examples available';
 
-  story: `You are a storytelling expert. Transform this YouTube video content into a narrative-driven LinkedIn post that engages and resonates with readers.
+  const technicalDetails = roles?.developer
+    ?.map(d => `• ${d.content}`)
+    .join('\n') || 'No technical details available';
 
-Video Title: {title}
-Channel: {channel}
-Description: {description}
-Tags: {tags}
-Transcription:
-{transcription}
+  const userContext = roles?.user
+    ?.map(u => `• ${u.content}`)
+    .join('\n') || 'No user context available';
 
-Guidelines:
-1. Structure the post as a story:
-   - Hook with an intriguing opening
-   - Build tension or interest
-   - Share main insights through narrative
-   - End with resolution and reflection
-2. Use storytelling elements (scene-setting, emotion, conflict/resolution)
-3. Keep the story relevant to professional context
-4. Include key learnings naturally in the narrative
-5. End with a personal reflection or lesson
-6. Keep the total length between 1000-1300 characters
-7. Include the video link
+  const prompt = `${videoContext.intro}
 
-Video Link: https://youtu.be/{videoId}`,
+Create a LinkedIn post using the "${selectedTemplate.name}" format:
 
-  value: `You are a value-focused content strategist. Create a LinkedIn post that emphasizes the practical value and key benefits from this YouTube video.
+Title: ${metadata.title}
+Channel: ${metadata.channelTitle}
+Description: ${metadata.description}
 
-Video Title: {title}
-Channel: {channel}
-Description: {description}
-Tags: {tags}
-Transcription:
-{transcription}
+Summary:
+${quick_summary}
 
-Guidelines:
-1. Start with the primary value proposition
-2. Structure the content as:
-   - Main benefit or insight
-   - 3 supporting points with examples
-   - Practical applications
-   - Real-world relevance
-3. Focus on what readers will gain
-4. Include actionable takeaways
-5. Add relevant professional context
-6. Keep the total length between 1000-1300 characters
-7. End with the video link
+Key Actions (Most Important):
+${topActions}
 
-Video Link: https://youtu.be/{videoId}`,
+Key Points:
+${topKeyPoints}
 
-  question: `You are an engagement specialist. Create a thought-provoking LinkedIn post that uses questions to drive discussion about this YouTube video.
+Practical Examples:
+${examples}
 
-Video Title: {title}
-Channel: {channel}
-Description: {description}
-Tags: {tags}
-Transcription:
-{transcription}
+Technical Implementation:
+${technicalDetails}
 
-Guidelines:
-1. Open with an engaging question
-2. Structure the content as:
-   - Initial thought-provoking question
-   - Context from the video
-   - Supporting points with mini-questions
-   - Discussion prompts
-   - Final reflection question
-3. Use questions to frame key points
-4. Encourage reader interaction
-5. Balance questions with insights
-6. Keep the total length between 1000-1300 characters
-7. End with the video link
+Target Audience Context:
+${userContext}
 
-Video Link: https://youtu.be/{videoId}`,
+Writing Style:
+- Tone: ${getToneLabel(settings.tone)}
+- Charm: ${settings.personality.charm}%
+- Wit: ${settings.personality.wit}%
+- Humor: ${settings.personality.humor}%
+- Sarcasm: ${settings.personality.sarcasm}%
 
-  action: `You are a CTA specialist. Create a LinkedIn post that builds toward clear, compelling calls-to-action based on this YouTube video.
+Post Structure (${selectedTemplate.name}):
+${selectedTemplate.structure}
 
-Video Title: {title}
-Channel: {channel}
-Description: {description}
-Tags: {tags}
-Transcription:
-{transcription}
+Content Focus (${videoType}):
+${videoContext.format.join('\n')}
 
-Guidelines:
-1. Structure for action:
-   - Hook with a problem or opportunity
-   - Build urgency through video insights
-   - Present clear next steps
-   - Overcome potential objections
-   - Strong final CTA
-2. Include mini-CTAs throughout
-3. Make actions specific and achievable
-4. Add social proof or benefits
-5. Create urgency naturally
-6. Keep the total length between 1000-1300 characters
-7. End with the video link
+Additional Guidelines:
+1. Keep it concise (1000-1300 characters)
+2. Use line breaks effectively
+3. Include 2-3 relevant hashtags
+4. Maintain the specified tone and personality
+5. Format for maximum engagement
+6. End with the video link${metadata.videoId ? `\n\nVideo Link: https://youtu.be/${metadata.videoId}` : ''}`; 
 
-Video Link: https://youtu.be/{videoId}`
-};
-
-function generatePrompt(videoData: VideoData, mode: PostGenerationMode, settings: PostSettings): string {
-  // Build the base prompt from the template
-  let prompt = PROMPT_TEMPLATES[mode]
-    .replace('{title}', videoData.title)
-    .replace('{channel}', videoData.channelTitle)
-    .replace('{description}', videoData.description || 'No description available')
-    .replace('{tags}', videoData.tags?.join(', ') || 'No tags')
-    .replace('{transcription}', videoData.transcription || 'No transcription available')
-    .replace('{videoId}', videoData.id);
-
-  // Add tone guidance based on settings
-  let toneGuidance = '';
-  if (settings.tone <= 33) {
-    toneGuidance = 'Keep the tone conversational and friendly, like talking to a friend.';
-  } else if (settings.tone <= 66) {
-    toneGuidance = 'Use a balanced tone that mixes professionalism with approachability.';
-  } else {
-    toneGuidance = 'Maintain a formal and professional tone throughout.';
-  }
-
-  // Add personality guidance
-  const { charm, wit, humor, sarcasm } = settings.personality;
-  let personalityGuidance = '\n\nPersonality Guidelines:';
-  
-  if (charm > 50) {
-    personalityGuidance += '\n- Add warmth and charm to engage readers';
-  }
-  if (wit > 50) {
-    personalityGuidance += '\n- Include clever observations and insights';
-  }
-  if (humor > 50) {
-    personalityGuidance += '\n- Add light, appropriate humor';
-  }
-  if (sarcasm > 50) {
-    personalityGuidance += '\n- Include subtle irony where appropriate';
-  }
-
-  // Add length guidance
-  let lengthGuidance = '';
-  switch (settings.length) {
-    case 'brief':
-      lengthGuidance = 'Keep the post concise and focused, around 100-200 words.';
-      break;
-    case 'standard':
-      lengthGuidance = 'Write a medium-length post of about 200-400 words.';
-      break;
-    case 'detailed':
-      lengthGuidance = 'Create a comprehensive post of 400-600 words.';
-      break;
-  }
-
-  // Combine all guidance
-  prompt += `\n\nTone: ${toneGuidance}`;
-  prompt += personalityGuidance;
-  prompt += `\n\nLength: ${lengthGuidance}`;
+  // Save the prompt to file
+  const dataDir = path.join(process.cwd(), 'data');
+  await fs.mkdir(dataDir, { recursive: true });
+  const promptPath = path.join(dataDir, `${data.metadata?.videoId || 'unknown'}_base_prompt.txt`);
+  await fs.writeFile(promptPath, prompt, 'utf-8');
+  console.log(` Base prompt saved to: ${promptPath}`);
 
   return prompt;
 }
 
-export async function generateLinkedInPost(videoData: VideoData, mode: PostGenerationMode, settings: PostSettings): Promise<string> {
-  console.log('\n=== Starting LinkedIn Post Generation ===');
+export async function generateLinkedInPost(
+  data: VideoData,
+  mode: PostGenerationMode,
+  settings: PostSettings
+): Promise<string> {
+  console.log(' Preparing LinkedIn post prompt...');
+
+  // First get the base prompt (same as generatePrompt)
+  const basePrompt = await generatePrompt(data, mode, settings);
   
-  if (typeof window !== 'undefined') {
-    console.error('Attempted to call generateLinkedInPost on client-side');
-    throw new Error('OpenAI client can only be used server-side');
+  // Check if we have enrichment data
+  if (!data.patterns && !data.semantic && !data.roles) {
+    console.log('No pattern/semantic/role data found, using base prompt');
+    return basePrompt;
   }
 
-  console.log('Getting OpenAI client...');
+  // Add enriched data to prompt
+  const enrichedPrompt = `${basePrompt}
+
+Additional Context:
+${data.patterns?.key_points?.length > 0 ? `
+Key Points:
+${data.patterns.key_points.map(p => `• ${p.content}`).join('\n')}` : ''}
+
+${data.patterns?.examples?.length > 0 ? `
+Examples:
+${data.patterns.examples.map(e => `• ${e.content}`).join('\n')}` : ''}
+
+${data.semantic?.actions?.length > 0 ? `
+Important Actions:
+${data.semantic.actions
+  .filter(a => a.importance >= 0.7)
+  .map(a => `• ${a.content}`)
+  .join('\n')}` : ''}
+
+${data.roles?.user?.length > 0 ? `
+User Context:
+${data.roles.user.map(u => `• ${u.content}`).join('\n')}` : ''}
+
+Please ensure:
+1. The post is engaging and encourages discussion
+2. Maintain a professional tone
+3. Include a clear call to action
+4. Keep the total length within LinkedIn's optimal range
+5. Always include the video URL before any hashtags
+6. Place relevant hashtags at the very end`;
+
+  // Save the enriched prompt
+  const dataDir = path.join(process.cwd(), 'data');
+  await fs.mkdir(dataDir, { recursive: true });
+  const enrichedPath = path.join(dataDir, `${data.metadata?.videoId || 'unknown'}_enriched_prompt.txt`);
+  await fs.writeFile(enrichedPath, enrichedPrompt, 'utf-8');
+  console.log(` Enriched prompt saved to: ${enrichedPath}`);
+
+  // Return the enriched prompt - don't make an API call
+  return enrichedPrompt;
+}
+
+export function enrichPrompt(prompt: string, videoContext: VideoContext): string {
+  const enrichedPrompt = prompt
+    .replace('${title}', videoContext.title || '')
+    .replace('${description}', videoContext.description || '')
+    .replace('${channelTitle}', videoContext.channelTitle || '')
+    .replace('${transcription}', videoContext.transcription || '')
+    .replace('${quick_summary}', videoContext.quick_summary || 'No summary available');
+
+  return enrichedPrompt;
+}
+
+export async function formatDetailedAnalysis(preprocessedData: PreprocessedData): Promise<string> {
+  console.log(' Formatting detailed analysis...');
   const openai = getOpenAIClient();
-  console.log('Successfully got OpenAI client');
 
-  const prompt = generatePrompt(videoData, mode, settings);
-  console.log('Generated prompt:', { length: prompt.length });
+  const prompt = `Format this video analysis into clear, concise sections. For each section:
+1. Combine related points
+2. Remove redundancy
+3. Use clear, professional language
+4. Keep only the most important insights
 
-  try {
-    console.log('Making OpenAI API request with:', {
-      model: 'gpt-3.5-turbo',
-      promptLength: prompt.length,
-      temperature: 0.7,
-      maxTokens: 1000
-    });
+Here is the raw analysis:
+${JSON.stringify(preprocessedData, null, 2)}
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a professional LinkedIn content creator who specializes in creating engaging, high-quality posts from video content.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000,
-    });
+Format the response in this structure:
+## Key Points
+- [2-3 key takeaways]
 
-    console.log('Successfully received OpenAI response:', {
-      hasContent: !!completion.choices[0]?.message?.content,
-      contentLength: completion.choices[0]?.message?.content?.length
-    });
+## Main Steps/Actions
+- [Step-by-step breakdown, max 5 steps]
 
-    console.log('=== Finished LinkedIn Post Generation ===\n');
-    return completion.choices[0]?.message?.content || 'Failed to generate content';
-  } catch (error: any) {
-    console.error('OpenAI API error:', {
-      message: error.message,
-      code: error.code,
-      type: error.type,
-      param: error.param,
-      status: error.status,
-      details: error.response?.data || error.toString()
-    });
-    throw error;
-  }
+## Target Audience
+- [Who this is for and what they'll learn]
+
+## Implementation Details
+- [Technical or practical details]`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "system",
+        content: "You are a technical writer helping format video content analysis into clear, structured sections."
+      },
+      {
+        role: "user",
+        content: prompt
+      }
+    ],
+    temperature: 0.3,
+    max_tokens: 500
+  });
+
+  const formattedAnalysis = response.choices[0].message.content;
+
+  // Save the formatted data to file
+  const dataDir = path.join(process.cwd(), 'data');
+  await fs.mkdir(dataDir, { recursive: true });
+  const analysisPath = path.join(dataDir, 'detailed_analysis.txt');
+  await fs.writeFile(analysisPath, formattedAnalysis, 'utf-8');
+  console.log(` Detailed analysis saved to: ${analysisPath}`);
+
+  return formattedAnalysis;
 }

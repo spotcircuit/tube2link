@@ -37,6 +37,33 @@ A Next.js application that converts YouTube videos into engaging LinkedIn posts 
 - Error handling with user-friendly messages
 - Copy-to-clipboard functionality
 
+### 4. Post Generation Features
+- **Length Control** (✅ Working)
+  - Brief (150-200 words)
+  - Standard (200-300 words)
+  - Detailed (300-500 words)
+  - Accurate word count validation
+
+- **Content Optimization** (✅ Working)
+  - Action-oriented writing style
+  - Strategic video URL placement
+  - Optimized hashtag positioning
+  - Engagement-focused formatting
+
+## Upcoming Features
+
+#### 1. Rich Text Editor
+- Custom post editing with formatting
+- Real-time word count
+- Markdown support
+- Save drafts functionality
+
+#### 2. LinkedIn Preview
+- Real-time post preview
+- Character count validation
+- Mobile/desktop view toggle
+- Image preview support
+
 ## Setup
 
 1. Clone the repository
@@ -111,6 +138,40 @@ The application includes comprehensive error handling for:
 - Authentication failures
 - Network issues
 - API rate limits
+
+## Known Bugs and Issues
+
+### 1. React Rendering Issues
+- Objects being rendered as React children in template components
+- Error: "Objects are not valid as a React child (found: object with keys {})"
+- Status: Under investigation
+- Workaround: Using ErrorBoundary and DebugRender components for better error tracking
+
+### 2. OpenAI API Key Issues
+If you encounter a 401 error with the OpenAI API:
+
+1. **Environment Variable Conflict**
+   - Check for system/user-level `OPENAI_API_KEY` overriding `.env.local`
+   - PowerShell check:
+     ```powershell
+     [System.Environment]::GetEnvironmentVariable('OPENAI_API_KEY', 'User')
+     ```
+   - Remove conflicting variable:
+     ```powershell
+     [System.Environment]::SetEnvironmentVariable('OPENAI_API_KEY', $null, 'User')
+     ```
+
+2. **After Environment Fix**
+   - Restart terminal/IDE
+   - Verify `.env.local` is being used
+
+3. **API Key Format**
+   - Must start with `sk-`
+   - Match format from OpenAI dashboard
+
+4. **Debug Script**
+   - Use `scripts/test-openai.py` to test API key
+   - Provides detailed environment debugging
 
 ## Troubleshooting
 
@@ -256,6 +317,23 @@ If you encounter a 401 error with the OpenAI API, check the following:
    - Show debug information about your environment
    - Make a test request to OpenAI
    - Save request and response details to JSON files
+
+## Recent Updates
+
+### 1. Dynamic Content Generation
+- Added intelligent video type detection
+- Implemented 6 new post templates
+- Added post length customization (brief/standard/detailed)
+
+### 2. Error Handling Improvements
+- Added React Error Boundaries
+- Enhanced debugging tools for React components
+- Improved error reporting and tracing
+
+### 3. UI/UX Enhancements
+- New template selection interface
+- Dynamic length controls
+- Improved personality trait sliders
 
 ## Contributing
 1. Fork the repository

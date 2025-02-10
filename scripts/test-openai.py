@@ -2,7 +2,7 @@ import os
 import json
 import requests
 from pathlib import Path
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 
 def debug_env():
     print("\n🔍 Environment Debug Info:")
@@ -15,10 +15,8 @@ def debug_env():
     print("\nEnvironment variables:")
     for key in sorted(os.environ):
         if 'KEY' in key or 'SECRET' in key:
-            print(f"- {key}: [HIDDEN]")
-        else:
             value = os.environ[key]
-            print(f"- {key}: {value}")
+            print(f"- {key}: {value[:10]}...{value[-10:] if len(value) > 20 else value}")
 
 def test_api_key():
     try:
@@ -27,87 +25,48 @@ def test_api_key():
         # Find all .env files
         env_files = list(Path('.').glob('**/.env*'))
         print(f"Found {len(env_files)} .env files:")
-        for env_file in env_files:
-            print(f"- {env_file}")
+        for f in env_files:
+            print(f"  - {f}")
         
-        # Load .env.local specifically
-        env_path = Path(__file__).parent.parent / '.env.local'
-        print(f"\nLoading from: {env_path}")
-        load_dotenv(env_path)
-        
-        # Debug environment after loading
-        debug_env()
+        # Load environment variables
+        load_dotenv('.env.local')
         
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
-            raise ValueError("OPENAI_API_KEY not found in .env.local")
-
-        print(f"\nAPI key loaded successfully!")
-
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-
-        # Define the payload for the API call
-        payload = {
-            "model": "gpt-3.5-turbo",
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "You are a professional LinkedIn content creator who specializes in creating engaging, high-quality posts from video content."
-                },
-                {
-                    "role": "user",
-                    "content": "Create a LinkedIn post about AI and automation."
-                }
-            ],
-            "temperature": 0.7,
-            "max_tokens": 1000
-        }
-
-        # Save request parameters
-        output_dir = Path(__file__).parent / 'output'
-        output_dir.mkdir(exist_ok=True)
+            print("❌ OPENAI_API_KEY not found in environment")
+            return
+            
+        print(f"✅ Found API key: {api_key[:10]}...{api_key[-10:]}")
         
-        with open(output_dir / 'request.json', 'w') as f:
-            json.dump({
-                'headers': headers,
-                'payload': payload
-            }, f, indent=2)
-
-        print("\n📝 Saved request parameters to output/request.json")
-
-        # Make the POST request to OpenAI's chat completions endpoint
-        print("\n🚀 Making request to OpenAI API...")
-        response = requests.post(
-            "https://api.openai.com/v1/chat/completions", 
-            headers=headers, 
-            json=payload
+        # Test the API
+        headers = {
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        response = requests.get(
+            'https://api.openai.com/v1/models',
+            headers=headers
         )
-
-        # Save the response
-        with open(output_dir / 'response.json', 'w') as f:
-            if response.status_code == 200:
-                json.dump(response.json(), f, indent=2)
-            else:
-                json.dump({
-                    'status_code': response.status_code,
-                    'error': response.text
-                }, f, indent=2)
-
-        # Check if the request was successful
+        
         if response.status_code == 200:
-            print("✅ API request successful!")
-            print("\nResponse content:", response.json()['choices'][0]['message']['content'])
+            print("✅ API test successful!")
+            models = response.json()['data']
+            print(f"\nAvailable models ({len(models)}):")
+            for model in models[:5]:  # Show first 5 models
+                print(f"- {model['id']}")
+            if len(models) > 5:
+                print(f"...and {len(models)-5} more")
         else:
-            print("❌ API request failed:")
-            print(f"Status code: {response.status_code}")
+            print(f"❌ API test failed with status {response.status_code}")
             print(f"Error: {response.text}")
             
     except Exception as e:
-        print("❌ Error:")
-        print(f"Message: {str(e)}")
+        print(f"❌ Error: {str(e)}")
 
 if __name__ == "__main__":
+    print("🔧 OpenAI API Environment Debugger")
+    print("=" * 40)
+    debug_env()
+    print("\n" + "=" * 40)
     test_api_key()

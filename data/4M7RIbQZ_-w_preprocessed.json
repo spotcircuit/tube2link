@@ -1,0 +1,1232 @@
+{
+  "metadata": {
+    "videoId": "4M7RIbQZ_-w",
+    "title": "Deep Research.....but Open Source",
+    "channelTitle": "NetworkChuck",
+    "description": "Hey, this video is sponsored by ME: https://ntck.co/NCAcademy (Get started in IT)\n\nDeep Research from OpenAI is kind of amazing....but it's expensive costing $200/month. But, good guy David produced an open source version of Deep Research that is actually pretty good. Let's get this setup. \n\nCommands and stuff: https://blog.networkchuck.com/posts/open-source-deep-research/\n\nFollow David: https://x.com/dzhng\nGo star the project: https://github.com/dzhng/deep-research\n\n- Explore OpenAI Deep Research vs. Open Source\n- Set up open source deep research guide\n- Compare AI research tools side by side\n- Deep dive into AI research capabilities\n- PhD-level research with AI in minutes\n- Cost-effective alternatives to OpenAI's service\n- How to use OpenAI Mini3 for research\n- Implementing open source AI research\n- DIY AI research setup with Docker\n- Access AI research without high fees\n- OpenAI vs. open source AI functionalities\n- Enhance research with open source tools\n- OpenAI API key setup tutorial\n- Open source AI for advanced research\n- Step-by-step guide to AI research tools\n- OpenAI's pricing vs. open source solutions\n- Multimodal AI capabilities explored\n- Detailed comparison of AI research outputs\n- Practical AI research applications\n- Setup OpenAI environment on Docker\n- Save money on AI research technologies\n- Open source AI projects DIY guide\n- Benefits of slower, detailed AI research\n- OpenAI Mini3 high features and use\n- Build your own AI research environment\n\n#deepresearch #openai"
+  },
+  "videoType": "tutorial",
+  "quick_summary": "\nKey Points:\nso I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this\nit's the dumbest name ever I can't remember anything it's using that get your coffee ready let's get started now before we go crazy let's talk about what is this deep research thing Well normally with AI we get very very quick answers just blah blah\nI'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month\nit's pay as you go and he even has a nice little diagram here essentially here is the thought process it's using what's called Ser queries which I just found out because I started playing with\nI'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API\nopen.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it\nlocal and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key\nI'm going to grab mine copy that key paste it here\nand then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually\nand I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.\nand now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look\n\nTechnical Actions/Steps:\nit's price tag if you want to use the sucker you have to be a chat GPT Pro user which is $200 a month now I pay for that because I want to play with stuff\nso you and me we're going to try it right now I'll show you how to set it up we'll do it together\nand we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high\nbut with this with deep research it's doing what it says it's doing some deep research it'll take 5 to 30 minutes to do a deep dive providing I think people say PhD quality research so it would take a normal person or a normal PhD person hours or days to research a topic I'm talking in depth like going out to web pages reading Pages coming back and referencing others and quoting and citations all that nerdy stuff it does that in 30 minutes I was talking with my producer Alex and we're like you know I love it when it takes longer to answer me like AI like we know we're all bragging about\nthis is fast this is so fast I love it when it takes longer I feel like it thought more about something I feel like it's giving me a well-rounded answer it's got multi-step reasoning it's like going out to web pages doing some data analysis doing another search it's kind of thinking like a human many people are thinking this is the first real step to AGI and one very annoying thing about AI and the answers it gives us is we can't really trust it like even chat gbt is like\nso what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science\nso we're getting to that here in a moment I'll just say all of the above now I will say sometimes it will just kind of get stuck here and not do anything I'd be like hey bro you good\nand he won't be kind of like what he's doing now\nI'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month\nso let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment\nbut we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits\nI'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API\nopen.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it\nI'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.\nand then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually\nand you'll see it right here that's what that dot does before a file it'll hide the file now we're going to create what's called a Docker file\nso we'll do Nano Docker file just like this\nand I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.\nnetwork.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano\ndocker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary\nand now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it\noh you know what I don't know what it is we messed up our package.json file let's jump back in there real quick package.json\nwe didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones\nall of the above let's do data driven\nand now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look\noh no I haven't I haven't done anything I haven't paid anything this is all free\noh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that\nso I can't do it right now check it out all the URLs it did some research we're about to see our results now it said it Sav it to report.\nyeah here's all the research right here in markdown right here in our German what was the conclusion I don't want to read all this you saw it here folks dogs are better take that suckers I am a dog person sorry cat lovers let's see let's see if chat GPT said the same thing it said dogs yes but check it out\nand you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI\nit knows more it can it can now research way better than you can better than I can Let's do an age-old question and by the way to run this again we'll do the same command just like this which OS is better for it professionals Mac Linux or Windows\nI will say my command Line's a lot faster although I do reach my uh rate limits and I bet the research would be so much better if I didn't hit these rate limits it is so fun watching the thought process of these AIS also extremely scary\nbut I don't know the more I play with AI which it feels like I've been playing with new things every single stinking day because of releasing things at the speed of light the more I play with it the more encouraged I am for us it people and Humanity in general it's going to make us so good at what we do\nand that's the question you have to ask yourself or this is the question you need to ask yourself every single day how can I use AI to help me do my job better that's how you're going to stay ahead in this\nall right let's see what uh actually I'm going to show up the same time so video editor don't show it yet dude chat GPT is taking too long I have to go pee come on chat GPT\noh it's finally done\nokay and the conclusion I saw it coming you know what I agree with this because I do the same thing as an IT Pro aim to build competency in all three over your career you'll need all of them\nMac Windows Linux use them all all right that's the video let me know if you try this let me know what you think about the conclusions and um that's all I got I'll catch you guys later\nand you can actually join right now it's 12 bucks a month it's uh introductory price nothing crazy kind of think of it as a Kickstarter we're not doing a Kickstarter by the way it's not a Kickstarter it's just if you want to come see the videos as we're preparing them the courses as we're making them if you want to get into it that's what you're going to see there nothing crazy just yet just know I'm about to have a meeting on it right now literally after this recording I'm meeting my business partner to about what we're doing I would love to have you come join me in building this that's the video I'll see you guys next time\n\nTarget Audience:\nso open AI came out with a thing called Deep research you might have heard of it\nso I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this\nand we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high\nso what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science\nokay got enough context it will ask me for more context this is also going to be available in the open source version of this\nI'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month\nso let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment\nI'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API\nopen AI you'll go to platform.\nopen.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it\nI'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.\nlocal and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key\nand then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually\nit's hidden type in ls-\nnetwork.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano\ndocker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary\nblah blah we're just going to backspace this a bit to where it looks like this just like this hit control X Y enter to save\nand now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it\nwe didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones\noh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that\nand you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI\nand I'm pretty sure this said the same thing the Deep research open source\nhey real quick no just as I'm making this video hugging face said they're coming out with their own agentic framework for deep search because they want to I guess beat open\n\nImplementation Details:\nso I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this\nI'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month\nso let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment\nbut we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits\nI'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API\nopen.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it\nlocal and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key\ndocker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary\nand now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look\noh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that\nah I'm resizing it uh it's not a single OS decision it's implementing a hybrid strategy utilizing each system's strengths while utilizing rigorous platform agnostic security practices",
+  "patterns": {
+    "steps": [
+      {
+        "content": "this is fast this is so fast I love it when it takes longer I feel like it thought more about something I feel like it's giving me a well-rounded answer it's got multi-step reasoning it's like going out to web pages doing some data analysis doing another search it's kind of thinking like a human many people are thinking this is the first real step to AGI and one very annoying thing about AI and the answers it gives us is we can't really trust it like even chat gbt is like",
+        "context_before": "oh AI",
+        "context_after": "yeah um sometimes we get stuff wrong",
+        "position": 14
+      },
+      {
+        "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+        "context_before": "open AI you'll go to platform.",
+        "context_after": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+        "position": 34
+      },
+      {
+        "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+        "context_before": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+        "context_after": "env.",
+        "position": 35
+      },
+      {
+        "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+        "context_before": "it's not proper Json we didn't put a comma you probably saw this didn't you",
+        "context_after": "yeah",
+        "position": 55
+      },
+      {
+        "content": "MD we'll look at that here in a second",
+        "context_before": "so I can't do it right now check it out all the URLs it did some research we're about to see our results now it said it Sav it to report.",
+        "context_after": "but I think",
+        "position": 66
+      },
+      {
+        "content": "oh it's finally done",
+        "context_before": "it's taking so long I got a meeting with Jeremy Chara hurry up",
+        "context_after": "okay and the conclusion I saw it coming you know what I agree with this because I do the same thing as an IT Pro aim to build competency in all three over your career you'll need all of them",
+        "position": 83
+      },
+      {
+        "content": "and you can actually join right now it's 12 bucks a month it's uh introductory price nothing crazy kind of think of it as a Kickstarter we're not doing a Kickstarter by the way it's not a Kickstarter it's just if you want to come see the videos as we're preparing them the courses as we're making them if you want to get into it that's what you're going to see there nothing crazy just yet just know I'm about to have a meeting on it right now literally after this recording I'm meeting my business partner to about what we're doing I would love to have you come join me in building this that's the video I'll see you guys next time",
+        "context_before": "but we're building something fun",
+        "context_after": "hey real quick no just as I'm making this video hugging face said they're coming out with their own agentic framework for deep search because they want to I guess beat open",
+        "position": 94
+      }
+    ],
+    "examples": [
+      {
+        "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+        "context_before": "env.",
+        "context_after": "I'm going to grab mine copy that key paste it here",
+        "position": 37
+      },
+      {
+        "content": "so we'll do Nano Docker file just like this",
+        "context_before": "and you'll see it right here that's what that dot does before a file it'll hide the file now we're going to create what's called a Docker file",
+        "context_after": "and I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.",
+        "position": 43
+      },
+      {
+        "content": "blah blah we're just going to backspace this a bit to where it looks like this just like this hit control X Y enter to save",
+        "context_before": "blah blah",
+        "context_after": "and now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it",
+        "position": 49
+      },
+      {
+        "content": "it knows more it can it can now research way better than you can better than I can Let's do an age-old question and by the way to run this again we'll do the same command just like this which OS is better for it professionals Mac Linux or Windows",
+        "context_before": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI",
+        "context_after": "spicy right let me ask the same question over here let's say system administration and network engineering and cyber security all of the above should the analysis be on cost licensing you know everything everything answer the same questions you know notice it's asking similar questions I mean we are both using chat",
+        "position": 74
+      }
+    ],
+    "key_points": [
+      {
+        "content": "so I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this",
+        "context_before": "but I want you to be able to play with stuff too",
+        "context_after": "so you and me we're going to try it right now I'll show you how to set it up we'll do it together",
+        "position": 6
+      },
+      {
+        "content": "it's the dumbest name ever I can't remember anything it's using that get your coffee ready let's get started now before we go crazy let's talk about what is this deep research thing Well normally with AI we get very very quick answers just blah blah",
+        "context_before": "and we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high",
+        "context_after": "and it's they're okay answers",
+        "position": 9
+      },
+      {
+        "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+        "context_before": "I know you want to know the answer you're going to watch and wait aren't you",
+        "context_after": "it's pay as you go and he even has a nice little diagram here essentially here is the thought process it's using what's called Ser queries which I just found out because I started playing with",
+        "position": 24
+      },
+      {
+        "content": "it's pay as you go and he even has a nice little diagram here essentially here is the thought process it's using what's called Ser queries which I just found out because I started playing with",
+        "context_before": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+        "context_after": "crew AI",
+        "position": 25
+      },
+      {
+        "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+        "context_before": "but we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits",
+        "context_after": "open AI you'll go to platform.",
+        "position": 32
+      },
+      {
+        "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+        "context_before": "open AI you'll go to platform.",
+        "context_after": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+        "position": 34
+      },
+      {
+        "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+        "context_before": "env.",
+        "context_after": "I'm going to grab mine copy that key paste it here",
+        "position": 37
+      },
+      {
+        "content": "I'm going to grab mine copy that key paste it here",
+        "context_before": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+        "context_after": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+        "position": 38
+      },
+      {
+        "content": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+        "context_before": "I'm going to grab mine copy that key paste it here",
+        "context_after": "no you won't see it",
+        "position": 39
+      },
+      {
+        "content": "and I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.",
+        "context_before": "so we'll do Nano Docker file just like this",
+        "context_after": "network.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano",
+        "position": 44
+      },
+      {
+        "content": "and now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look",
+        "context_before": "okay",
+        "context_after": "oh no I haven't I haven't done anything I haven't paid anything this is all free",
+        "position": 61
+      }
+    ],
+    "lists": [],
+    "code_blocks": []
+  },
+  "semantic": {
+    "actions": [
+      {
+        "content": "it's price tag if you want to use the sucker you have to be a chat GPT Pro user which is $200 a month now I pay for that because I want to play with stuff",
+        "importance": 0.1365736722946167
+      },
+      {
+        "content": "so you and me we're going to try it right now I'll show you how to set it up we'll do it together",
+        "importance": 0.1895776391029358
+      },
+      {
+        "content": "and we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high",
+        "importance": 0.19529637694358826
+      },
+      {
+        "content": "but with this with deep research it's doing what it says it's doing some deep research it'll take 5 to 30 minutes to do a deep dive providing I think people say PhD quality research so it would take a normal person or a normal PhD person hours or days to research a topic I'm talking in depth like going out to web pages reading Pages coming back and referencing others and quoting and citations all that nerdy stuff it does that in 30 minutes I was talking with my producer Alex and we're like you know I love it when it takes longer to answer me like AI like we know we're all bragging about",
+        "importance": 0.17514656484127045
+      },
+      {
+        "content": "this is fast this is so fast I love it when it takes longer I feel like it thought more about something I feel like it's giving me a well-rounded answer it's got multi-step reasoning it's like going out to web pages doing some data analysis doing another search it's kind of thinking like a human many people are thinking this is the first real step to AGI and one very annoying thing about AI and the answers it gives us is we can't really trust it like even chat gbt is like",
+        "importance": 0.24013946950435638
+      },
+      {
+        "content": "so what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science",
+        "importance": 0.12880560755729675
+      },
+      {
+        "content": "so we're getting to that here in a moment I'll just say all of the above now I will say sometimes it will just kind of get stuck here and not do anything I'd be like hey bro you good",
+        "importance": 0.16607722640037537
+      },
+      {
+        "content": "and he won't be kind of like what he's doing now",
+        "importance": 0.08551459014415741
+      },
+      {
+        "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+        "importance": 0.24142637848854065
+      },
+      {
+        "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+        "importance": 0.18654020130634308
+      },
+      {
+        "content": "but we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits",
+        "importance": 0.1626332849264145
+      },
+      {
+        "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+        "importance": 0.15862224996089935
+      },
+      {
+        "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+        "importance": 0.16286125779151917
+      },
+      {
+        "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+        "importance": 0.1403970718383789
+      },
+      {
+        "content": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+        "importance": 0.13304024934768677
+      },
+      {
+        "content": "and you'll see it right here that's what that dot does before a file it'll hide the file now we're going to create what's called a Docker file",
+        "importance": 0.1199449896812439
+      },
+      {
+        "content": "so we'll do Nano Docker file just like this",
+        "importance": 0.18466691672801971
+      },
+      {
+        "content": "and I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.",
+        "importance": 0.10921335965394974
+      },
+      {
+        "content": "network.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano",
+        "importance": 0.132700115442276
+      },
+      {
+        "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+        "importance": 0.05473950877785683
+      },
+      {
+        "content": "and now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it",
+        "importance": 0.0691693052649498
+      },
+      {
+        "content": "oh you know what I don't know what it is we messed up our package.json file let's jump back in there real quick package.json",
+        "importance": 0.10677044093608856
+      },
+      {
+        "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+        "importance": 0.20668254792690277
+      },
+      {
+        "content": "all of the above let's do data driven",
+        "importance": 0.14294078946113586
+      },
+      {
+        "content": "and now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look",
+        "importance": 0.1583477258682251
+      },
+      {
+        "content": "oh no I haven't I haven't done anything I haven't paid anything this is all free",
+        "importance": 0.13970594108104706
+      },
+      {
+        "content": "oh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that",
+        "importance": 0.18522712588310242
+      },
+      {
+        "content": "so I can't do it right now check it out all the URLs it did some research we're about to see our results now it said it Sav it to report.",
+        "importance": 0.18708638846874237
+      },
+      {
+        "content": "yeah here's all the research right here in markdown right here in our German what was the conclusion I don't want to read all this you saw it here folks dogs are better take that suckers I am a dog person sorry cat lovers let's see let's see if chat GPT said the same thing it said dogs yes but check it out",
+        "importance": 0.14322228729724884
+      },
+      {
+        "content": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI",
+        "importance": 0.21336869895458221
+      },
+      {
+        "content": "it knows more it can it can now research way better than you can better than I can Let's do an age-old question and by the way to run this again we'll do the same command just like this which OS is better for it professionals Mac Linux or Windows",
+        "importance": 0.18033230304718018
+      },
+      {
+        "content": "I will say my command Line's a lot faster although I do reach my uh rate limits and I bet the research would be so much better if I didn't hit these rate limits it is so fun watching the thought process of these AIS also extremely scary",
+        "importance": 0.20239748060703278
+      },
+      {
+        "content": "but I don't know the more I play with AI which it feels like I've been playing with new things every single stinking day because of releasing things at the speed of light the more I play with it the more encouraged I am for us it people and Humanity in general it's going to make us so good at what we do",
+        "importance": 0.19115331768989563
+      },
+      {
+        "content": "and that's the question you have to ask yourself or this is the question you need to ask yourself every single day how can I use AI to help me do my job better that's how you're going to stay ahead in this",
+        "importance": 0.18176880478858948
+      },
+      {
+        "content": "all right let's see what uh actually I'm going to show up the same time so video editor don't show it yet dude chat GPT is taking too long I have to go pee come on chat GPT",
+        "importance": 0.17606617510318756
+      },
+      {
+        "content": "oh it's finally done",
+        "importance": 0.15474586188793182
+      },
+      {
+        "content": "okay and the conclusion I saw it coming you know what I agree with this because I do the same thing as an IT Pro aim to build competency in all three over your career you'll need all of them",
+        "importance": 0.13052190840244293
+      },
+      {
+        "content": "Mac Windows Linux use them all all right that's the video let me know if you try this let me know what you think about the conclusions and um that's all I got I'll catch you guys later",
+        "importance": 0.11499935388565063
+      },
+      {
+        "content": "and you can actually join right now it's 12 bucks a month it's uh introductory price nothing crazy kind of think of it as a Kickstarter we're not doing a Kickstarter by the way it's not a Kickstarter it's just if you want to come see the videos as we're preparing them the courses as we're making them if you want to get into it that's what you're going to see there nothing crazy just yet just know I'm about to have a meeting on it right now literally after this recording I'm meeting my business partner to about what we're doing I would love to have you come join me in building this that's the video I'll see you guys next time",
+        "importance": 0.15816713869571686
+      }
+    ],
+    "problems": [],
+    "comparisons": [
+      {
+        "content": "so what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science",
+        "context": "yeah um sometimes we get stuff wrong"
+      },
+      {
+        "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+        "context": "it's not proper Json we didn't put a comma you probably saw this didn't you"
+      },
+      {
+        "content": "yeah here's all the research right here in markdown right here in our German what was the conclusion I don't want to read all this you saw it here folks dogs are better take that suckers I am a dog person sorry cat lovers let's see let's see if chat GPT said the same thing it said dogs yes but check it out",
+        "context": "but I think"
+      },
+      {
+        "content": "it knows more it can it can now research way better than you can better than I can Let's do an age-old question and by the way to run this again we'll do the same command just like this which OS is better for it professionals Mac Linux or Windows",
+        "context": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI"
+      },
+      {
+        "content": "I will say my command Line's a lot faster although I do reach my uh rate limits and I bet the research would be so much better if I didn't hit these rate limits it is so fun watching the thought process of these AIS also extremely scary",
+        "context": "gp03 mini High okay starting research"
+      },
+      {
+        "content": "and that's the question you have to ask yourself or this is the question you need to ask yourself every single day how can I use AI to help me do my job better that's how you're going to stay ahead in this",
+        "context": "but I don't know the more I play with AI which it feels like I've been playing with new things every single stinking day because of releasing things at the speed of light the more I play with it the more encouraged I am for us it people and Humanity in general it's going to make us so good at what we do"
+      }
+    ]
+  },
+  "roles": {
+    "user": [
+      {
+        "content": "so open AI came out with a thing called Deep research you might have heard of it",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "so I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "and we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "so what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science",
+        "matched_patterns": [
+          "click",
+          "type"
+        ]
+      },
+      {
+        "content": "okay got enough context it will ask me for more context this is also going to be available in the open source version of this",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+        "matched_patterns": [
+          "open",
+          "go to"
+        ]
+      },
+      {
+        "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "open AI you'll go to platform.",
+        "matched_patterns": [
+          "open",
+          "go to"
+        ]
+      },
+      {
+        "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+        "matched_patterns": [
+          "type"
+        ]
+      },
+      {
+        "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+        "matched_patterns": [
+          "open",
+          "enter",
+          "type",
+          "save"
+        ]
+      },
+      {
+        "content": "it's hidden type in ls-",
+        "matched_patterns": [
+          "type"
+        ]
+      },
+      {
+        "content": "network.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano",
+        "matched_patterns": [
+          "enter",
+          "type",
+          "save"
+        ]
+      },
+      {
+        "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+        "matched_patterns": [
+          "enter",
+          "type",
+          "save"
+        ]
+      },
+      {
+        "content": "blah blah we're just going to backspace this a bit to where it looks like this just like this hit control X Y enter to save",
+        "matched_patterns": [
+          "enter",
+          "save"
+        ]
+      },
+      {
+        "content": "and now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it",
+        "matched_patterns": [
+          "type"
+        ]
+      },
+      {
+        "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+        "matched_patterns": [
+          "enter",
+          "save"
+        ]
+      },
+      {
+        "content": "oh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "and I'm pretty sure this said the same thing the Deep research open source",
+        "matched_patterns": [
+          "open"
+        ]
+      },
+      {
+        "content": "hey real quick no just as I'm making this video hugging face said they're coming out with their own agentic framework for deep search because they want to I guess beat open",
+        "matched_patterns": [
+          "open"
+        ]
+      }
+    ],
+    "developer": [
+      {
+        "content": "so I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this",
+        "matched_patterns": [
+          "implement"
+        ]
+      },
+      {
+        "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+        "matched_patterns": [
+          "api"
+        ]
+      },
+      {
+        "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+        "matched_patterns": [
+          "api"
+        ]
+      },
+      {
+        "content": "but we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits",
+        "matched_patterns": [
+          "api"
+        ]
+      },
+      {
+        "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+        "matched_patterns": [
+          "api"
+        ]
+      },
+      {
+        "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+        "matched_patterns": [
+          "api",
+          "install"
+        ]
+      },
+      {
+        "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+        "matched_patterns": [
+          "api"
+        ]
+      },
+      {
+        "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+        "matched_patterns": [
+          "variable"
+        ]
+      },
+      {
+        "content": "and now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look",
+        "matched_patterns": [
+          "api"
+        ]
+      },
+      {
+        "content": "oh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that",
+        "matched_patterns": [
+          "code"
+        ]
+      },
+      {
+        "content": "ah I'm resizing it uh it's not a single OS decision it's implementing a hybrid strategy utilizing each system's strengths while utilizing rigorous platform agnostic security practices",
+        "matched_patterns": [
+          "implement"
+        ]
+      }
+    ],
+    "config": [
+      {
+        "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+        "matched_patterns": [
+          "set up",
+          "environment"
+        ]
+      },
+      {
+        "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+        "matched_patterns": [
+          "set up"
+        ]
+      },
+      {
+        "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+        "matched_patterns": [
+          "set up",
+          "install",
+          "environment"
+        ]
+      },
+      {
+        "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+        "matched_patterns": [
+          "environment"
+        ]
+      },
+      {
+        "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+        "matched_patterns": [
+          "environment"
+        ]
+      },
+      {
+        "content": "I promise it's going to be one little file right here the start TSX environment file",
+        "matched_patterns": [
+          "environment"
+        ]
+      }
+    ],
+    "troubleshoot": [
+      {
+        "content": "oh crap we got an error",
+        "matched_patterns": [
+          "error"
+        ]
+      },
+      {
+        "content": "Mac Windows Linux use them all all right that's the video let me know if you try this let me know what you think about the conclusions and um that's all I got I'll catch you guys later",
+        "matched_patterns": [
+          "catch"
+        ]
+      }
+    ]
+  },
+  "originalPreprocessed": {
+    "patterns": {
+      "steps": [
+        {
+          "content": "this is fast this is so fast I love it when it takes longer I feel like it thought more about something I feel like it's giving me a well-rounded answer it's got multi-step reasoning it's like going out to web pages doing some data analysis doing another search it's kind of thinking like a human many people are thinking this is the first real step to AGI and one very annoying thing about AI and the answers it gives us is we can't really trust it like even chat gbt is like",
+          "context_before": "oh AI",
+          "context_after": "yeah um sometimes we get stuff wrong",
+          "position": 14
+        },
+        {
+          "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+          "context_before": "open AI you'll go to platform.",
+          "context_after": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+          "position": 34
+        },
+        {
+          "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+          "context_before": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+          "context_after": "env.",
+          "position": 35
+        },
+        {
+          "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+          "context_before": "it's not proper Json we didn't put a comma you probably saw this didn't you",
+          "context_after": "yeah",
+          "position": 55
+        },
+        {
+          "content": "MD we'll look at that here in a second",
+          "context_before": "so I can't do it right now check it out all the URLs it did some research we're about to see our results now it said it Sav it to report.",
+          "context_after": "but I think",
+          "position": 66
+        },
+        {
+          "content": "oh it's finally done",
+          "context_before": "it's taking so long I got a meeting with Jeremy Chara hurry up",
+          "context_after": "okay and the conclusion I saw it coming you know what I agree with this because I do the same thing as an IT Pro aim to build competency in all three over your career you'll need all of them",
+          "position": 83
+        },
+        {
+          "content": "and you can actually join right now it's 12 bucks a month it's uh introductory price nothing crazy kind of think of it as a Kickstarter we're not doing a Kickstarter by the way it's not a Kickstarter it's just if you want to come see the videos as we're preparing them the courses as we're making them if you want to get into it that's what you're going to see there nothing crazy just yet just know I'm about to have a meeting on it right now literally after this recording I'm meeting my business partner to about what we're doing I would love to have you come join me in building this that's the video I'll see you guys next time",
+          "context_before": "but we're building something fun",
+          "context_after": "hey real quick no just as I'm making this video hugging face said they're coming out with their own agentic framework for deep search because they want to I guess beat open",
+          "position": 94
+        }
+      ],
+      "examples": [
+        {
+          "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+          "context_before": "env.",
+          "context_after": "I'm going to grab mine copy that key paste it here",
+          "position": 37
+        },
+        {
+          "content": "so we'll do Nano Docker file just like this",
+          "context_before": "and you'll see it right here that's what that dot does before a file it'll hide the file now we're going to create what's called a Docker file",
+          "context_after": "and I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.",
+          "position": 43
+        },
+        {
+          "content": "blah blah we're just going to backspace this a bit to where it looks like this just like this hit control X Y enter to save",
+          "context_before": "blah blah",
+          "context_after": "and now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it",
+          "position": 49
+        },
+        {
+          "content": "it knows more it can it can now research way better than you can better than I can Let's do an age-old question and by the way to run this again we'll do the same command just like this which OS is better for it professionals Mac Linux or Windows",
+          "context_before": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI",
+          "context_after": "spicy right let me ask the same question over here let's say system administration and network engineering and cyber security all of the above should the analysis be on cost licensing you know everything everything answer the same questions you know notice it's asking similar questions I mean we are both using chat",
+          "position": 74
+        }
+      ],
+      "key_points": [
+        {
+          "content": "so I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this",
+          "context_before": "but I want you to be able to play with stuff too",
+          "context_after": "so you and me we're going to try it right now I'll show you how to set it up we'll do it together",
+          "position": 6
+        },
+        {
+          "content": "it's the dumbest name ever I can't remember anything it's using that get your coffee ready let's get started now before we go crazy let's talk about what is this deep research thing Well normally with AI we get very very quick answers just blah blah",
+          "context_before": "and we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high",
+          "context_after": "and it's they're okay answers",
+          "position": 9
+        },
+        {
+          "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+          "context_before": "I know you want to know the answer you're going to watch and wait aren't you",
+          "context_after": "it's pay as you go and he even has a nice little diagram here essentially here is the thought process it's using what's called Ser queries which I just found out because I started playing with",
+          "position": 24
+        },
+        {
+          "content": "it's pay as you go and he even has a nice little diagram here essentially here is the thought process it's using what's called Ser queries which I just found out because I started playing with",
+          "context_before": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+          "context_after": "crew AI",
+          "position": 25
+        },
+        {
+          "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+          "context_before": "but we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits",
+          "context_after": "open AI you'll go to platform.",
+          "position": 32
+        },
+        {
+          "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+          "context_before": "open AI you'll go to platform.",
+          "context_after": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+          "position": 34
+        },
+        {
+          "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+          "context_before": "env.",
+          "context_after": "I'm going to grab mine copy that key paste it here",
+          "position": 37
+        },
+        {
+          "content": "I'm going to grab mine copy that key paste it here",
+          "context_before": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+          "context_after": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+          "position": 38
+        },
+        {
+          "content": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+          "context_before": "I'm going to grab mine copy that key paste it here",
+          "context_after": "no you won't see it",
+          "position": 39
+        },
+        {
+          "content": "and I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.",
+          "context_before": "so we'll do Nano Docker file just like this",
+          "context_after": "network.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano",
+          "position": 44
+        },
+        {
+          "content": "and now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look",
+          "context_before": "okay",
+          "context_after": "oh no I haven't I haven't done anything I haven't paid anything this is all free",
+          "position": 61
+        }
+      ],
+      "lists": [],
+      "code_blocks": []
+    },
+    "semantic": {
+      "actions": [
+        {
+          "content": "it's price tag if you want to use the sucker you have to be a chat GPT Pro user which is $200 a month now I pay for that because I want to play with stuff",
+          "importance": 0.1365736722946167
+        },
+        {
+          "content": "so you and me we're going to try it right now I'll show you how to set it up we'll do it together",
+          "importance": 0.1895776391029358
+        },
+        {
+          "content": "and we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high",
+          "importance": 0.19529637694358826
+        },
+        {
+          "content": "but with this with deep research it's doing what it says it's doing some deep research it'll take 5 to 30 minutes to do a deep dive providing I think people say PhD quality research so it would take a normal person or a normal PhD person hours or days to research a topic I'm talking in depth like going out to web pages reading Pages coming back and referencing others and quoting and citations all that nerdy stuff it does that in 30 minutes I was talking with my producer Alex and we're like you know I love it when it takes longer to answer me like AI like we know we're all bragging about",
+          "importance": 0.17514656484127045
+        },
+        {
+          "content": "this is fast this is so fast I love it when it takes longer I feel like it thought more about something I feel like it's giving me a well-rounded answer it's got multi-step reasoning it's like going out to web pages doing some data analysis doing another search it's kind of thinking like a human many people are thinking this is the first real step to AGI and one very annoying thing about AI and the answers it gives us is we can't really trust it like even chat gbt is like",
+          "importance": 0.24013946950435638
+        },
+        {
+          "content": "so what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science",
+          "importance": 0.12880560755729675
+        },
+        {
+          "content": "so we're getting to that here in a moment I'll just say all of the above now I will say sometimes it will just kind of get stuck here and not do anything I'd be like hey bro you good",
+          "importance": 0.16607722640037537
+        },
+        {
+          "content": "and he won't be kind of like what he's doing now",
+          "importance": 0.08551459014415741
+        },
+        {
+          "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+          "importance": 0.24142637848854065
+        },
+        {
+          "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+          "importance": 0.18654020130634308
+        },
+        {
+          "content": "but we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits",
+          "importance": 0.1626332849264145
+        },
+        {
+          "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+          "importance": 0.15862224996089935
+        },
+        {
+          "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+          "importance": 0.16286125779151917
+        },
+        {
+          "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+          "importance": 0.1403970718383789
+        },
+        {
+          "content": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+          "importance": 0.13304024934768677
+        },
+        {
+          "content": "and you'll see it right here that's what that dot does before a file it'll hide the file now we're going to create what's called a Docker file",
+          "importance": 0.1199449896812439
+        },
+        {
+          "content": "so we'll do Nano Docker file just like this",
+          "importance": 0.18466691672801971
+        },
+        {
+          "content": "and I'm going to copy and paste this config in this is essentially describing a Docker container we're about to build I will have all this config Below in a nice little blog post on blog.",
+          "importance": 0.10921335965394974
+        },
+        {
+          "content": "network.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano",
+          "importance": 0.132700115442276
+        },
+        {
+          "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+          "importance": 0.05473950877785683
+        },
+        {
+          "content": "and now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it",
+          "importance": 0.0691693052649498
+        },
+        {
+          "content": "oh you know what I don't know what it is we messed up our package.json file let's jump back in there real quick package.json",
+          "importance": 0.10677044093608856
+        },
+        {
+          "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+          "importance": 0.20668254792690277
+        },
+        {
+          "content": "all of the above let's do data driven",
+          "importance": 0.14294078946113586
+        },
+        {
+          "content": "and now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look",
+          "importance": 0.1583477258682251
+        },
+        {
+          "content": "oh no I haven't I haven't done anything I haven't paid anything this is all free",
+          "importance": 0.13970594108104706
+        },
+        {
+          "content": "oh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that",
+          "importance": 0.18522712588310242
+        },
+        {
+          "content": "so I can't do it right now check it out all the URLs it did some research we're about to see our results now it said it Sav it to report.",
+          "importance": 0.18708638846874237
+        },
+        {
+          "content": "yeah here's all the research right here in markdown right here in our German what was the conclusion I don't want to read all this you saw it here folks dogs are better take that suckers I am a dog person sorry cat lovers let's see let's see if chat GPT said the same thing it said dogs yes but check it out",
+          "importance": 0.14322228729724884
+        },
+        {
+          "content": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI",
+          "importance": 0.21336869895458221
+        },
+        {
+          "content": "it knows more it can it can now research way better than you can better than I can Let's do an age-old question and by the way to run this again we'll do the same command just like this which OS is better for it professionals Mac Linux or Windows",
+          "importance": 0.18033230304718018
+        },
+        {
+          "content": "I will say my command Line's a lot faster although I do reach my uh rate limits and I bet the research would be so much better if I didn't hit these rate limits it is so fun watching the thought process of these AIS also extremely scary",
+          "importance": 0.20239748060703278
+        },
+        {
+          "content": "but I don't know the more I play with AI which it feels like I've been playing with new things every single stinking day because of releasing things at the speed of light the more I play with it the more encouraged I am for us it people and Humanity in general it's going to make us so good at what we do",
+          "importance": 0.19115331768989563
+        },
+        {
+          "content": "and that's the question you have to ask yourself or this is the question you need to ask yourself every single day how can I use AI to help me do my job better that's how you're going to stay ahead in this",
+          "importance": 0.18176880478858948
+        },
+        {
+          "content": "all right let's see what uh actually I'm going to show up the same time so video editor don't show it yet dude chat GPT is taking too long I have to go pee come on chat GPT",
+          "importance": 0.17606617510318756
+        },
+        {
+          "content": "oh it's finally done",
+          "importance": 0.15474586188793182
+        },
+        {
+          "content": "okay and the conclusion I saw it coming you know what I agree with this because I do the same thing as an IT Pro aim to build competency in all three over your career you'll need all of them",
+          "importance": 0.13052190840244293
+        },
+        {
+          "content": "Mac Windows Linux use them all all right that's the video let me know if you try this let me know what you think about the conclusions and um that's all I got I'll catch you guys later",
+          "importance": 0.11499935388565063
+        },
+        {
+          "content": "and you can actually join right now it's 12 bucks a month it's uh introductory price nothing crazy kind of think of it as a Kickstarter we're not doing a Kickstarter by the way it's not a Kickstarter it's just if you want to come see the videos as we're preparing them the courses as we're making them if you want to get into it that's what you're going to see there nothing crazy just yet just know I'm about to have a meeting on it right now literally after this recording I'm meeting my business partner to about what we're doing I would love to have you come join me in building this that's the video I'll see you guys next time",
+          "importance": 0.15816713869571686
+        }
+      ],
+      "problems": [],
+      "comparisons": [
+        {
+          "content": "so what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science",
+          "context": "yeah um sometimes we get stuff wrong"
+        },
+        {
+          "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+          "context": "it's not proper Json we didn't put a comma you probably saw this didn't you"
+        },
+        {
+          "content": "yeah here's all the research right here in markdown right here in our German what was the conclusion I don't want to read all this you saw it here folks dogs are better take that suckers I am a dog person sorry cat lovers let's see let's see if chat GPT said the same thing it said dogs yes but check it out",
+          "context": "but I think"
+        },
+        {
+          "content": "it knows more it can it can now research way better than you can better than I can Let's do an age-old question and by the way to run this again we'll do the same command just like this which OS is better for it professionals Mac Linux or Windows",
+          "context": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI"
+        },
+        {
+          "content": "I will say my command Line's a lot faster although I do reach my uh rate limits and I bet the research would be so much better if I didn't hit these rate limits it is so fun watching the thought process of these AIS also extremely scary",
+          "context": "gp03 mini High okay starting research"
+        },
+        {
+          "content": "and that's the question you have to ask yourself or this is the question you need to ask yourself every single day how can I use AI to help me do my job better that's how you're going to stay ahead in this",
+          "context": "but I don't know the more I play with AI which it feels like I've been playing with new things every single stinking day because of releasing things at the speed of light the more I play with it the more encouraged I am for us it people and Humanity in general it's going to make us so good at what we do"
+        }
+      ]
+    },
+    "roles": {
+      "user": [
+        {
+          "content": "so open AI came out with a thing called Deep research you might have heard of it",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "so I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "and we'll do a little bit of side by side comparing open AI deep research to well open source deep research keeping in mind this deep research is using open AI mini three I can't even say the thing open AI mini3 high",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "so what's really cool about the research is that it has citations for every for most of the things it says it says hey don't take my word for it here's the link right here that's pretty killer and the sucker is multimodal which you don't if you don't know what that means it can look at pictures it can look at texts it can look at PDFs it can process all of this these types of data so tell you what right now let's try a little deep research I almost said deep search deep seek deep research I'll click on my deep research button here and I'll search for a hard-hitting topic research which animal is better cats or dogs give me a thorough answer a definitive answer based on Science",
+          "matched_patterns": [
+            "click",
+            "type"
+          ]
+        },
+        {
+          "content": "okay got enough context it will ask me for more context this is also going to be available in the open source version of this",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+          "matched_patterns": [
+            "open",
+            "go to"
+          ]
+        },
+        {
+          "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "open AI you'll go to platform.",
+          "matched_patterns": [
+            "open",
+            "go to"
+          ]
+        },
+        {
+          "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+          "matched_patterns": [
+            "type"
+          ]
+        },
+        {
+          "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "and then just under that my open aior key equal my key where'd you go buddy there you are that's that's all we need for that file we'll hit control X Y enter to save type in LS you should see our file right actually",
+          "matched_patterns": [
+            "open",
+            "enter",
+            "type",
+            "save"
+          ]
+        },
+        {
+          "content": "it's hidden type in ls-",
+          "matched_patterns": [
+            "type"
+          ]
+        },
+        {
+          "content": "network.com we h control XY enter to save and then one last thing we're going to create our Docker compose file type in Nano",
+          "matched_patterns": [
+            "enter",
+            "type",
+            "save"
+          ]
+        },
+        {
+          "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+          "matched_patterns": [
+            "enter",
+            "type",
+            "save"
+          ]
+        },
+        {
+          "content": "blah blah we're just going to backspace this a bit to where it looks like this just like this hit control X Y enter to save",
+          "matched_patterns": [
+            "enter",
+            "save"
+          ]
+        },
+        {
+          "content": "and now we're ready to go actually all we have to do is run one command we'll type in Docker compose you may have to do a pseudo at the beginning of this I'll go ahead and do that right now just in case Docker compose run-- RM this will actually remove the container once we're done with it",
+          "matched_patterns": [
+            "type"
+          ]
+        },
+        {
+          "content": "we didn't put a comma after our start right here there we go proper Json control X Y enter to save hit the up Arrow to run that command one more time and come on it's working exciting what would I like to research hm let's research the same thing I would like to know what is better or what animal is better cats or dogs and then it we'll control the breadth of the research defaults to four we'll just do four and then depth so the first one was how wide second one's how deep what does that mean exactly I'm not sure I haven't I haven't done the breadth and the depth on this yet we're playing with it right now and it's creating the research plan it's going to ask actually ask me the questions that chat GPT just did earlier similar ones",
+          "matched_patterns": [
+            "enter",
+            "save"
+          ]
+        },
+        {
+          "content": "oh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "and you know how wide this goes as well on the open source side what do you say we do one more thing by the way let me know how you feel about that conclusion do you agree you know it's hard not to agree it's it's AI",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "and I'm pretty sure this said the same thing the Deep research open source",
+          "matched_patterns": [
+            "open"
+          ]
+        },
+        {
+          "content": "hey real quick no just as I'm making this video hugging face said they're coming out with their own agentic framework for deep search because they want to I guess beat open",
+          "matched_patterns": [
+            "open"
+          ]
+        }
+      ],
+      "developer": [
+        {
+          "content": "so I was scrolling through Twitter and I found this guy's tweet David no not that David David came up with his own open source implementation of deep research essentially you get the same capability without paying 200 bucks I have to try this",
+          "matched_patterns": [
+            "implement"
+          ]
+        },
+        {
+          "content": "I'm not I'm not even going to put time stamps you're going to have to watch the entire video but now let's check out this open source thing again this chat GPT deep research right now cost 200 bucks this guy's like nah all you're going to need is a chat GPT your open AI API key which is not free but is significantly cheaper than 200 bucks a month",
+          "matched_patterns": [
+            "api"
+          ]
+        },
+        {
+          "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+          "matched_patterns": [
+            "api"
+          ]
+        },
+        {
+          "content": "but we're going to do that inside of a Docker container because you know how I roll also I'm pretty new to fir crawl API this thing's amazing they do have a hosted option which is free well up to 500 credits",
+          "matched_patterns": [
+            "api"
+          ]
+        },
+        {
+          "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+          "matched_patterns": [
+            "api"
+          ]
+        },
+        {
+          "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+          "matched_patterns": [
+            "api",
+            "install"
+          ]
+        },
+        {
+          "content": "local and we're going to add two things here our fir craw API key and our open AI API key I'll add mine right now just like this fir crawl uncore key have that equal within parentheses your API key",
+          "matched_patterns": [
+            "api"
+          ]
+        },
+        {
+          "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+          "matched_patterns": [
+            "variable"
+          ]
+        },
+        {
+          "content": "and now it's researching coffee break while it does it now I'm not sure if I've exhausted my API key usage let me go look",
+          "matched_patterns": [
+            "api"
+          ]
+        },
+        {
+          "content": "oh it's doing it this is so cool doing things on your own Hardware which this is not our own Hardware but it's open source and we're doing it in the command line it just feels cooler open AI keeps things very mysterious you don't really know what's happening here you do this the code is all there now I'm not sure if I mentioned what fir crawl was for if I did ah my rate limit was exceeded this is why I would probably want to run this locally which you can do that",
+          "matched_patterns": [
+            "code"
+          ]
+        },
+        {
+          "content": "ah I'm resizing it uh it's not a single OS decision it's implementing a hybrid strategy utilizing each system's strengths while utilizing rigorous platform agnostic security practices",
+          "matched_patterns": [
+            "implement"
+          ]
+        }
+      ],
+      "config": [
+        {
+          "content": "so let's go to the GitHub and get this set up it's actually really quick to get the set up we're really only going to need two things well three things we'll need a fir crawl API which is free don't worry and an open AI API we'll also need a nodejs environment",
+          "matched_patterns": [
+            "set up",
+            "environment"
+          ]
+        },
+        {
+          "content": "I'll get logged in real quick with my Google account and seriously it's so easy to get this API key cuz right when you log in it's just sitting right here ready for you to copy it so make sure you have that and then for the open AI API key you'll need to get set up with a account with open API open API",
+          "matched_patterns": [
+            "set up"
+          ]
+        },
+        {
+          "content": "open.com you'll get logged in or sign up normally I think it's connected to your chat gbt uh if you already have a subscription but the 20 bucks a month or whatever you pay does not include this this API usage will be pay as you go which if you're just doing this real quick for a few things it's going to be pennies if you're doing crazy stuff it's going to cost you crazy money but we're not doing anything crazy right now but once you're logged in and you have a credit card you can go grab your API keys I'm going to create one right now now with both of our keys ready to go we can now set up our Docker environment now you don't have to do it with Docker if you preer H prefer just doing mpm he shows you how to do it right here I like Docker it keeps things separate secure nice and safe now if you're like I don't know what Docker is Chuck and um please help me I've got a Docker video right over here go watch it get set up get it installed it's very easy it's on Mac windows and Linux and here in Windows you do have to run it inside WSL which is another thing if you don't know what that is that'll blow your mind I want to watch my WSL instance right here and my video on that is right here it's essentially Linux on Windows we'll first use the get clone command to clone the repo deep research you will need get installed but thankfully on most uh installations like mac and Linux it'll already have get there if you don't got it go get it",
+          "matched_patterns": [
+            "set up",
+            "install",
+            "environment"
+          ]
+        },
+        {
+          "content": "I'm sorry for that I'm going to CD or jump into the deep research directory and then inside here I'm going to add all the stuff I need to create my Docker container you don't need to know what Docker is just follow along but it will help to know what it is to kind of understand what I'm doing here first we'll create an environment file we'll type in Nano the best text editor in Linux period we'll specify our file.",
+          "matched_patterns": [
+            "environment"
+          ]
+        },
+        {
+          "content": "docker-compose.yml we'll paste this config in again this will be below crl X Y enter to save and then because we're doing environment variables a bit differently we will have to change one file type in LS where you are right now we're going to change the package.json file so we'll do Nano package.json this won't be scary",
+          "matched_patterns": [
+            "environment"
+          ]
+        },
+        {
+          "content": "I promise it's going to be one little file right here the start TSX environment file",
+          "matched_patterns": [
+            "environment"
+          ]
+        }
+      ],
+      "troubleshoot": [
+        {
+          "content": "oh crap we got an error",
+          "matched_patterns": [
+            "error"
+          ]
+        },
+        {
+          "content": "Mac Windows Linux use them all all right that's the video let me know if you try this let me know what you think about the conclusions and um that's all I got I'll catch you guys later",
+          "matched_patterns": [
+            "catch"
+          ]
+        }
+      ]
+    },
+    "stats": {
+      "total_length": 15372,
+      "pattern_matches": 22,
+      "semantic_matches": 45,
+      "role_matches": 42
+    }
+  }
+}
