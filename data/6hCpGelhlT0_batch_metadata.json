@@ -1,0 +1,10 @@
+{
+  "batchId": "batch_1739223363364_6hCpGelhlT0",
+  "timestamp": "2025-02-10T21:36:13.085Z",
+  "status": "completed",
+  "model": "gpt-4o-mini-2024-07-18",
+  "inputFile": "C:\\Users\\Big Daddy Pyatt\\CascadeProjects\\Tube2Link\\data\\6hCpGelhlT0_enriched_prompt.txt",
+  "outputFile": "C:\\Users\\Big Daddy Pyatt\\CascadeProjects\\Tube2Link\\data\\6hCpGelhlT0_batch_result.txt",
+  "totalBatches": 1,
+  "estimatedTokens": 2946.5
+}

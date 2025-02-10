@@ -1,4 +1,5 @@
 import 'openai/shims/node';
+import 'openai/shims/node'; // Added OpenAI Node.js shim import
 import OpenAI from 'openai';
 
 // Initialize OpenAI client (server-side only)

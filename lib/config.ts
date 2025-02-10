@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 interface Config {
+  baseUrl: string;
   youtubeApiKey: string;
   openaiApiKey: string;
   openaiOrganizationId: string;
@@ -16,6 +17,7 @@ export function getConfig(): Config {
   if (config) return config;
 
   config = {
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
     youtubeApiKey: process.env.NEXT_PUBLIC_YT_API_KEY || '',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
     openaiOrganizationId: process.env.OPENAI_ORGANIZATION_ID || '',
@@ -41,6 +43,9 @@ export const envSchema = z.object({
 
   // Required for session management
   SESSION_SECRET: z.string().min(1, 'Session Secret is required'),
+
+  // Required for base URL
+  NEXT_PUBLIC_BASE_URL: z.string().url('Base URL must be a valid URL'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

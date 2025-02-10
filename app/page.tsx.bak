@@ -174,34 +174,34 @@ const getTemplateGuide = (template: string, length: 'brief' | 'standard' | 'deta
   console.debug('getTemplateGuide called with:', { template, length });
   const guides = {
     question: {
-      brief: "150-200 words. Create a thought-provoking question with minimal context to spark discussion.",
-      standard: "200-300 words. Present a main question with 2-3 follow-up points to guide the discussion.",
-      detailed: "300-500 words. Explore a complex question from multiple angles, with supporting questions and discussion prompts throughout."
+      brief: "Create a thought-provoking question with minimal context to spark discussion.",
+      standard: "Present a main question with 2-3 follow-up points to guide the discussion.",
+      detailed: "Explore a complex question from multiple angles, with supporting questions and discussion prompts throughout."
     },
     story: {
-      brief: "150-200 words. Tell a focused micro-story highlighting one key moment or insight.",
-      standard: "200-300 words. Develop a narrative with clear beginning, middle, and end. Balance story elements with key takeaways.",
-      detailed: "300-500 words. Create a rich narrative with character development, detailed scenes, and multiple learning points woven throughout."
+      brief: "Tell a focused micro-story highlighting one key moment or insight.",
+      standard: "Develop a narrative with clear beginning, middle, and end. Balance story elements with key takeaways.",
+      detailed: "Create a rich narrative with character development, detailed scenes, and multiple learning points woven throughout."
     },
     action: {
-      brief: "150-200 words. Single, clear call-to-action with immediate next step.",
-      standard: "200-300 words. Main call-to-action with 2-3 supporting steps or reasons.",
-      detailed: "300-500 words. Comprehensive action plan with preparation steps, implementation guide, and expected outcomes."
+      brief: "Single, clear call-to-action with immediate next step.",
+      standard: "Main call-to-action with 2-3 supporting steps or reasons.",
+      detailed: "Comprehensive action plan with preparation steps, implementation guide, and expected outcomes."
     },
     insight: {
-      brief: "150-200 words. Lead with surprising data and explain its significance.",
-      standard: "200-300 words. Present key discoveries and support with evidence.",
-      detailed: "300-500 words. Reveal deeper understanding and challenge assumptions."
+      brief: "Lead with surprising data and explain its significance.",
+      standard: "Present key discoveries and support with evidence.",
+      detailed: "Reveal deeper understanding and challenge assumptions."
     },
     problem_solution: {
-      brief: "150-200 words. Identify the pain point clearly and present the solution approach.",
-      standard: "200-300 words. Explain the impact and share implementation details.",
-      detailed: "300-500 words. Highlight the benefits and provide a clear call-to-action."
+      brief: "Identify the pain point clearly and present the solution approach.",
+      standard: "Explain the impact and share implementation details.",
+      detailed: "Highlight the benefits and provide a clear call-to-action."
     },
     comparison: {
-      brief: "150-200 words. Introduce the approaches and compare key aspects.",
-      standard: "200-300 words. Highlight innovations and present evidence.",
-      detailed: "300-500 words. Guide decision making with a balanced analysis."
+      brief: "Introduce the approaches and compare key aspects.",
+      standard: "Highlight innovations and present evidence.",
+      detailed: "Guide decision making with a balanced analysis."
     }
   };
 
@@ -218,116 +218,6 @@ const templateOptions = Object.entries(POST_TEMPLATES).map(([id, template]) => (
   name: template.name,
   description: template.description
 }));
-
-interface KeyActionsSectionProps {
-  actions: Array<{ content: string; importance: number }>;
-  onUseInPost?: (action: { content: string; importance: number }) => void;
-  onHighlight?: (action: { content: string; importance: number }) => void;
-}
-
-function KeyActionsSection({ actions, onUseInPost, onHighlight }: KeyActionsSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
-
-  // Group actions by importance
-  const groupedActions = actions.reduce((acc, action) => {
-    const importance = action.importance;
-    if (importance >= 0.8) acc.high.push(action);
-    else if (importance >= 0.5) acc.medium.push(action);
-    else acc.low.push(action);
-    return acc;
-  }, { high: [], medium: [], low: [] } as { high: typeof actions, medium: typeof actions, low: typeof actions });
-
-  return (
-    <div className="bg-black/20 rounded-lg p-4 border border-white/10">
-      <button 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between text-lg font-semibold text-white mb-2"
-      >
-        <span>🎯 Key Actions</span>
-        <span>{isExpanded ? '▼' : '▶'}</span>
-      </button>
-      
-      {isExpanded && (
-        <div className="space-y-4">
-          {groupedActions.high.length > 0 && (
-            <div>
-              <h5 className="text-red-400 font-medium mb-2">🔥 High Priority</h5>
-              {groupedActions.high.map((action, i) => (
-                <div key={i} className="flex items-start gap-2 mb-2 group">
-                  <p className="text-gray-300 flex-grow">{action.content}</p>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => onUseInPost?.(action)}
-                      className="text-xs bg-purple-900/50 hover:bg-purple-900 px-2 py-1 rounded mr-1"
-                    >
-                      Use in Post
-                    </button>
-                    <button 
-                      onClick={() => onHighlight?.(action)}
-                      className="text-xs bg-yellow-900/50 hover:bg-yellow-900 px-2 py-1 rounded"
-                    >
-                      Highlight
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {groupedActions.medium.length > 0 && (
-            <div>
-              <h5 className="text-orange-400 font-medium mb-2">⚡ Medium Priority</h5>
-              {groupedActions.medium.map((action, i) => (
-                <div key={i} className="flex items-start gap-2 mb-2 group">
-                  <p className="text-gray-300 flex-grow">{action.content}</p>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => onUseInPost?.(action)}
-                      className="text-xs bg-purple-900/50 hover:bg-purple-900 px-2 py-1 rounded mr-1"
-                    >
-                      Use in Post
-                    </button>
-                    <button 
-                      onClick={() => onHighlight?.(action)}
-                      className="text-xs bg-yellow-900/50 hover:bg-yellow-900 px-2 py-1 rounded"
-                    >
-                      Highlight
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {groupedActions.low.length > 0 && (
-            <div>
-              <h5 className="text-blue-400 font-medium mb-2">📝 Other Actions</h5>
-              {groupedActions.low.map((action, i) => (
-                <div key={i} className="flex items-start gap-2 mb-2 group">
-                  <p className="text-gray-300 flex-grow">{action.content}</p>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => onUseInPost?.(action)}
-                      className="text-xs bg-purple-900/50 hover:bg-purple-900 px-2 py-1 rounded mr-1"
-                    >
-                      Use in Post
-                    </button>
-                    <button 
-                      onClick={() => onHighlight?.(action)}
-                      className="text-xs bg-yellow-900/50 hover:bg-yellow-900 px-2 py-1 rounded"
-                    >
-                      Highlight
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function Home() {
   const [videoUrl, setVideoUrl] = useState('');
@@ -349,16 +239,14 @@ export default function Home() {
     tone: 50,
     length: 'standard',
     personality: {
-      charm: 0,
-      wit: 0,
-      humor: 0,
-      sarcasm: 0
+      charm: 50,
+      wit: 50,
+      humor: 50,
+      sarcasm: 50
     }
   });
   const [showPreview, setShowPreview] = useState(false);
   const [previewPrompt, setPreviewPrompt] = useState<string | null>(null);
-  const [quickSummaryExpanded, setQuickSummaryExpanded] = useState(true);
-  const [detailedAnalysisExpanded, setDetailedAnalysisExpanded] = useState(true);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -499,20 +387,12 @@ export default function Home() {
       }
 
       const data = await response.json();
-      console.log('API Response:', data);
-      
       // Store preprocessed data and analysis
-      setVideoData(prevVideoData => {
-        console.log('Previous Video Data:', prevVideoData);
-        if (!prevVideoData) return null;
-        const newData = {
-          ...prevVideoData,
-          preprocessed: data.preprocessed,
-          summary: data.summary,
-          detailedAnalysis: data.detailedAnalysis
-        };
-        console.log('New Video Data:', newData);
-        return newData;
+      setVideoData({
+        ...videoData,
+        preprocessed: data.preprocessed,
+        gptQuickSummary: data.preprocessed.gptQuickSummary,
+        detailedAnalysis: data.preprocessed.detailedAnalysis
       });
       
       // Show template selection
@@ -541,7 +421,7 @@ export default function Home() {
         title: videoData.title,
         description: videoData.description,
         channelTitle: videoData.channelTitle,
-        summary: videoData.summary,
+        gptQuickSummary: videoData.gptQuickSummary,
         detailedAnalysis: videoData.detailedAnalysis,
         patterns: videoData.preprocessed.patterns,
         semantic: videoData.preprocessed.semantic,
@@ -592,7 +472,7 @@ export default function Home() {
         title: videoData.title,
         description: videoData.description,
         channelTitle: videoData.channelTitle,
-        summary: videoData.summary,
+        gptQuickSummary: videoData.gptQuickSummary,
         detailedAnalysis: videoData.detailedAnalysis,
         patterns: videoData.preprocessed.patterns,
         semantic: videoData.preprocessed.semantic,
@@ -823,22 +703,11 @@ export default function Home() {
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        {/* Summary Section */}
-                        {videoData?.summary && (
+                        {/* Quick Summary */}
+                        {videoData?.gptQuickSummary && (
                           <div className="bg-black/20 rounded-lg p-4 border border-white/10">
-                            <h4 className="text-lg font-semibold text-white mb-2">Summary</h4>
-                            <div className="space-y-4">
-                              {videoData.summary && (
-                                <div className="text-gray-300 leading-relaxed">
-                                  {videoData.summary}
-                                </div>
-                              )}
-                              {videoData.detailedAnalysis && (
-                                <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
-                                  {videoData.detailedAnalysis}
-                                </div>
-                              )}
-                            </div>
+                            <h4 className="text-lg font-semibold text-white mb-2">Quick Summary</h4>
+                            <p className="text-gray-300">{videoData.gptQuickSummary}</p>
                           </div>
                         )}
 
@@ -917,44 +786,42 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <ErrorBoundary>
-                          {/* Length Selection */}
-                          <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-200 mb-2">
-                              Post Length
-                            </label>
-                            <div className="grid grid-cols-3 gap-4">
-                              {['brief', 'standard', 'detailed'].map((length) => {
-                                const guide = getTemplateGuide(selectedTemplate, length as 'brief' | 'standard' | 'detailed');
-                                console.debug('Rendering length option:', {
-                                  length,
-                                  selectedTemplate,
-                                  guide
-                                });
-                                
-                                return (
-                            <button 
-                                    key={length}
-                                    onClick={() => setPostSettings(prev => ({ ...prev, length: length as 'brief' | 'standard' | 'detailed' }))}
-                                    className={`p-4 rounded-lg border ${
-                                      postSettings.length === length
-                                        ? 'border-purple-500 bg-purple-900/50'
-                                        : 'border-gray-700 hover:border-purple-500/50 hover:bg-purple-900/20'
-                                    } transition-all duration-200`}
-                                  >
-                                    <h3 className="text-lg font-semibold mb-2 capitalize">{length}</h3>
-                                    <p className="text-sm text-gray-400">
-                                      <DebugRender 
-                                        value={guide} 
-                                        name={`guide-${length}`}
-                                      />
-                                    </p>
-                            </button>
-                                );
-                              })}
-                            </div>
+                        {/* Length Selection */}
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
+                            Post Length
+                          </label>
+                          <div className="grid grid-cols-3 gap-4">
+                            {['brief', 'standard', 'detailed'].map((length) => {
+                              const guide = getTemplateGuide(selectedTemplate, length as 'brief' | 'standard' | 'detailed');
+                              console.debug('Rendering length option:', {
+                                length,
+                                selectedTemplate,
+                                guide
+                              });
+                              
+                              return (
+                                <button
+                                  key={length}
+                                  onClick={() => setPostSettings(prev => ({ ...prev, length: length as 'brief' | 'standard' | 'detailed' }))}
+                                  className={`p-4 rounded-lg border ${
+                                    postSettings.length === length
+                                      ? 'border-purple-500 bg-purple-900/50'
+                                      : 'border-gray-700 hover:border-purple-500/50 hover:bg-purple-900/20'
+                                  } transition-all duration-200`}
+                                >
+                                  <h3 className="text-lg font-semibold mb-2 capitalize">{length}</h3>
+                                  <p className="text-sm text-gray-400">
+                                    <DebugRender 
+                                      value={guide} 
+                                      name={`guide-${length}`}
+                                    />
+                                  </p>
+                                </button>
+                              );
+                            })}
                           </div>
-                        </ErrorBoundary>
+                        </div>
 
                         {/* Template Selection */}
                         <div className="mt-6">
@@ -978,8 +845,8 @@ export default function Home() {
                                 </p>
                               </button>
                             ))}
-                                </div>
-                              </div>
+                          </div>
+                        </div>
 
                         {/* Create LinkedIn Post Button */}
                         <div className="mt-6 flex gap-4">

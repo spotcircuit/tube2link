@@ -4,6 +4,7 @@ import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
+import { preprocessTranscript, PreprocessedData } from './preprocessor';
 
 const oauth2Client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -15,20 +16,33 @@ const execAsync = promisify(exec);
 
 interface TranscriptionData {
   transcription: string;
+  preprocessed?: PreprocessedData;
   filepath: string;
 }
 
-async function writeTranscriptionToFile(videoId: string, title: string, transcription: string): Promise<string> {
+async function writeTranscriptionToFile(
+  videoId: string, 
+  title: string, 
+  transcription: string, 
+  preprocessed?: PreprocessedData
+): Promise<string> {
   const timestamp = new Date().toISOString().replace(/:/g, '-');
   const filename = `${videoId}_${timestamp}.txt`;
   const filepath = join(process.cwd(), 'transcriptions', filename);
 
-  const content = `Title: ${title}\nVideo ID: ${videoId}\nTranscribed at: ${new Date().toISOString()}\n\nTranscription:\n${transcription}`;
-  await writeFile(filepath, content, 'utf-8');
+  const content = {
+    title,
+    videoId,
+    transcribedAt: new Date().toISOString(),
+    transcription,
+    preprocessed
+  };
+
+  await writeFile(filepath, JSON.stringify(content, null, 2), 'utf-8');
   return filepath;
 }
 
-export async function transcribeYouTubeVideo(videoId: string): Promise<string | null> {
+export async function transcribeYouTubeVideo(videoId: string): Promise<TranscriptionData | null> {
   try {
     // Get video details from YouTube API
     const apiKey = process.env.NEXT_PUBLIC_YT_API_KEY;
@@ -50,32 +64,50 @@ export async function transcribeYouTubeVideo(videoId: string): Promise<string | 
     // Try to get transcript using youtube-transcript-api
     const transcript = await getTranscriptFast(videoId);
     if (!transcript) {
-      console.log('No transcript available for video:', videoId);
+      console.log('Could not get transcript for video:', videoId);
       return null;
     }
 
-    // Write transcription to file
-    await writeTranscriptionToFile(videoId, title, transcript);
-    return transcript;
-  } catch (error: any) {
-    console.error('Error getting transcription:', error.response?.data || error);
+    // Preprocess the transcript
+    console.log('Preprocessing transcript...');
+    const preprocessed = await preprocessTranscript(transcript, (step: string) => {
+      console.log(`Processing: ${step}`);
+    });
+
+    // Save to file
+    const filepath = await writeTranscriptionToFile(videoId, title, transcript, preprocessed);
+
+    return {
+      transcription: transcript,
+      preprocessed,
+      filepath
+    };
+
+  } catch (error) {
+    console.error('Error in transcribeYouTubeVideo:', error);
     return null;
   }
 }
 
 export async function getTranscriptFast(videoId: string): Promise<string | null> {
   try {
-    // Call the Python script with the video ID
-    const { stdout, stderr } = await execAsync(`python scripts/test-captions.py ${videoId}`);
+    // Use the youtube-transcript-api module directly
+    const { YoutubeTranscript } = require('youtube-transcript');
+    const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
     
-    if (stderr) {
-      console.error('Error getting transcript:', stderr);
+    if (!transcriptItems || transcriptItems.length === 0) {
+      console.error('No transcript available for video:', videoId);
       return null;
     }
 
-    return stdout || null;
+    // Combine all text parts into one string
+    const fullTranscript = transcriptItems
+      .map((item: { text: string }) => item.text)
+      .join(' ');
+
+    return fullTranscript;
   } catch (error) {
-    console.error('Error executing Python script:', error);
+    console.error('Error getting transcript:', error);
     return null;
   }
 }

@@ -9,8 +9,6 @@ export const oauth2Client = new OAuth2Client(
   config.googleRedirectUri
 );
 
-// Removed defaultScopes assignment since OAuth2Client does not support it
-
 export function getAuthUrl() {
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',

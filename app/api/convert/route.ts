@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import { transcribeYouTubeVideo, generateLinkedInPost, oauth2Client, getTranscriptFast } from '@/lib/transcription';
+import { oauth2Client, getTranscriptFast } from '@/lib/transcription';
 import { getConfig } from '@/lib/config';
 import { cookies } from 'next/headers';
 import { URL } from 'url';
@@ -60,8 +60,8 @@ export async function POST(request: Request) {
     });
     oauth2Client.setCredentials(tokens);
 
-    const { videoUrl, getDetailsOnly = false, forceTranscribe = false } = await request.json();
-    console.log('Processing URL:', videoUrl, 'Force Transcribe:', forceTranscribe);
+    const { videoUrl } = await request.json();
+    console.log('Processing URL:', videoUrl);
 
     // Extract video ID from URL (including Shorts)
     let videoId: string | null = null;
@@ -141,20 +141,19 @@ export async function POST(request: Request) {
         description: videoDetails.snippet.description,
         channelTitle: videoDetails.snippet.channelTitle,
         thumbnails: videoDetails.snippet.thumbnails,
-        tags: videoDetails.snippet.tags,
-        transcription: null // Will be set later if requested
+        tags: videoDetails.snippet.tags
       };
 
-      // Always get transcription with metadata
+      // Get transcription
       try {
         console.log('Getting transcription for video:', videoId);
-        const transcription = await transcribeYouTubeVideo(videoId);
+        const transcription = await getTranscriptFast(videoId);
         videoMetadata.transcription = transcription;
         
-        if (!videoMetadata.transcription) {
+        if (!transcription) {
           return NextResponse.json({
             error: 'Transcription Failed',
-            details: 'Failed to generate transcription'
+            details: 'Failed to get transcription'
           }, { status: 500 });
         }
       } catch (error: any) {
