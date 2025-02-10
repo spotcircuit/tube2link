@@ -21,8 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       success: true,
       transcription: existingTranscription.transcription,
-      filepath: existingTranscription.filepath,
-      quickSummary: existingTranscription.preprocessed?.quick_summary || null
+      filepath: existingTranscription.filepath
     });
   } catch (error: any) {
     console.error('Error loading transcription:', error);
