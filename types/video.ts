@@ -20,6 +20,7 @@ export interface VideoData {
   tags?: string[];
   transcription?: string | null;
   preprocessed?: any;
+  summary?: string;  // Summary of the video content
   gptQuickSummary?: string;  // 2-3 sentence overview from GPT
   detailedAnalysis?: string; // Formatted sections with key points, actions, etc
   metadata?: VideoMetadata;

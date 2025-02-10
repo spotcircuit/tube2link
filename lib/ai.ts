@@ -3,6 +3,7 @@ import { z } from 'zod';
 import OpenAI from 'openai';
 import { VideoData } from '@/types/video';
 import { PostSettings } from '@/types/post';
+import { VideoContext } from '@/lib/video_context';
 import { getOpenAIClient } from './openai';
 import { PreprocessedData } from './preprocessor';
 import { getConfig } from './config';
@@ -104,7 +105,7 @@ export async function generatePrompt(data: VideoData, template: keyof typeof POS
       description: 'No description available',
       videoId: ''
     },
-    quick_summary = 'No summary available',
+    gptQuickSummary = 'No summary available',
     patterns = {},
     semantic = {},
     roles = {}
@@ -142,7 +143,7 @@ Channel: ${metadata.channelTitle}
 Description: ${metadata.description}
 
 Summary:
-${quick_summary}
+${gptQuickSummary}
 
 Key Actions (Most Important):
 ${topActions}
@@ -210,24 +211,28 @@ export async function generateLinkedInPost(
   const enrichedPrompt = `${basePrompt}
 
 Additional Context:
-${data.patterns?.key_points?.length > 0 ? `
+${data.patterns?.key_points && data.patterns.key_points.length > 0 ? `
 Key Points:
 ${data.patterns.key_points.map(p => `• ${p.content}`).join('\n')}` : ''}
 
-${data.patterns?.examples?.length > 0 ? `
+${data.patterns?.examples && data.patterns.examples.length > 0 ? `
 Examples:
 ${data.patterns.examples.map(e => `• ${e.content}`).join('\n')}` : ''}
 
-${data.semantic?.actions?.length > 0 ? `
+${data.semantic?.actions && data.semantic.actions.length > 0 ? `
 Important Actions:
 ${data.semantic.actions
   .filter(a => a.importance >= 0.7)
   .map(a => `• ${a.content}`)
   .join('\n')}` : ''}
 
-${data.roles?.user?.length > 0 ? `
-User Context:
+${data.roles?.user && data.roles.user.length > 0 ? `
+User Actions:
 ${data.roles.user.map(u => `• ${u.content}`).join('\n')}` : ''}
+
+${data.roles?.developer && data.roles.developer.length > 0 ? `
+Technical Notes:
+${data.roles.developer.map(d => `• ${d.content}`).join('\n')}` : ''}
 
 Please ensure:
 1. The post is engaging and encourages discussion
@@ -248,63 +253,38 @@ Please ensure:
   return enrichedPrompt;
 }
 
-export function enrichPrompt(prompt: string, videoContext: VideoContext): string {
+export function enrichPrompt(prompt: string, videoData: VideoData): string {
   const enrichedPrompt = prompt
-    .replace('${title}', videoContext.title || '')
-    .replace('${description}', videoContext.description || '')
-    .replace('${channelTitle}', videoContext.channelTitle || '')
-    .replace('${transcription}', videoContext.transcription || '')
-    .replace('${quick_summary}', videoContext.quick_summary || 'No summary available');
+    .replace('${title}', videoData.metadata?.title || '')
+    .replace('${description}', videoData.metadata?.description || '')
+    .replace('${channelTitle}', videoData.metadata?.channelTitle || '')
+    .replace('${transcription}', videoData.transcription || '');
 
   return enrichedPrompt;
 }
 
 export async function formatDetailedAnalysis(preprocessedData: PreprocessedData): Promise<string> {
   console.log(' Formatting detailed analysis...');
-  const openai = getOpenAIClient();
 
-  const prompt = `Format this video analysis into clear, concise sections. For each section:
-1. Combine related points
-2. Remove redundancy
-3. Use clear, professional language
-4. Keep only the most important insights
+  const formattedAnalysis = `# Detailed Analysis
 
-Here is the raw analysis:
-${JSON.stringify(preprocessedData, null, 2)}
+Key Points:
+${preprocessedData.patterns.key_points?.map(p => `- ${p.content}`).join('\n') || 'No key points found'}
 
-Format the response in this structure:
-## Key Points
-- [2-3 key takeaways]
+Examples:
+${preprocessedData.patterns.examples?.map(e => `- ${e.content}`).join('\n') || 'No examples found'}
 
-## Main Steps/Actions
-- [Step-by-step breakdown, max 5 steps]
+Actions:
+${preprocessedData.semantic.actions?.map(a => `- ${a.content} (Importance: ${a.importance})`).join('\n') || 'No actions found'}
 
-## Target Audience
-- [Who this is for and what they'll learn]
+User Context:
+${preprocessedData.roles.user?.map(u => `- ${u.content}`).join('\n') || 'No user context found'}
 
-## Implementation Details
-- [Technical or practical details]`;
+Technical Notes:
+${preprocessedData.roles.developer?.map(d => `- ${d.content}`).join('\n') || 'No technical notes found'}`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: "You are a technical writer helping format video content analysis into clear, structured sections."
-      },
-      {
-        role: "user",
-        content: prompt
-      }
-    ],
-    temperature: 0.3,
-    max_tokens: 500
-  });
-
-  const formattedAnalysis = response.choices[0].message.content;
-
-  // Save the formatted data to file
-  const dataDir = path.join(process.cwd(), 'data');
+  // Save to file
+  const dataDir = path.join(process.cwd(), 'data', 'analysis');
   await fs.mkdir(dataDir, { recursive: true });
   const analysisPath = path.join(dataDir, 'detailed_analysis.txt');
   await fs.writeFile(analysisPath, formattedAnalysis, 'utf-8');

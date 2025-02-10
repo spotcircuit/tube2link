@@ -9,12 +9,10 @@ export async function POST(request: Request) {
     // Both functions receive the same data structure
     const videoData = {
       id: data.id,
-      metadata: {
-        title: data.title,
-        channelTitle: data.channelTitle,
-        description: data.description,
-        videoId: data.id
-      },
+      title: data.title,
+      description: data.description,
+      channelTitle: data.channelTitle,
+      // Optional fields from the data
       quick_summary: data.quick_summary,
       patterns: data.patterns,
       semantic: data.semantic,

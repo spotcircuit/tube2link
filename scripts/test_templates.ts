@@ -14,7 +14,7 @@ const testData: VideoData = {
     description: "In this detailed tutorial, we'll walk through building a web scraper from scratch using Python and BeautifulSoup. Learn best practices and handle common challenges.",
     videoId: "test123"
   },
-  quick_summary: "A comprehensive tutorial on web scraping with Python, covering setup, implementation, and advanced techniques.",
+  gptQuickSummary: "A comprehensive tutorial on web scraping with Python, covering setup, implementation, and advanced techniques.",
   patterns: {
     key_points: [
       { content: "Setting up Python and required libraries" },
@@ -47,16 +47,9 @@ const testData: VideoData = {
 // Test settings
 const testSettings: PostSettings[] = [
   {
-    tone: 0.2, // Casual
-    personality: { charm: 70, wit: 60, humor: 50, sarcasm: 20 }
-  },
-  {
     tone: 0.5, // Balanced
-    personality: { charm: 50, wit: 50, humor: 50, sarcasm: 30 }
-  },
-  {
-    tone: 0.8, // Formal
-    personality: { charm: 40, wit: 40, humor: 30, sarcasm: 10 }
+    personality: { charm: 50, wit: 50, humor: 50, sarcasm: 30 },
+    length: 'standard'
   }
 ];
 
