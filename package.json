@@ -25,6 +25,7 @@
     "@tiptap/starter-kit": "^2.11.5",
     "axios": "^1.6.7",
     "csrf": "^3.1.0",
+    "encoding": "^0.1.13",
     "googleapis": "^144.0.0",
     "iron-session": "^8.0.4",
     "lucide-react": "^0.475.0",
@@ -35,6 +36,7 @@
     "react-dom": "^18.2.0",
     "react-feather": "^2.0.10",
     "react-hot-toast": "^2.5.1",
+    "supports-color": "^9.4.0",
     "youtube-transcript": "^1.0.6",
     "ytdl-core": "^4.11.5",
     "zod": "^3.22.4"
