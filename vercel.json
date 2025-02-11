@@ -17,9 +17,5 @@
         "Cache-Control": "public, max-age=3600"
       }
     }
-  ],
-  "env": {
-    "CLOUD_PROVIDER": "vercel",
-    "STORAGE_BUCKET": "@tube2link-bucket"
-  }
+  ]
 }
