@@ -4,6 +4,8 @@ import dynamic from 'next/dynamic'
 import React, { useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { FaLinkedin, FaFacebookSquare, FaTwitter, FaInstagram, FaTiktok, FaCopy } from 'react-icons/fa'
+import type { Editor as TinyMCEEditor, IAllProps } from '@tinymce/tinymce-react'
+import { Editor as TinyMCEEditorType } from 'tinymce'
 
 interface RichTextEditorProps {
   content: string
@@ -15,13 +17,16 @@ interface RichTextEditorProps {
 }
 
 // Dynamically import TinyMCE Editor with SSR disabled
-const TinyMCEEditor = dynamic(
-  () => import('@tinymce/tinymce-react').then(mod => mod.Editor),
+const Editor = dynamic(
+  () => import('@tinymce/tinymce-react').then((mod) => {
+    const { Editor } = mod;
+    return Editor as React.ComponentType<IAllProps>;
+  }),
   { ssr: false }
 )
 
 const RichTextEditor = ({ content, onReturn, onCopy, className = '', videoUrl = '', videoTitle = '' }: RichTextEditorProps) => {
-  const editorRef = useRef<any>(null)
+  const editorRef = useRef<TinyMCEEditorType | null>(null)
 
   const handleCopy = () => {
     if (editorRef.current) {
@@ -144,8 +149,8 @@ const RichTextEditor = ({ content, onReturn, onCopy, className = '', videoUrl = 
 
       {/* Editor */}
       <div className="p-6">
-        <TinyMCEEditor
-          apiKey="rlq7r4yruge85f95n2qewi3w152sfea92wutffjotgjg11pw"
+        <Editor
+          apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
           onInit={(evt, editor) => editorRef.current = editor}
           initialValue={content}
           init={{

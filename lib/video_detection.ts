@@ -81,18 +81,20 @@ export function detectVideoType(metadata: VideoMetadata): VideoType {
   }
 
   // Consider YouTube category if available
-  if (metadata.youtubeCategory && metadata.youtubeCategory in YOUTUBE_CATEGORY_SCORES) {
-    const categoryScores = YOUTUBE_CATEGORY_SCORES[metadata.youtubeCategory];
+  const category = metadata.youtubeCategory;
+  if (category && category in YOUTUBE_CATEGORY_SCORES) {
+    const categoryScores = YOUTUBE_CATEGORY_SCORES[category];
     Object.entries(categoryScores).forEach(([type, score]) => {
       scores[type as VideoType] += score;
     });
   }
 
-  // Return type with highest score, defaulting to commentary if all scores are 0
+  // Find the type with the highest score
   const result = Object.entries(scores)
-    .reduce((max, [type, score]) => 
-      score > max.score ? {type, score} : max,
-      {type: 'commentary' as VideoType, score: 0}
+    .reduce<{ type: VideoType; score: number }>(
+      (max, [type, score]) =>
+        score > max.score ? { type: type as VideoType, score } : max,
+      { type: 'commentary', score: 0 }
     );
 
   return result.type;

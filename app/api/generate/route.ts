@@ -11,9 +11,9 @@ export async function POST(request: Request) {
       id: data.id,
       title: data.title,
       description: data.description,
+      channelId: data.channelId || data.id,
       channelTitle: data.channelTitle,
-      // Optional fields from the data
-      quick_summary: data.quick_summary,
+      gptQuickSummary: data.quick_summary,
       patterns: data.patterns,
       semantic: data.semantic,
       roles: data.roles,

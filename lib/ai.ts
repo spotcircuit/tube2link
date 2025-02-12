@@ -7,7 +7,6 @@ import { PreprocessedData } from './preprocessor';
 import { getConfig } from './config';
 import { getVideoType, VIDEO_CONTEXTS } from './video_context';
 import { detectVideoType } from './video_detection';
-import { generatePrompt } from './video_prompts';
 import { validateEnrichment, repairEnrichment } from './video_validation';
 import { VideoType } from './video_types';
 import * as path from 'path';
@@ -269,6 +268,7 @@ export async function generateLinkedInPost(
   settings: PostSettings
 ): Promise<string> {
   try {
+    // Generate the post content
     const prompt = await generatePrompt(data, mode, settings);
     const lengthParams = getPostLengthParams(settings.length);
     
