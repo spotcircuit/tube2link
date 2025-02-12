@@ -179,9 +179,12 @@ export function validateEnrichment(type: VideoType, data: unknown) {
 // Fallback/repair functions for common issues
 export function repairEnrichment(type: VideoType, data: unknown) {
   try {
+    // Ensure data is an object before spreading
+    const baseData = (typeof data === 'object' && data !== null) ? data : {};
+
     // Try to fix common issues before validation
     const repairedData = {
-      ...data,
+      ...baseData,
       // Add missing arrays if undefined
       ...(type === 'tutorial' && {
         prerequisites: (data as any)?.prerequisites || [],

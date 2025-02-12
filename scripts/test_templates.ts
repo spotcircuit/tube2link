@@ -7,6 +7,7 @@ const testData: VideoData = {
   id: "test123",
   title: "How to Build a Web Scraper in Python - Complete Tutorial",
   description: "In this detailed tutorial, we'll walk through building a web scraper from scratch using Python and BeautifulSoup. Learn best practices and handle common challenges.",
+  channelId: "test_channel_123",
   channelTitle: "Test Channel",
   metadata: {
     title: "How to Build a Web Scraper in Python - Complete Tutorial",

@@ -33,7 +33,9 @@ export function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
     {
       id: 'summary',
       title: 'Summary',
-      content: videoData.summary || 'No summary available',
+      content: typeof videoData.summary === 'string' 
+        ? videoData.summary 
+        : videoData.summary?.summary || 'No summary available',
       defaultCollapsed: false
     },
     {
@@ -43,15 +45,16 @@ export function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
         <div className="space-y-4">
           <div>
             <h4 className="text-purple-300 mb-2">Key Points</h4>
-            {videoData.keyPoints?.map((point, index) => (
+            {videoData.summary && typeof videoData.summary !== 'string' && 
+              videoData.summary.analysis.core_concepts.key_points.map((point, index) => (
               <div key={index} className="mb-2 flex items-start gap-2">
                 <button 
-                  onClick={() => onUseInPost?.(point)}
+                  onClick={() => onUseInPost?.(point.content)}
                   className="text-blue-400 hover:text-blue-300"
                 >
                   Copy
                 </button>
-                <span>{point}</span>
+                <span>{point.content}</span>
               </div>
             ))}
           </div>
@@ -63,7 +66,8 @@ export function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
       title: 'Insights',
       content: (
         <div className="space-y-4">
-          {videoData.insights?.map((insight, index) => (
+          {videoData.summary && typeof videoData.summary !== 'string' && 
+            videoData.summary.analysis.core_concepts.insights.map((insight, index) => (
             <div key={index} className="mb-2 flex items-start gap-2">
               <button 
                 onClick={() => onUseInPost?.(insight.content)}
@@ -72,7 +76,7 @@ export function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
                 Copy
               </button>
               <div>
-                <span className="text-purple-300">{insight.type}: </span>
+                <span className="text-purple-300">Importance: {insight.importance} </span>
                 <span>{insight.content}</span>
               </div>
             </div>
@@ -84,11 +88,11 @@ export function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
 
   return (
     <div className="space-y-4">
-      {/* Video Type Label */}
+      {/* Video Info */}
       <div className="flex items-center gap-2">
-        <span className="text-purple-300">Type:</span>
+        <span className="text-purple-300">Channel:</span>
         <span className="px-3 py-1 bg-purple-500/30 border border-purple-500/50 rounded-full text-white">
-          {videoData.metadata?.type?.charAt(0).toUpperCase() + videoData.metadata?.type?.slice(1)}
+          {videoData.metadata?.channelTitle || 'Unknown Channel'}
         </span>
       </div>
 

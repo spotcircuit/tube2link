@@ -1,6 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 import { getConfig } from './config';
-import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 const config = getConfig();
 
@@ -33,15 +33,19 @@ export async function setTokens(tokens: any) {
   // Set credentials in oauth2Client
   oauth2Client.setCredentials(credentials);
 
-  // Store tokens in secure HTTP-only cookie
-  const cookieStore = cookies();
-  cookieStore.set('oauth_tokens', JSON.stringify(credentials), {
+  // Create response with cookie
+  const response = NextResponse.json({ status: 'success' });
+  response.cookies.set({
+    name: 'oauth_tokens',
+    value: JSON.stringify(credentials),
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
     maxAge: 30 * 24 * 60 * 60 // 30 days
   });
+  
+  return response;
 }
 
 export function getOAuth2Client() {

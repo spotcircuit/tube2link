@@ -43,7 +43,6 @@ const formatDuration = (duration: string): string => {
 const POST_TEMPLATES = {
   question: {
     name: 'Question-Based',
-    description: 'Thought-provoking questions that encourage engagement',
     structure: `
 1. Open with an intriguing industry question
 2. Share context from your experience
@@ -53,7 +52,6 @@ const POST_TEMPLATES = {
   },
   story: {
     name: 'Story-Based',
-    description: 'Narrative that draws readers in and makes content relatable',
     structure: `
 1. Start with a relatable situation
 2. Share the learning journey
@@ -63,7 +61,6 @@ const POST_TEMPLATES = {
   },
   action: {
     name: 'Action-Oriented',
-    description: 'Actionable takeaways that motivate readers',
     structure: `
 1. State the goal clearly
 2. Explain why it matters now
@@ -73,7 +70,6 @@ const POST_TEMPLATES = {
   },
   insight: {
     name: 'Insight-Based',
-    description: 'Data-driven insights that reveal deeper understanding',
     structure: `
 1. Lead with surprising data
 2. Explain the significance
@@ -83,7 +79,6 @@ const POST_TEMPLATES = {
   },
   problem_solution: {
     name: 'Problem-Solution',
-    description: 'Clear solutions to common challenges',
     structure: `
 1. Identify the pain point clearly
 2. Explain its impact
@@ -93,7 +88,6 @@ const POST_TEMPLATES = {
   },
   comparison: {
     name: 'Comparison',
-    description: 'Balanced analysis of different approaches',
     structure: `
 1. Introduce the approaches
 2. Compare key aspects
@@ -216,7 +210,6 @@ const getTemplateGuide = (template: string, length: 'brief' | 'standard' | 'deta
 const templateOptions = Object.entries(POST_TEMPLATES).map(([id, template]) => ({
   id: id as keyof typeof POST_TEMPLATES,
   name: template.name,
-  description: template.description
 }));
 
 interface KeyActionsSectionProps {
@@ -637,17 +630,14 @@ export default function Home() {
               {[
                 {
                   title: 'AI-Powered',
-                  description: 'Advanced AI algorithms transform your video content into professional LinkedIn posts',
                   icon: '🤖'
                 },
                 {
                   title: 'Time-Saving',
-                  description: 'Convert videos to posts in minutes, not hours',
                   icon: '⚡'
                 },
                 {
                   title: 'Professional',
-                  description: 'Get polished, engagement-ready content for your LinkedIn audience',
                   icon: '✨'
                 }
               ].map((feature, index) => (
@@ -657,7 +647,6 @@ export default function Home() {
                 >
                   <div className="text-4xl mb-4">{feature.icon}</div>
                   <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                  <p className="text-gray-300">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -807,24 +796,24 @@ export default function Home() {
                                 <button
                                   className="text-xs px-2 py-1 rounded bg-purple-500/20 text-purple-300 hover:bg-purple-500/30"
                                   onClick={() => copyToClipboard(
-                                    videoData.summary.analysis.core_concepts.key_points
-                                      .map(point => `${point.importance}: ${point.content}\n`)
-                                      .join('\n')
+                                    videoData.summary?.analysis?.core_concepts?.key_points
+                                      ?.map(point => `${point.importance}: ${point.content}\n`)
+                                      ?.join('\n') || ''
                                   )}
                                 >
                                   Copy
                                 </button>
                               </div>
                               <div className="space-y-2">
-                                {videoData.summary.analysis.core_concepts.key_points.map((point, index) => (
+                                {videoData.summary?.analysis?.core_concepts?.key_points?.map((point, index) => (
                                   <div key={index} className="flex items-start gap-2 group relative">
                                     <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
-                                      point.importance === 'core' ? 'bg-purple-500/20 text-purple-300' :
-                                      point.importance === 'key' ? 'bg-blue-500/20 text-blue-300' :
+                                      point.importance >= 0.8 ? 'bg-purple-500/20 text-purple-300' :
+                                      point.importance >= 0.5 ? 'bg-blue-500/20 text-blue-300' :
                                       'bg-gray-500/20 text-gray-300'
                                     }`}>
-                                      {point.importance === 'core' ? 'Core Concept' :
-                                       point.importance === 'key' ? 'Key Point' :
+                                      {point.importance >= 0.8 ? 'Core Concept' :
+                                       point.importance >= 0.5 ? 'Key Point' :
                                        'Supporting'}
                                     </span>
                                     <div className="text-gray-300 flex-1 relative">
@@ -842,24 +831,24 @@ export default function Home() {
                                 <button
                                   className="text-xs px-2 py-1 rounded bg-purple-500/20 text-purple-300 hover:bg-purple-500/30"
                                   onClick={() => copyToClipboard(
-                                    videoData.summary.analysis.core_concepts.insights
-                                      .map(insight => `${insight.importance}: ${insight.content}\n`)
-                                      .join('\n')
+                                    videoData.summary?.analysis?.core_concepts?.insights
+                                      ?.map(insight => `${insight.importance}: ${insight.content}\n`)
+                                      ?.join('\n') || ''
                                   )}
                                 >
                                   Copy
                                 </button>
                               </div>
                               <div className="space-y-2">
-                                {videoData.summary.analysis.core_concepts.insights.map((insight, index) => (
+                                {videoData.summary?.analysis?.core_concepts?.insights?.map((insight, index) => (
                                   <div key={index} className="flex items-start gap-2 group relative">
                                     <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
-                                      insight.importance === 'critical' ? 'bg-red-500/20 text-red-300' :
-                                      insight.importance === 'valuable' ? 'bg-yellow-500/20 text-yellow-300' :
+                                      insight.importance >= 0.8 ? 'bg-red-500/20 text-red-300' :
+                                      insight.importance >= 0.5 ? 'bg-yellow-500/20 text-yellow-300' :
                                       'bg-green-500/20 text-green-300'
                                     }`}>
-                                      {insight.importance === 'critical' ? 'Critical' :
-                                       insight.importance === 'valuable' ? 'Valuable' :
+                                      {insight.importance >= 0.8 ? 'Critical' :
+                                       insight.importance >= 0.5 ? 'Valuable' :
                                        'Helpful'}
                                     </span>
                                     <div className="text-gray-300 flex-1 relative">
@@ -891,9 +880,9 @@ export default function Home() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       copyToClipboard(
-                                        videoData.summary.analysis.technical_details.requirements
-                                          .map(req => `${req.content}\n${req.installation ? `// ${req.installation}\n` : ''}\n`)
-                                          .join('\n')
+                                        videoData.summary?.analysis?.technical_details?.requirements
+                                          ?.map(req => `${req.content}\n${req.type ? `// Type: ${req.type}\n` : ''}\n`)
+                                          ?.join('\n') || ''
                                       );
                                     }}
                                   >
@@ -907,15 +896,14 @@ export default function Home() {
                               {!collapsedSections['requirements'] && (
                                 <div className="p-4 pt-0">
                                   <div className="space-y-3">
-                                    {videoData.summary.analysis.technical_details.requirements.map((req, index) => (
+                                    {videoData.summary?.analysis?.technical_details?.requirements?.map((req, index) => (
                                       <div key={index} className="bg-black/20 p-3 rounded space-y-2">
                                         <div className="flex items-center justify-between">
                                           <span className="text-gray-300">{req.content}</span>
-                                          <span className="text-xs text-purple-400">{req.type}</span>
+                                          {req.type && (
+                                            <span className="text-xs text-blue-400">Type: {req.type}</span>
+                                          )}
                                         </div>
-                                        {req.installation && (
-                                          <pre className="text-sm text-gray-400 bg-black/20 p-2 rounded mt-2">{req.installation}</pre>
-                                        )}
                                       </div>
                                     ))}
                                   </div>
@@ -936,9 +924,9 @@ export default function Home() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       copyToClipboard(
-                                        videoData.summary.analysis.technical_details.limitations
-                                          .map(limit => `${limit.content}\n${limit.workaround ? `// ${limit.workaround}\n` : ''}\n`)
-                                          .join('\n')
+                                        videoData.summary?.analysis?.technical_details?.limitations
+                                          ?.map(limit => `${limit.content}\n${limit.severity ? `// Severity: ${limit.severity}\n` : ''}\n`)
+                                          ?.join('\n') || ''
                                       );
                                     }}
                                   >
@@ -952,24 +940,20 @@ export default function Home() {
                               {!collapsedSections['limitations'] && (
                                 <div className="p-4 pt-0">
                                   <div className="space-y-3">
-                                    {videoData.summary.analysis.technical_details.limitations.map((limit, index) => (
+                                    {videoData.summary?.analysis?.technical_details?.limitations?.map((limit, index) => (
                                       <div key={index} className="bg-black/20 p-3 rounded space-y-2">
                                         <div className="flex items-center justify-between">
                                           <span className="text-gray-300">{limit.content}</span>
-                                          <span className={`text-xs px-2 py-1 rounded ${
-                                            limit.severity === 'critical' ? 'bg-red-500/20 text-red-300' :
-                                            limit.severity === 'significant' ? 'bg-yellow-500/20 text-yellow-300' :
-                                            'bg-green-500/20 text-green-300'
-                                          }`}>
-                                            {limit.severity}
-                                          </span>
+                                          {limit.severity && (
+                                            <span className={`text-xs ${
+                                              limit.severity === 'high' ? 'text-red-400' :
+                                              limit.severity === 'medium' ? 'text-yellow-400' :
+                                              'text-blue-400'
+                                            }`}>
+                                              Severity: {limit.severity}
+                                            </span>
+                                          )}
                                         </div>
-                                        {limit.workaround && (
-                                          <div className="text-sm text-gray-400">
-                                            <span className="font-medium">Workaround: </span>
-                                            {limit.workaround}
-                                          </div>
-                                        )}
                                       </div>
                                     ))}
                                   </div>
@@ -998,9 +982,9 @@ export default function Home() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       copyToClipboard(
-                                        videoData.summary.analysis.practical_application.implementation_steps
-                                          .map(step => `${step.order || ''}: ${step.content}\n${step.prerequisites ? `Prerequisites: ${step.prerequisites.join(', ')}\n` : ''}\n`)
-                                          .join('\n')
+                                        videoData.summary?.analysis?.practical_application?.implementation_steps
+                                          ?.map((step, index) => `${index + 1}: ${step.content}\n${step.prerequisites?.length ? `Prerequisites: ${step.prerequisites.join(', ')}\n` : ''}\n`)
+                                          ?.join('\n') || ''
                                       );
                                     }}
                                   >
@@ -1014,32 +998,27 @@ export default function Home() {
                               {!collapsedSections['implementation'] && (
                                 <div className="p-4 pt-0">
                                   <div className="space-y-4">
-                                    {videoData.summary.analysis.practical_application.implementation_steps.map((step, index) => (
+                                    {videoData.summary?.analysis?.practical_application?.implementation_steps?.map((step, index) => (
                                       <div key={index} className="space-y-2">
                                         <div className="flex items-center justify-between gap-2">
                                           <div className="flex items-center gap-2">
                                             <span className="text-lg font-semibold text-purple-400">
-                                              {step.order || index + 1}
+                                              #{index + 1}
                                             </span>
-                                            <span className={`text-xs px-2 py-1 rounded ${
-                                              step.importance === 'required' ? 'bg-red-500/20 text-red-300' :
-                                              step.importance === 'recommended' ? 'bg-yellow-500/20 text-yellow-300' :
-                                              'bg-blue-500/20 text-blue-300'
-                                            }`}>
-                                              {step.importance === 'required' ? 'Required' :
-                                               step.importance === 'recommended' ? 'Recommended' :
-                                               'Optional'}
-                                            </span>
+                                            <span className="text-gray-300">{step.content}</span>
                                           </div>
-                                          {step.estimated_time && (
-                                            <span className="text-xs text-gray-400 whitespace-nowrap">⏱️ {step.estimated_time}</span>
-                                          )}
+                                          <span className={`text-xs px-2 py-1 rounded ${
+                                            step.importance >= 0.8 ? 'bg-red-500/20 text-red-300' :
+                                            step.importance >= 0.5 ? 'bg-yellow-500/20 text-yellow-300' :
+                                            'bg-green-500/20 text-green-300'
+                                          }`}>
+                                            {step.importance >= 0.8 ? 'Critical' :
+                                             step.importance >= 0.5 ? 'Important' :
+                                             'Optional'}
+                                          </span>
                                         </div>
-                                        <div className="bg-black/20 p-3 rounded group relative">
-                                          <p className="text-gray-300">{step.content}</p>
-                                        </div>
-                                        {step.prerequisites && step.prerequisites.length > 0 && (
-                                          <div className="text-xs text-purple-400">
+                                        {step.prerequisites?.length > 0 && (
+                                          <div className="text-sm text-gray-400 pl-6">
                                             <span className="font-medium">Prerequisites: </span>
                                             {step.prerequisites.join(', ')}
                                           </div>
@@ -1064,9 +1043,9 @@ export default function Home() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       copyToClipboard(
-                                        videoData.summary.analysis.practical_application.code_examples
-                                          .map(ex => `// ${ex.importance} - ${ex.language}\n${ex.content}\n${ex.description ? `// ${ex.description}\n` : ''}\n`)
-                                          .join('\n')
+                                        videoData.summary?.analysis?.practical_application?.code_examples
+                                          ?.map(ex => `// Language: ${ex.language} (Importance: ${ex.importance})\n${ex.content}\n`)
+                                          ?.join('\n') || ''
                                       );
                                     }}
                                   >
@@ -1080,30 +1059,23 @@ export default function Home() {
                               {!collapsedSections['code-examples'] && (
                                 <div className="p-4 pt-0">
                                   <div className="space-y-6">
-                                    {videoData.summary.analysis.practical_application.code_examples.map((example, index) => (
+                                    {videoData.summary?.analysis?.practical_application?.code_examples?.map((example, index) => (
                                       <div key={index} className="space-y-3">
                                         <div className="flex items-center justify-between">
                                           <span className={`text-xs px-2 py-1 rounded ${
-                                            example.importance === 'primary' ? 'bg-green-500/20 text-green-300' :
-                                            example.importance === 'alternative' ? 'bg-blue-500/20 text-blue-300' :
-                                            'bg-purple-500/20 text-purple-300'
+                                            example.importance >= 0.8 ? 'bg-purple-500/20 text-purple-300' :
+                                            example.importance >= 0.5 ? 'bg-blue-500/20 text-blue-300' :
+                                            'bg-gray-500/20 text-gray-300'
                                           }`}>
-                                            {example.importance === 'primary' ? 'Primary Method' :
-                                             example.importance === 'alternative' ? 'Alternative Approach' :
-                                             'Advanced Usage'}
+                                            {example.language}
                                           </span>
-                                          <span className="text-xs text-purple-400">{example.language}</span>
+                                          <span className="text-xs text-gray-400">
+                                            Importance: {Math.round(example.importance * 100)}%
+                                          </span>
                                         </div>
-                                        <div className="bg-black/20 p-4 rounded group relative">
-                                          <pre className="text-gray-300 overflow-x-auto whitespace-pre-wrap break-words" style={{ maxHeight: '400px' }}>
-                                            {example.content}
-                                          </pre>
-                                        </div>
-                                        {example.description && (
-                                          <p className="text-sm text-gray-400 bg-black/10 p-3 rounded">
-                                            {example.description}
-                                          </p>
-                                        )}
+                                        <pre className="bg-black/20 p-3 rounded overflow-x-auto">
+                                          <code className="text-gray-300 text-sm">{example.content}</code>
+                                        </pre>
                                       </div>
                                     ))}
                                   </div>
@@ -1140,47 +1112,47 @@ export default function Home() {
                                 </div>
                               </div>
 
-{/* Personality Traits */}
-<div className="space-y-6">
-  <h5 className="text-white font-medium">Personality Traits</h5>
-  <div className="grid sm:grid-cols-2 gap-6">
-    {[
-      { key: 'charm', label: '✨ Charm', description: 'Warmth and appeal' },
-      { key: 'wit', label: '💭 Wit', description: 'Clever observations' },
-      { key: 'humor', label: '😊 Humor', description: 'Fun and light' },
-      { key: 'sarcasm', label: '😏 Sarcasm', description: 'Ironic edge' }
-    ].map((trait) => (
-      <div key={trait.key} className="space-y-2">
-        <div className="flex justify-between text-white">
-          <div>
-            <div className="font-medium">{trait.label}</div>
-            <p className="text-sm text-gray-400">{trait.description}</p>
-            <p className="text-xs text-blue-400">
-              {getToneHint(postSettings.tone).suggestions[trait.key]}
-            </p>
-          </div>
-          <span className="text-xs text-purple-400">
-            {postSettings.personality[trait.key as keyof typeof postSettings.personality]}%
-          </span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={postSettings.personality[trait.key as keyof typeof postSettings.personality]}
-          onChange={(e) => setPostSettings(prev => ({
-            ...prev,
-            personality: {
-              ...prev.personality,
-              [trait.key]: parseInt(e.target.value)
-            }
-          }))}
-          className="w-full"
-        />
-      </div>
-    ))}
-  </div>
-</div>
+                              {/* Personality Traits */}
+                              <div className="space-y-6">
+                                <h5 className="text-white font-medium">Personality Traits</h5>
+                                <div className="grid sm:grid-cols-2 gap-6">
+                                  {[
+                                    { key: 'charm', label: '✨ Charm', description: 'Warmth and appeal' },
+                                    { key: 'wit', label: '💭 Wit', description: 'Clever observations' },
+                                    { key: 'humor', label: '😊 Humor', description: 'Fun and light' },
+                                    { key: 'sarcasm', label: '😏 Sarcasm', description: 'Ironic edge' }
+                                  ].map((trait) => (
+                                    <div key={trait.key} className="space-y-2">
+                                      <div className="flex justify-between text-white">
+                                        <div>
+                                          <div className="font-medium">{trait.label}</div>
+                                          <p className="text-sm text-gray-400">{trait.description}</p>
+                                          <p className="text-xs text-blue-400">
+                                            {getToneHint(postSettings.tone).suggestions[trait.key]}
+                                          </p>
+                                        </div>
+                                        <span className="text-xs text-purple-400">
+                                          {postSettings.personality[trait.key as keyof typeof postSettings.personality]}%
+                                        </span>
+                                      </div>
+                                      <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={postSettings.personality[trait.key as keyof typeof postSettings.personality]}
+                                        onChange={(e) => setPostSettings(prev => ({
+                                          ...prev,
+                                          personality: {
+                                            ...prev.personality,
+                                            [trait.key]: parseInt(e.target.value)
+                                          }
+                                        }))}
+                                        className="w-full"
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         )}
@@ -1227,7 +1199,6 @@ export default function Home() {
                                   }`}
                                 >
                                   <h3 className="text-lg font-semibold text-white">{template.name}</h3>
-                                  <p className="text-sm text-gray-400 mt-1">{template.description}</p>
                                 </button>
                               ))}
                             </div>

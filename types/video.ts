@@ -3,6 +3,7 @@ export interface VideoMetadata {
   channelTitle: string;
   description: string;
   videoId: string;
+  youtubeCategory?: string;
 }
 
 interface VideoSummary {
@@ -48,22 +49,30 @@ interface VideoSummary {
 }
 
 export interface VideoData {
+  // Required base fields
   id: string;
   title: string;
   description: string;
   channelId: string;
   channelTitle: string;
+
+  // Optional metadata and enrichment
+  metadata?: VideoMetadata;
+  transcription?: string;
   tags?: string[];
   duration?: string;
+  preprocessed?: any;
+
+  // Thumbnails
   thumbnails?: {
     default?: { url: string; width: number; height: number };
     medium?: { url: string; width: number; height: number };
     high?: { url: string; width: number; height: number };
   };
-  transcription?: string;
+
+  // AI-generated content
+  gptQuickSummary?: string;
   summary?: VideoSummary;
-  preprocessed?: any;
-  metadata?: VideoMetadata;
   patterns?: {
     key_points?: Array<{ content: string }>;
     examples?: Array<{ content: string }>;
