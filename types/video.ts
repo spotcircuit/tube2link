@@ -72,16 +72,4 @@ export interface VideoData {
 
   // AI-generated content
   gptQuickSummary?: string;
-  summary?: VideoSummary;
-  patterns?: {
-    key_points?: Array<{ content: string }>;
-    examples?: Array<{ content: string }>;
-  };
-  semantic?: {
-    actions?: Array<{ content: string; importance: number }>;
-  };
-  roles?: {
-    user?: Array<{ content: string; matched_patterns: string[] }>;
-    developer?: Array<{ content: string; matched_patterns: string[] }>;
-  };
 }

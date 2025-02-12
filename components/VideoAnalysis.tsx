@@ -13,7 +13,7 @@ interface Section {
   defaultCollapsed?: boolean;
 }
 
-export function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
+export default function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
     'summary': false,
     'core-concepts': true,
@@ -88,14 +88,6 @@ export function VideoAnalysis({ videoData, onUseInPost }: VideoAnalysisProps) {
 
   return (
     <div className="space-y-4">
-      {/* Video Info */}
-      <div className="flex items-center gap-2">
-        <span className="text-purple-300">Channel:</span>
-        <span className="px-3 py-1 bg-purple-500/30 border border-purple-500/50 rounded-full text-white">
-          {videoData.metadata?.channelTitle || 'Unknown Channel'}
-        </span>
-      </div>
-
       {sections.map(section => (
         <div key={section.id} className="bg-black/20 rounded-lg border border-white/10">
           <button
