@@ -1,0 +1,81 @@
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import React, { useEffect } from 'react'
+
+interface RichTextEditorProps {
+  content: string
+  onReturn: () => void
+  onCopy: () => void
+  className?: string
+}
+
+const RichTextEditor = ({ content, onReturn, onCopy, className = '' }: RichTextEditorProps) => {
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: content,
+    editorProps: {
+      attributes: {
+        class: 'prose prose-invert max-w-none w-full focus:outline-none'
+      }
+    }
+  })
+
+  useEffect(() => {
+    if (editor && content) {
+      editor.commands.setContent(content)
+    }
+  }, [content, editor])
+
+  if (!editor) {
+    return null
+  }
+
+  return (
+    <div className={`bg-black/20 rounded-lg border border-white/5 ${className}`}>
+      {/* Toolbar */}
+      <div className="flex items-center justify-between p-4 border-b border-white/5">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onReturn}
+            className="text-sm px-3 py-1.5 rounded bg-purple-500/20 text-purple-300 hover:bg-purple-500/30"
+          >
+            ← Return to Template
+          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              className={`p-2 rounded hover:bg-white/5 ${editor.isActive('bold') ? 'bg-white/10' : ''}`}
+            >
+              <span className="text-white">B</span>
+            </button>
+            <button
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              className={`p-2 rounded hover:bg-white/5 ${editor.isActive('italic') ? 'bg-white/10' : ''}`}
+            >
+              <span className="text-white italic">I</span>
+            </button>
+            <button
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              className={`p-2 rounded hover:bg-white/5 ${editor.isActive('bulletList') ? 'bg-white/10' : ''}`}
+            >
+              <span className="text-white">•</span>
+            </button>
+          </div>
+        </div>
+        <button
+          onClick={onCopy}
+          className="text-sm px-3 py-1.5 rounded bg-purple-500/20 text-purple-300 hover:bg-purple-500/30"
+        >
+          Copy Content
+        </button>
+      </div>
+
+      {/* Editor */}
+      <div className="p-6">
+        <EditorContent editor={editor} />
+      </div>
+    </div>
+  )
+}
+
+export default RichTextEditor

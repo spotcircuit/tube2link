@@ -14,15 +14,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No transcription provided' }, { status: 400 });
     }
 
-    // Preprocess data using preprocessTranscript (which includes OpenAI summary)
+    // Preprocess data using preprocessTranscript 
     const preprocessed = await preprocessTranscript(videoData.transcription, (step: string) => {
       console.log(`Processing: ${step}`);
     });
     console.log('Preprocessed data:', preprocessed);
-
-    // Get summary from preprocessed data
-    const summary = preprocessed.summary;
-    console.log('Summary:', summary);
 
     // Generate detailed analysis
     const detailedAnalysis = await formatDetailedAnalysis(preprocessed);
@@ -45,11 +41,9 @@ export async function POST(request: Request) {
     await fs.writeFile(preprocessedPath, JSON.stringify({
       metadata,
       videoType,
-      summary: preprocessed.summary,
       patterns: preprocessed.patterns,
       semantic: preprocessed.semantic,
-      roles: preprocessed.roles,
-      originalPreprocessed: preprocessed // Keep original for reference
+      roles: preprocessed.roles
     }, null, 2));
 
     const response = {
@@ -59,11 +53,8 @@ export async function POST(request: Request) {
         videoType,
         patterns: preprocessed.patterns,
         semantic: preprocessed.semantic,
-        roles: preprocessed.roles,
-        originalPreprocessed: preprocessed,
-        summary
+        roles: preprocessed.roles
       },
-      summary,
       detailedAnalysis
     };
     console.log('Sending response:', response);

@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
     const { videoUrl } = await request.json();
     console.log('Processing URL:', videoUrl);
-
+    
     // Extract video ID from URL (including Shorts)
     let videoId: string | null = null;
     try {
@@ -151,7 +151,7 @@ export async function POST(request: Request) {
         videoMetadata.transcription = transcription;
         
         if (!transcription) {
-          return NextResponse.json({
+        return NextResponse.json({
             error: 'Transcription Failed',
             details: 'Failed to get transcription'
           }, { status: 500 });
@@ -169,14 +169,14 @@ export async function POST(request: Request) {
       console.error('API Error:', error);
       return NextResponse.json({ 
         error: 'API Error',
-        details: error.message 
+        details: error.message
       }, { status: 500 });
     }
   } catch (error: any) {
-    console.error('Conversion error:', error);
+    console.error('General Error:', error);
     return NextResponse.json({ 
       error: 'Failed to process video',
-      details: error.message 
+      details: error.message
     }, { status: 500 });
   }
 }
