@@ -5,6 +5,13 @@
 
 # testing
 /coverage
+/scripts/test_*
+/scripts/test-*
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
 
 # next.js
 /.next/
@@ -23,129 +30,17 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
-.env
-.env.development
-.env.test
-.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
-!.vercel/
-.vercelignore
+.vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# Google Cloud
-google-credentials.json
-*-service-account.json
-*.credentials.json
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# IDE - IntelliJ
-.idea/
-*.iml
-*.iws
-.idea_modules/
-
-# IDE - WebStorm
-.idea/
-*.iml
-*.iws
-.idea_modules/
-
-# Temp files
-*.swp
-*.swo
-*~
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Audio processing temp files
-*.flac
-*.mp3
-*.wav
-*.m4a
-
-# Log files
-*.log
-logs/
-log/
-
-# Cache directories
-.cache/
-.temp/
-.tmp/
-
-# N8N (for future use)
-.n8n/
-n8n-data/
-
-# Build artifacts
-dist/
-build/
-
-# Test coverage
-coverage/
-.nyc_output/
-
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
-
-# Generated files
-/scripts/output/
-/transcriptions/
-*.txt
-available_models.json
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Temporary files
-*.swp
-*.swo
-*~
-
-# Data files
+# data files
 /data/
-/test_data/
-/scripts/output/

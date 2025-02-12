@@ -5,24 +5,64 @@ export interface VideoMetadata {
   videoId: string;
 }
 
+interface VideoSummary {
+  summary: string;
+  analysis: {
+    core_concepts: {
+      key_points: Array<{
+        content: string;
+        importance: number;
+      }>;
+      insights: Array<{
+        content: string;
+        importance: number;
+      }>;
+    };
+    practical_application: {
+      code_examples: Array<{
+        content: string;
+        importance: number;
+        language: string;
+      }>;
+      implementation_steps: Array<{
+        content: string;
+        importance: number;
+        prerequisites: string[];
+      }>;
+    };
+    technical_details: {
+      requirements: Array<{
+        content: string;
+        type: string;
+      }>;
+      considerations: Array<{
+        content: string;
+        category: string;
+      }>;
+      limitations: Array<{
+        content: string;
+        severity: string;
+      }>;
+    };
+  };
+}
+
 export interface VideoData {
   id: string;
   title: string;
   description: string;
+  channelId: string;
   channelTitle: string;
+  tags?: string[];
+  duration?: string;
   thumbnails?: {
     default?: { url: string; width: number; height: number };
     medium?: { url: string; width: number; height: number };
     high?: { url: string; width: number; height: number };
-    standard?: { url: string; width: number; height: number };
-    maxres?: { url: string; width: number; height: number };
   };
-  tags?: string[];
-  transcription?: string | null;
+  transcription?: string;
+  summary?: VideoSummary;
   preprocessed?: any;
-  summary?: string;  // Summary of the video content
-  gptQuickSummary?: string;  // 2-3 sentence overview from GPT
-  detailedAnalysis?: string; // Formatted sections with key points, actions, etc
   metadata?: VideoMetadata;
   patterns?: {
     key_points?: Array<{ content: string }>;

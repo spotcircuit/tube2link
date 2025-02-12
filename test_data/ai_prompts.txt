@@ -1,0 +1,456 @@
+
+================================================================================
+Template: question
+================================================================================
+
+
+You are writing a LinkedIn post about an informative video. The post should be insightful and value-focused.
+
+Video Details:
+Title: 9 Best Ways to Scrape Any Website in n8n
+Channel: Nick Surve
+Description: A comprehensive guide covering nine different methods for web scraping using n8n, from basic http requests to advanced cloud-based solutions. Learn how to scrape both static and dynamic websites, with practical demonstrations and api integrations
+
+Key Insights:
+• But we're run through an api request to rapid api which is make this a lot easier put in all of my information here (Impact: 29%)
+• And then feed in the code here because i didn't feed in this we should now run this grab data from the site (Impact: 29%)
+• And then send it and what we see here is multiple fields that rapid apis or this particular scraper gives us make this easier for to see a text content field with all of the content of the website which is cool what i did earlier but instead of me having to formulate this request try and parse it and try and use ai tokens what i did is i sent the request to rapid api and did it all for me then we also have an html content field i think one more here all the way down to the bottom there is a ton of html (Impact: 28%)
+
+Main Points:
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you 
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it 
+• And then what do is do the message a model have to connect my credential here assuming that you've already connected a credential if not you're have to go to opena website when you do the connection and grab your api key and paste it in some instructions that allow you to do so what do is grab the gpt 40 mini model the i say most cost effective one as of the time of this recording 
+
+Examples & Implementation:
+• So go http request http request node looks this a method field a url field authentication field query parameters headers body some options as well all 
+• So if we go to curl what we need to do is we need to format a request that looks something this 
+
+Additional Context:
+Key Workflow:
+
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you
+  Context: So this video is give the sauce you're learn everything you need to scrape websites that on your own get into it ➔ Okay you're this wonderful smiley person and you access a static website what you're doing is you're sending a request over to some document think about this as a piece of paper on a cupboard and a bunch of text on this piece of paper and is you say hey can i have this piece of paper the piece of paper comes back to you with all of the information inside of the piece of paper
+
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it
+  Context: And so where a lot of people think all websites are at ➔ Okay what happens is this piece of paper then sends a request to some other dude which i guess in this case is a server really who will then he has a trusty pen in his hand and he'll write all of the stuff on said piece of paper
+
+
+Key Comparisons:
+
+• So maybe you wanted to find a keyword and maybe again nicks or location you want do united states that'll probably be better language not select an language 
+
+
+Audience Perspective:
+
+• So give a website that be scraping here my own site called left click about to do a redesign (Behaviors: click)
+
+
+Technical Perspective:
+
+• I scaled my automation agency to 72k a month using no code tools make and n8n and scraping was a big part of that 
+
+Post Structure (QUESTION):
+1. Opening with an intriguing fact
+2. Highlighting key discoveries
+3. Sharing practical applications
+4. Providing context
+5. Ending with takeaways
+
+Writing Style:
+- Voice: professional
+- Connection: 70% personal and relatable
+- Wit: 60% clever and sharp
+- Humor: 40% light and fun
+- Sarcasm: 20% subtle irony
+
+Guidelines:
+1. Keep it concise (1000-1300 characters)
+2. Use line breaks effectively
+3. Include 2-3 relevant hashtags
+4. Maintain the specified tone and personality
+5. Format for maximum engagement
+6. End with the video link
+
+Video Link: https://youtu.be/dQw4w9WgXcQ
+
+
+
+================================================================================
+Template: story
+================================================================================
+
+
+You are writing a LinkedIn post about an informative video. The post should be insightful and value-focused.
+
+Video Details:
+Title: 9 Best Ways to Scrape Any Website in n8n
+Channel: Nick Surve
+Description: A comprehensive guide covering nine different methods for web scraping using n8n, from basic http requests to advanced cloud-based solutions. Learn how to scrape both static and dynamic websites, with practical demonstrations and api integrations
+
+Key Insights:
+• But we're run through an api request to rapid api which is make this a lot easier put in all of my information here (Impact: 29%)
+• And then feed in the code here because i didn't feed in this we should now run this grab data from the site (Impact: 29%)
+• And then send it and what we see here is multiple fields that rapid apis or this particular scraper gives us make this easier for to see a text content field with all of the content of the website which is cool what i did earlier but instead of me having to formulate this request try and parse it and try and use ai tokens what i did is i sent the request to rapid api and did it all for me then we also have an html content field i think one more here all the way down to the bottom there is a ton of html (Impact: 28%)
+
+Main Points:
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you 
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it 
+• And then what do is do the message a model have to connect my credential here assuming that you've already connected a credential if not you're have to go to opena website when you do the connection and grab your api key and paste it in some instructions that allow you to do so what do is grab the gpt 40 mini model the i say most cost effective one as of the time of this recording 
+
+Examples & Implementation:
+• So go http request http request node looks this a method field a url field authentication field query parameters headers body some options as well all 
+• So if we go to curl what we need to do is we need to format a request that looks something this 
+
+Additional Context:
+Key Workflow:
+
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you
+  Context: So this video is give the sauce you're learn everything you need to scrape websites that on your own get into it ➔ Okay you're this wonderful smiley person and you access a static website what you're doing is you're sending a request over to some document think about this as a piece of paper on a cupboard and a bunch of text on this piece of paper and is you say hey can i have this piece of paper the piece of paper comes back to you with all of the information inside of the piece of paper
+
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it
+  Context: And so where a lot of people think all websites are at ➔ Okay what happens is this piece of paper then sends a request to some other dude which i guess in this case is a server really who will then he has a trusty pen in his hand and he'll write all of the stuff on said piece of paper
+
+
+Key Comparisons:
+
+• So maybe you wanted to find a keyword and maybe again nicks or location you want do united states that'll probably be better language not select an language 
+
+
+Audience Perspective:
+
+• So give a website that be scraping here my own site called left click about to do a redesign (Behaviors: click)
+
+
+Technical Perspective:
+
+• I scaled my automation agency to 72k a month using no code tools make and n8n and scraping was a big part of that 
+
+Post Structure (STORY):
+1. Opening with an intriguing fact
+2. Highlighting key discoveries
+3. Sharing practical applications
+4. Providing context
+5. Ending with takeaways
+
+Writing Style:
+- Voice: professional
+- Connection: 70% personal and relatable
+- Wit: 60% clever and sharp
+- Humor: 40% light and fun
+- Sarcasm: 20% subtle irony
+
+Guidelines:
+1. Keep it concise (1000-1300 characters)
+2. Use line breaks effectively
+3. Include 2-3 relevant hashtags
+4. Maintain the specified tone and personality
+5. Format for maximum engagement
+6. End with the video link
+
+Video Link: https://youtu.be/dQw4w9WgXcQ
+
+
+
+================================================================================
+Template: action
+================================================================================
+
+
+You are writing a LinkedIn post about an informative video. The post should be insightful and value-focused.
+
+Video Details:
+Title: 9 Best Ways to Scrape Any Website in n8n
+Channel: Nick Surve
+Description: A comprehensive guide covering nine different methods for web scraping using n8n, from basic http requests to advanced cloud-based solutions. Learn how to scrape both static and dynamic websites, with practical demonstrations and api integrations
+
+Key Insights:
+• But we're run through an api request to rapid api which is make this a lot easier put in all of my information here (Impact: 29%)
+• And then feed in the code here because i didn't feed in this we should now run this grab data from the site (Impact: 29%)
+• And then send it and what we see here is multiple fields that rapid apis or this particular scraper gives us make this easier for to see a text content field with all of the content of the website which is cool what i did earlier but instead of me having to formulate this request try and parse it and try and use ai tokens what i did is i sent the request to rapid api and did it all for me then we also have an html content field i think one more here all the way down to the bottom there is a ton of html (Impact: 28%)
+
+Main Points:
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you 
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it 
+• And then what do is do the message a model have to connect my credential here assuming that you've already connected a credential if not you're have to go to opena website when you do the connection and grab your api key and paste it in some instructions that allow you to do so what do is grab the gpt 40 mini model the i say most cost effective one as of the time of this recording 
+
+Examples & Implementation:
+• So go http request http request node looks this a method field a url field authentication field query parameters headers body some options as well all 
+• So if we go to curl what we need to do is we need to format a request that looks something this 
+
+Additional Context:
+Key Workflow:
+
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you
+  Context: So this video is give the sauce you're learn everything you need to scrape websites that on your own get into it ➔ Okay you're this wonderful smiley person and you access a static website what you're doing is you're sending a request over to some document think about this as a piece of paper on a cupboard and a bunch of text on this piece of paper and is you say hey can i have this piece of paper the piece of paper comes back to you with all of the information inside of the piece of paper
+
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it
+  Context: And so where a lot of people think all websites are at ➔ Okay what happens is this piece of paper then sends a request to some other dude which i guess in this case is a server really who will then he has a trusty pen in his hand and he'll write all of the stuff on said piece of paper
+
+
+Key Comparisons:
+
+• So maybe you wanted to find a keyword and maybe again nicks or location you want do united states that'll probably be better language not select an language 
+
+
+Audience Perspective:
+
+• So give a website that be scraping here my own site called left click about to do a redesign (Behaviors: click)
+
+
+Technical Perspective:
+
+• I scaled my automation agency to 72k a month using no code tools make and n8n and scraping was a big part of that 
+
+Post Structure (ACTION):
+1. Opening with an intriguing fact
+2. Highlighting key discoveries
+3. Sharing practical applications
+4. Providing context
+5. Ending with takeaways
+
+Writing Style:
+- Voice: professional
+- Connection: 70% personal and relatable
+- Wit: 60% clever and sharp
+- Humor: 40% light and fun
+- Sarcasm: 20% subtle irony
+
+Guidelines:
+1. Keep it concise (1000-1300 characters)
+2. Use line breaks effectively
+3. Include 2-3 relevant hashtags
+4. Maintain the specified tone and personality
+5. Format for maximum engagement
+6. End with the video link
+
+Video Link: https://youtu.be/dQw4w9WgXcQ
+
+
+
+================================================================================
+Template: insight
+================================================================================
+
+
+You are writing a LinkedIn post about an informative video. The post should be insightful and value-focused.
+
+Video Details:
+Title: 9 Best Ways to Scrape Any Website in n8n
+Channel: Nick Surve
+Description: A comprehensive guide covering nine different methods for web scraping using n8n, from basic http requests to advanced cloud-based solutions. Learn how to scrape both static and dynamic websites, with practical demonstrations and api integrations
+
+Key Insights:
+• But we're run through an api request to rapid api which is make this a lot easier put in all of my information here (Impact: 29%)
+• And then feed in the code here because i didn't feed in this we should now run this grab data from the site (Impact: 29%)
+• And then send it and what we see here is multiple fields that rapid apis or this particular scraper gives us make this easier for to see a text content field with all of the content of the website which is cool what i did earlier but instead of me having to formulate this request try and parse it and try and use ai tokens what i did is i sent the request to rapid api and did it all for me then we also have an html content field i think one more here all the way down to the bottom there is a ton of html (Impact: 28%)
+
+Main Points:
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you 
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it 
+• And then what do is do the message a model have to connect my credential here assuming that you've already connected a credential if not you're have to go to opena website when you do the connection and grab your api key and paste it in some instructions that allow you to do so what do is grab the gpt 40 mini model the i say most cost effective one as of the time of this recording 
+
+Examples & Implementation:
+• So go http request http request node looks this a method field a url field authentication field query parameters headers body some options as well all 
+• So if we go to curl what we need to do is we need to format a request that looks something this 
+
+Additional Context:
+Key Workflow:
+
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you
+  Context: So this video is give the sauce you're learn everything you need to scrape websites that on your own get into it ➔ Okay you're this wonderful smiley person and you access a static website what you're doing is you're sending a request over to some document think about this as a piece of paper on a cupboard and a bunch of text on this piece of paper and is you say hey can i have this piece of paper the piece of paper comes back to you with all of the information inside of the piece of paper
+
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it
+  Context: And so where a lot of people think all websites are at ➔ Okay what happens is this piece of paper then sends a request to some other dude which i guess in this case is a server really who will then he has a trusty pen in his hand and he'll write all of the stuff on said piece of paper
+
+
+Key Comparisons:
+
+• So maybe you wanted to find a keyword and maybe again nicks or location you want do united states that'll probably be better language not select an language 
+
+
+Audience Perspective:
+
+• So give a website that be scraping here my own site called left click about to do a redesign (Behaviors: click)
+
+
+Technical Perspective:
+
+• I scaled my automation agency to 72k a month using no code tools make and n8n and scraping was a big part of that 
+
+Post Structure (INSIGHT):
+1. Opening with an intriguing fact
+2. Highlighting key discoveries
+3. Sharing practical applications
+4. Providing context
+5. Ending with takeaways
+
+Writing Style:
+- Voice: professional
+- Connection: 70% personal and relatable
+- Wit: 60% clever and sharp
+- Humor: 40% light and fun
+- Sarcasm: 20% subtle irony
+
+Guidelines:
+1. Keep it concise (1000-1300 characters)
+2. Use line breaks effectively
+3. Include 2-3 relevant hashtags
+4. Maintain the specified tone and personality
+5. Format for maximum engagement
+6. End with the video link
+
+Video Link: https://youtu.be/dQw4w9WgXcQ
+
+
+
+================================================================================
+Template: problem_solution
+================================================================================
+
+
+You are writing a LinkedIn post about an informative video. The post should be insightful and value-focused.
+
+Video Details:
+Title: 9 Best Ways to Scrape Any Website in n8n
+Channel: Nick Surve
+Description: A comprehensive guide covering nine different methods for web scraping using n8n, from basic http requests to advanced cloud-based solutions. Learn how to scrape both static and dynamic websites, with practical demonstrations and api integrations
+
+Key Insights:
+• But we're run through an api request to rapid api which is make this a lot easier put in all of my information here (Impact: 29%)
+• And then feed in the code here because i didn't feed in this we should now run this grab data from the site (Impact: 29%)
+• And then send it and what we see here is multiple fields that rapid apis or this particular scraper gives us make this easier for to see a text content field with all of the content of the website which is cool what i did earlier but instead of me having to formulate this request try and parse it and try and use ai tokens what i did is i sent the request to rapid api and did it all for me then we also have an html content field i think one more here all the way down to the bottom there is a ton of html (Impact: 28%)
+
+Main Points:
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you 
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it 
+• And then what do is do the message a model have to connect my credential here assuming that you've already connected a credential if not you're have to go to opena website when you do the connection and grab your api key and paste it in some instructions that allow you to do so what do is grab the gpt 40 mini model the i say most cost effective one as of the time of this recording 
+
+Examples & Implementation:
+• So go http request http request node looks this a method field a url field authentication field query parameters headers body some options as well all 
+• So if we go to curl what we need to do is we need to format a request that looks something this 
+
+Additional Context:
+Key Workflow:
+
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you
+  Context: So this video is give the sauce you're learn everything you need to scrape websites that on your own get into it ➔ Okay you're this wonderful smiley person and you access a static website what you're doing is you're sending a request over to some document think about this as a piece of paper on a cupboard and a bunch of text on this piece of paper and is you say hey can i have this piece of paper the piece of paper comes back to you with all of the information inside of the piece of paper
+
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it
+  Context: And so where a lot of people think all websites are at ➔ Okay what happens is this piece of paper then sends a request to some other dude which i guess in this case is a server really who will then he has a trusty pen in his hand and he'll write all of the stuff on said piece of paper
+
+
+Key Comparisons:
+
+• So maybe you wanted to find a keyword and maybe again nicks or location you want do united states that'll probably be better language not select an language 
+
+
+Audience Perspective:
+
+• So give a website that be scraping here my own site called left click about to do a redesign (Behaviors: click)
+
+
+Technical Perspective:
+
+• I scaled my automation agency to 72k a month using no code tools make and n8n and scraping was a big part of that 
+
+Post Structure (PROBLEM_SOLUTION):
+1. Opening with an intriguing fact
+2. Highlighting key discoveries
+3. Sharing practical applications
+4. Providing context
+5. Ending with takeaways
+
+Writing Style:
+- Voice: professional
+- Connection: 70% personal and relatable
+- Wit: 60% clever and sharp
+- Humor: 40% light and fun
+- Sarcasm: 20% subtle irony
+
+Guidelines:
+1. Keep it concise (1000-1300 characters)
+2. Use line breaks effectively
+3. Include 2-3 relevant hashtags
+4. Maintain the specified tone and personality
+5. Format for maximum engagement
+6. End with the video link
+
+Video Link: https://youtu.be/dQw4w9WgXcQ
+
+
+
+================================================================================
+Template: comparison
+================================================================================
+
+
+You are writing a LinkedIn post about an informative video. The post should be insightful and value-focused.
+
+Video Details:
+Title: 9 Best Ways to Scrape Any Website in n8n
+Channel: Nick Surve
+Description: A comprehensive guide covering nine different methods for web scraping using n8n, from basic http requests to advanced cloud-based solutions. Learn how to scrape both static and dynamic websites, with practical demonstrations and api integrations
+
+Key Insights:
+• But we're run through an api request to rapid api which is make this a lot easier put in all of my information here (Impact: 29%)
+• And then feed in the code here because i didn't feed in this we should now run this grab data from the site (Impact: 29%)
+• And then send it and what we see here is multiple fields that rapid apis or this particular scraper gives us make this easier for to see a text content field with all of the content of the website which is cool what i did earlier but instead of me having to formulate this request try and parse it and try and use ai tokens what i did is i sent the request to rapid api and did it all for me then we also have an html content field i think one more here all the way down to the bottom there is a ton of html (Impact: 28%)
+
+Main Points:
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you 
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it 
+• And then what do is do the message a model have to connect my credential here assuming that you've already connected a credential if not you're have to go to opena website when you do the connection and grab your api key and paste it in some instructions that allow you to do so what do is grab the gpt 40 mini model the i say most cost effective one as of the time of this recording 
+
+Examples & Implementation:
+• So go http request http request node looks this a method field a url field authentication field query parameters headers body some options as well all 
+• So if we go to curl what we need to do is we need to format a request that looks something this 
+
+Additional Context:
+Key Workflow:
+
+• All jump into n8n in a minute and build these alongside you and one other thing do is sign up to all the services in front of you walk you through the authentication and the onboarding flows and get your api keys and stuff that but before i do explain very quickly the difference between a static site a dynamic site because if you don't know this scraping gets a lot harder and so cover this in 30 seconds and we can move on so if you
+  Context: So this video is give the sauce you're learn everything you need to scrape websites that on your own get into it ➔ Okay you're this wonderful smiley person and you access a static website what you're doing is you're sending a request over to some document think about this as a piece of paper on a cupboard and a bunch of text on this piece of paper and is you say hey can i have this piece of paper the piece of paper comes back to you with all of the information inside of the piece of paper
+
+• And then they confuse it with this next step which is dynamic a dynamic site essentially is not that at all what you're doing is you're sending a request to a piece of paper but the piece of paper has nothing on it
+  Context: And so where a lot of people think all websites are at ➔ Okay what happens is this piece of paper then sends a request to some other dude which i guess in this case is a server really who will then he has a trusty pen in his hand and he'll write all of the stuff on said piece of paper
+
+
+Key Comparisons:
+
+• So maybe you wanted to find a keyword and maybe again nicks or location you want do united states that'll probably be better language not select an language 
+
+
+Audience Perspective:
+
+• So give a website that be scraping here my own site called left click about to do a redesign (Behaviors: click)
+
+
+Technical Perspective:
+
+• I scaled my automation agency to 72k a month using no code tools make and n8n and scraping was a big part of that 
+
+Post Structure (COMPARISON):
+1. Opening with an intriguing fact
+2. Highlighting key discoveries
+3. Sharing practical applications
+4. Providing context
+5. Ending with takeaways
+
+Writing Style:
+- Voice: professional
+- Connection: 70% personal and relatable
+- Wit: 60% clever and sharp
+- Humor: 40% light and fun
+- Sarcasm: 20% subtle irony
+
+Guidelines:
+1. Keep it concise (1000-1300 characters)
+2. Use line breaks effectively
+3. Include 2-3 relevant hashtags
+4. Maintain the specified tone and personality
+5. Format for maximum engagement
+6. End with the video link
+
+Video Link: https://youtu.be/dQw4w9WgXcQ
+
+

@@ -5,7 +5,6 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 export interface PreprocessedData {
-  summary: string;
   patterns: {
     key_points: Array<{content: string; context_before?: string; context_after?: string}>;
     examples: Array<{content: string; context_before?: string; context_after?: string}>;
@@ -24,36 +23,11 @@ export interface PreprocessedData {
 }
 
 export async function preprocessTranscript(transcript: string, onStatus: (step: string) => void): Promise<PreprocessedData> {
-  const openai = getOpenAIClient();
-
   // Preprocess the transcript using the Python script
   const preprocessed = await preprocessData(transcript, onStatus);
 
-  // Generate summary using GPT-3.5
-  const summary = (await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: `You are analyzing video content. Create a 2-3 sentence summary that captures:
-1. The main topic/purpose
-2. The key insight or technique
-3. The target audience and their benefit
-
-Keep it concise and focused. Avoid marketing language.`
-      },
-      {
-        role: "user",
-        content: transcript
-      }
-    ],
-    temperature: 0.7,
-    max_tokens: 200
-  })).choices[0].message.content || '';
-
-  // Initialize preprocessed data structure with both Python and GPT analysis
+  // Initialize preprocessed data structure
   const preprocessedData: PreprocessedData = {
-    summary,
     patterns: {
       key_points: preprocessed.patterns.key_points || [],
       examples: preprocessed.patterns.examples || [],

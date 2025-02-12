@@ -3,11 +3,13 @@ import { z } from 'zod';
 import OpenAI from 'openai';
 import { VideoData } from '@/types/video';
 import { PostSettings } from '@/types/post';
-import { VideoContext } from '@/lib/video_context';
-import { getOpenAIClient } from './openai';
 import { PreprocessedData } from './preprocessor';
 import { getConfig } from './config';
 import { getVideoType, VIDEO_CONTEXTS } from './video_context';
+import { detectVideoType } from './video_detection';
+import { generatePrompt } from './video_prompts';
+import { validateEnrichment, repairEnrichment } from './video_validation';
+import { VideoType } from './video_types';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 
@@ -92,58 +94,83 @@ function getToneLabel(tone: number): string {
   return 'Formal';
 }
 
+function getPostLengthParams(length: 'brief' | 'standard' | 'detailed'): { charRange: string, maxPoints: number } {
+  switch (length) {
+    case 'brief':
+      return { charRange: '700-1000', maxPoints: 2 };
+    case 'standard':
+      return { charRange: '1300-1700', maxPoints: 3 };
+    case 'detailed':
+      return { charRange: '1700-2000', maxPoints: 5 };
+  }
+}
+
 export async function generatePrompt(data: VideoData, template: keyof typeof POST_TEMPLATES, settings: PostSettings): Promise<string> {
   const videoType = await getVideoType(data);
   const videoContext = VIDEO_CONTEXTS[videoType];
   const selectedTemplate = POST_TEMPLATES[template];
+  const lengthParams = getPostLengthParams(settings.length);
 
   // Ensure all data properties exist with defaults
   const {
-    metadata = {
-      title: 'No title available',
-      channelTitle: 'No channel available',
-      description: 'No description available',
-      videoId: ''
-    },
-    gptQuickSummary = 'No summary available',
-    patterns = {},
-    semantic = {},
-    roles = {}
+    title = 'No title available',
+    channelTitle = 'No channel available',
+    description = 'No description available',
+    summary = {
+      summary: 'No summary available',
+      analysis: {
+        core_concepts: {
+          key_points: [],
+          insights: []
+        },
+        practical_application: {
+          code_examples: [],
+          implementation_steps: []
+        },
+        technical_details: {
+          considerations: [],
+          limitations: []
+        }
+      }
+    }
   } = data;
 
-  const topActions = semantic?.actions
+  const topActions = summary.analysis?.core_concepts?.key_points
     ?.sort((a, b) => b.importance - a.importance)
-    .slice(0, 3)
+    .slice(0, lengthParams.maxPoints)
     .map(a => `• ${a.content}`)
     .join('\n') || 'No key actions available';
 
-  const topKeyPoints = patterns?.key_points
-    ?.slice(0, 3)
+  const topKeyPoints = summary.analysis?.core_concepts?.insights
+    ?.slice(0, lengthParams.maxPoints)
     .map(p => `• ${p.content}`)
     .join('\n') || 'No key points available';
 
-  const examples = patterns?.examples
-    ?.map(e => `• ${e.content}`)
+  const examples = summary.analysis?.practical_application?.code_examples
+    ?.slice(0, lengthParams.maxPoints)
+    .map(e => `• ${e.content}`)
     .join('\n') || 'No examples available';
 
-  const technicalDetails = roles?.developer
-    ?.map(d => `• ${d.content}`)
+  const technicalDetails = summary.analysis?.technical_details?.considerations
+    ?.slice(0, lengthParams.maxPoints)
+    .map(d => `• ${d.content}`)
     .join('\n') || 'No technical details available';
 
-  const userContext = roles?.user
-    ?.map(u => `• ${u.content}`)
+  const userContext = summary.analysis?.practical_application?.implementation_steps
+    ?.slice(0, lengthParams.maxPoints)
+    .map(u => `• ${u.content}`)
     .join('\n') || 'No user context available';
 
   const prompt = `${videoContext.intro}
 
-Create a LinkedIn post using the "${selectedTemplate.name}" format:
+Create a ${settings.length.toUpperCase()} LinkedIn post using the "${selectedTemplate.name}" format:
 
-Title: ${metadata.title}
-Channel: ${metadata.channelTitle}
-Description: ${metadata.description}
+Title: ${title}
+Channel: ${channelTitle}
+Description: ${description}
 
 Summary:
-${gptQuickSummary}
+${summary.summary}
 
 Key Actions (Most Important):
 ${topActions}
@@ -174,21 +201,66 @@ Content Focus (${videoType}):
 ${videoContext.format.join('\n')}
 
 Additional Guidelines:
-1. Keep it concise (1000-1300 characters)
+1. Keep it within ${lengthParams.charRange} characters (${settings.length} format)
 2. Use line breaks effectively
-3. Include 2-3 relevant hashtags
+3. Include ${settings.length === 'brief' ? '2-3' : '3-5'} relevant hashtags
 4. Maintain the specified tone and personality
 5. Format for maximum engagement
-6. End with the video link${metadata.videoId ? `\n\nVideo Link: https://youtu.be/${metadata.videoId}` : ''}`; 
+6. End with the video link${data.metadata?.videoId ? `\n\nVideo Link: https://youtu.be/${data.metadata.videoId}` : ''}`; 
 
   // Save the prompt to file
   const dataDir = path.join(process.cwd(), 'data');
   await fs.mkdir(dataDir, { recursive: true });
   const promptPath = path.join(dataDir, `${data.metadata?.videoId || 'unknown'}_base_prompt.txt`);
   await fs.writeFile(promptPath, prompt, 'utf-8');
-  console.log(` Base prompt saved to: ${promptPath}`);
 
   return prompt;
+}
+
+// Format plain text content into HTML with proper styling
+function formatContentToHtml(content: string): string {
+  if (!content) return '';
+  
+  // Normalize line endings and clean up extra spaces
+  content = content.replace(/\r\n/g, '\n')
+                  .replace(/\n{3,}/g, '\n\n')
+                  .trim();
+  
+  // Split content into paragraphs
+  const paragraphs = content.split('\n\n').filter(p => p.trim());
+  
+  // Process each paragraph
+  const formattedParagraphs = paragraphs.map(p => {
+    let text = p.trim();
+    
+    // Escape HTML special characters
+    text = text.replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char] || char));
+    
+    // Convert URLs to links (after escaping)
+    text = text.replace(
+      /(https?:\/\/[^\s<>]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600">$1</a>'
+    );
+    
+    // Style hashtags (after escaping)
+    text = text.replace(
+      /#[\w\u0590-\u05ff]+/g,
+      match => `<span class="text-purple-500 font-semibold">${match}</span>`
+    );
+    
+    // Handle single line breaks within paragraphs
+    text = text.replace(/\n/g, '<br />');
+    
+    return `<p class="mb-4">${text}</p>`;
+  });
+  
+  return formattedParagraphs.join('\n');
 }
 
 export async function generateLinkedInPost(
@@ -196,61 +268,186 @@ export async function generateLinkedInPost(
   mode: PostGenerationMode,
   settings: PostSettings
 ): Promise<string> {
-  console.log(' Preparing LinkedIn post prompt...');
+  try {
+    const prompt = await generatePrompt(data, mode, settings);
+    const lengthParams = getPostLengthParams(settings.length);
+    
+    const finalPrompt = `Create an engaging ${settings.length.toUpperCase()} LinkedIn post about this video.
+Focus on providing value while maintaining readability and staying within ${lengthParams.charRange} characters.
 
-  // First get the base prompt (same as generatePrompt)
-  const basePrompt = await generatePrompt(data, mode, settings);
-  
-  // Check if we have enrichment data
-  if (!data.patterns && !data.semantic && !data.roles) {
-    console.log('No pattern/semantic/role data found, using base prompt');
-    return basePrompt;
-  }
-
-  // Add enriched data to prompt
-  const enrichedPrompt = `${basePrompt}
-
-Additional Context:
-${data.patterns?.key_points && data.patterns.key_points.length > 0 ? `
-Key Points:
-${data.patterns.key_points.map(p => `• ${p.content}`).join('\n')}` : ''}
-
-${data.patterns?.examples && data.patterns.examples.length > 0 ? `
-Examples:
-${data.patterns.examples.map(e => `• ${e.content}`).join('\n')}` : ''}
-
-${data.semantic?.actions && data.semantic.actions.length > 0 ? `
-Important Actions:
-${data.semantic.actions
-  .filter(a => a.importance >= 0.7)
-  .map(a => `• ${a.content}`)
-  .join('\n')}` : ''}
-
-${data.roles?.user && data.roles.user.length > 0 ? `
-User Actions:
-${data.roles.user.map(u => `• ${u.content}`).join('\n')}` : ''}
-
-${data.roles?.developer && data.roles.developer.length > 0 ? `
-Technical Notes:
-${data.roles.developer.map(d => `• ${d.content}`).join('\n')}` : ''}
+Use this information:
+${prompt}
 
 Please ensure:
 1. The post is engaging and encourages discussion
-2. Maintain a professional tone
+2. Maintain a professional tone while being accessible
 3. Include a clear call to action
-4. Keep the total length within LinkedIn's optimal range
+4. Keep the total length within ${lengthParams.charRange} characters
 5. Always include the video URL before any hashtags
-6. Place relevant hashtags at the very end`;
+6. Place ${settings.length === 'brief' ? '2-3' : '3-5'} relevant hashtags at the very end
+7. Highlight the most impactful insights and practical applications`;
 
-  // Save the enriched prompt
-  const dataDir = path.join(process.cwd(), 'data');
-  await fs.mkdir(dataDir, { recursive: true });
-  const enrichedPath = path.join(dataDir, `${data.metadata?.videoId || 'unknown'}_enriched_prompt.txt`);
-  await fs.writeFile(enrichedPath, enrichedPrompt, 'utf-8');
-  console.log(` Enriched prompt saved to: ${enrichedPath}`);
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini-2024-07-18",  // Use consistent model
+      messages: [
+        {
+          role: "system",
+          content: "You are a professional content writer specializing in technical content for LinkedIn."
+        },
+        {
+          role: "user",
+          content: finalPrompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: settings.length === 'detailed' ? 2500 : 2000
+    });
 
-  // Return the enriched prompt - don't make an API call
-  return enrichedPrompt;
+    const rawContent = completion.choices[0].message.content || '';
+    return formatContentToHtml(rawContent);
+  } catch (error) {
+    console.error('Error generating LinkedIn post:', error);
+    throw error;
+  }
+}
+
+export async function generateSummary(transcript: string): Promise<{ summary: string, analysis: any }> {
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini-2024-07-18",  // Use consistent model
+      messages: [
+        {
+          role: "system",
+          content: `Analyze this video transcript and provide TWO sections:
+
+1. SUMMARY (2-3 sentences):
+   Provide a concise but informative summary that captures:
+   - The main topic and purpose of the video
+   - The key technique or methodology demonstrated
+   - The practical value for the target audience
+
+2. ANALYSIS (in JSON format):
+   {
+     "core_concepts": {
+       "key_points": [  // ALWAYS provide at least 3 key points
+         { 
+           "content": "Specific, actionable concept that was demonstrated or explained",
+           "importance": "core" | "key" | "supporting"  // Use these exact labels
+         }
+       ],
+       "insights": [  // ALWAYS provide at least 3 insights
+         {
+           "content": "Valuable learning or strategic insight derived from the demonstration",
+           "importance": "critical" | "valuable" | "helpful"  // Use these exact labels
+         }
+       ]
+     },
+     "practical_application": {
+       "code_examples": [  // ALWAYS provide at least 3 code examples when code is discussed
+         {
+           "content": "Complete, runnable code snippet (not just API calls)",
+           "description": "Brief explanation of what this code does",
+           "importance": "primary" | "alternative" | "advanced",  // Use these exact labels
+           "language": "language_name"
+         }
+       ],
+       "implementation_steps": [  // Provide ALL necessary steps for complete implementation
+         {
+           "content": "Detailed, specific step with exact commands or settings",
+           "importance": "required" | "recommended" | "optional",  // Use these exact labels
+           "prerequisites": ["Specific tools/accounts/settings needed for this step"],
+           "estimated_time": "5-10 minutes",  // Add time estimates
+           "order": 1  // Add step order for clarity
+         }
+       ]
+     },
+     "technical_details": {
+       "requirements": [  // ALWAYS provide at least 2 requirements
+         {
+           "content": "Specific tool, library, or resource needed",
+           "type": "dependency|configuration|environment|account",
+           "installation": "Exact installation command or setup step if applicable"
+         }
+       ],
+       "considerations": [  // ALWAYS provide at least 2 considerations
+         {
+           "content": "Specific action or best practice to follow",
+           "category": "performance|security|scalability|maintenance|legal",
+           "recommendation": "Exact steps to implement this consideration"
+         }
+       ],
+       "limitations": [  // ALWAYS provide at least 3 limitations
+         {
+           "content": "Specific limitation or constraint to be aware of",
+           "severity": "critical" | "significant" | "minor",  // Use these exact labels
+           "workaround": "Specific steps to mitigate this limitation if available"
+         }
+       ]
+     }
+   }
+
+Important Guidelines:
+- ALWAYS provide the minimum number of items specified for each section:
+  * At least 3 key points
+  * At least 3 insights
+  * At least 3 code examples (when code is discussed)
+  * ALL necessary implementation steps (no minimum/maximum - be comprehensive)
+  * At least 2 requirements
+  * At least 2 considerations
+  * At least 3 limitations
+- Implementation steps must be exhaustive and cover the entire process
+- Each step must include:
+  * Clear, specific instructions
+  * Required prerequisites
+  * Estimated time
+  * Step order number
+  * Any commands or configurations needed
+- Focus on concrete, actionable information
+- Include specific commands, configurations, and settings
+- Highlight unique approaches and gotchas
+
+Format your response exactly as:
+SUMMARY:
+[Your 2-3 sentence summary here]
+
+ANALYSIS:
+[Your JSON analysis here]`
+        },
+        {
+          role: "user",
+          content: `Analyze this video transcript and provide a detailed summary with key points:\n\n${transcript}`
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 4000
+    });
+
+    const fullResponse = completion.choices[0].message.content || '';
+    
+    // Split response into summary and analysis
+    const summaryMatch = fullResponse.match(/SUMMARY:\n([\s\S]*?)\n\nANALYSIS:/);
+    const analysisMatch = fullResponse.match(/ANALYSIS:\n([\s\S]*)/);
+    
+    const summary = summaryMatch ? summaryMatch[1].trim() : 'No summary available';
+    let analysis = {};
+    
+    try {
+      analysis = analysisMatch ? JSON.parse(analysisMatch[1].trim()) : {};
+    } catch (e) {
+      console.error('Failed to parse analysis JSON:', e);
+      analysis = {
+        core_concepts: {
+          key_points: [],
+          insights: []
+        }
+      };
+    }
+
+    return { summary, analysis };
+  } catch (error) {
+    console.error('Error generating summary:', error);
+    throw error;
+  }
 }
 
 export function enrichPrompt(prompt: string, videoData: VideoData): string {
@@ -264,8 +461,6 @@ export function enrichPrompt(prompt: string, videoData: VideoData): string {
 }
 
 export async function formatDetailedAnalysis(preprocessedData: PreprocessedData): Promise<string> {
-  console.log(' Formatting detailed analysis...');
-
   const formattedAnalysis = `# Detailed Analysis
 
 Key Points:
@@ -287,8 +482,7 @@ ${preprocessedData.roles.developer?.map(d => `- ${d.content}`).join('\n') || 'No
   const dataDir = path.join(process.cwd(), 'data', 'analysis');
   await fs.mkdir(dataDir, { recursive: true });
   const analysisPath = path.join(dataDir, 'detailed_analysis.txt');
-  await fs.writeFile(analysisPath, formattedAnalysis, 'utf-8');
-  console.log(` Detailed analysis saved to: ${analysisPath}`);
+  await fs.writeFile(analysisPath, formattedAnalysis);
 
   return formattedAnalysis;
 }

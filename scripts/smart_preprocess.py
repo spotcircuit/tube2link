@@ -90,6 +90,10 @@ class SmartPreprocessor:
                     })
                     processed.add(sentence)
         
+        # Limit results to top 10 per category
+        for pattern_type in results:
+            results[pattern_type] = results[pattern_type][:10]
+        
         print(f"📊 Stage 1: Extracting patterns and key points... Found {sum(len(v) for v in results.values())} pattern matches", file=sys.stderr)
         return results
     
@@ -122,7 +126,8 @@ class SmartPreprocessor:
                     if any(word in sentences[j].lower() for word in ['solution', 'fix', 'resolve']):
                         results['problems'].append({
                             'problem': sentence,
-                            'solution': sentences[j]
+                            'solution': sentences[j],
+                            'importance': self._calculate_importance(embeddings[i], embeddings)
                         })
                         break
             
@@ -130,8 +135,13 @@ class SmartPreprocessor:
             if any(word in sentence.lower() for word in ['better', 'worse', 'unlike', 'compared']):
                 results['comparisons'].append({
                     'content': sentence,
-                    'context': sentences[i-1] if i > 0 else ""
+                    'context': sentences[i-1] if i > 0 else "",
+                    'importance': self._calculate_importance(embeddings[i], embeddings)
                 })
+        
+        # Sort by importance and limit to top 10
+        for key in results:
+            results[key] = sorted(results[key], key=lambda x: x.get('importance', 0), reverse=True)[:10]
         
         print(f"🧠 Stage 2: Running semantic analysis... Found {len(results['actions'])} actions", file=sys.stderr)
         print(f"🧠 Stage 2: Running semantic analysis... Found {len(results['problems'])} problem-solution pairs", file=sys.stderr)
@@ -145,14 +155,22 @@ class SmartPreprocessor:
         
         results = {role: [] for role in self.role_patterns.keys()}
         
-        for sentence in sentences:
+        # Encode all sentences for similarity comparison
+        embeddings = self.sentence_model.encode(sentences)
+        
+        for i, sentence in enumerate(sentences):
             sentence_lower = sentence.lower()
             for role, patterns in self.role_patterns.items():
                 if any(pattern in sentence_lower for pattern in patterns):
                     results[role].append({
                         'content': sentence,
-                        'matched_patterns': [p for p in patterns if p in sentence_lower]
+                        'matched_patterns': [p for p in patterns if p in sentence_lower],
+                        'importance': self._calculate_importance(embeddings[i], embeddings)
                     })
+        
+        # Sort by importance and limit to top 10 per role
+        for role in results:
+            results[role] = sorted(results[role], key=lambda x: x.get('importance', 0), reverse=True)[:10]
         
         for role, items in results.items():
             if items:
@@ -167,6 +185,12 @@ class SmartPreprocessor:
     def process(self, text: str) -> Dict:
         """Process text through all stages"""
         print("🔄 Building semantic model...", file=sys.stderr)
+        
+        # Limit text length to approximately 6000 tokens (about 24000 characters)
+        MAX_CHARS = 24000
+        if len(text) > MAX_CHARS:
+            print(f"⚠️ Text too long ({len(text)} chars), truncating to {MAX_CHARS} chars...", file=sys.stderr)
+            text = text[:MAX_CHARS]
         
         pattern_results = self.extract_patterns(text)
         semantic_results = self.semantic_analysis(text)

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description: 'Transform your YouTube content into engaging LinkedIn posts automatically with AI-powered content generation.',
   keywords: 'youtube to linkedin, content repurposing, social media automation, video to text, AI content generation',
   authors: [{ name: 'SpotCircuit' }],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   openGraph: {
     title: 'Tube2Link - YouTube to LinkedIn Converter',
     description: 'Transform your YouTube videos into engaging LinkedIn posts',

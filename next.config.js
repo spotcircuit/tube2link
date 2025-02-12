@@ -14,6 +14,14 @@ const nextConfig = {
       },
     ],
   },
+  transpilePackages: ['debug', 'supports-color'],
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      'supports-color': false,
+    };
+    return config;
+  },
 }
 
 module.exports = nextConfig

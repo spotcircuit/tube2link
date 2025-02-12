@@ -5,9 +5,11 @@ import Image from 'next/image';
 import axios from 'axios';
 import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { ProcessingStatus } from './components/ProcessingStatus';
 import { toast } from 'react-hot-toast';
 import { VIDEO_CONTEXTS } from '@/lib/video_context';
-
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { DebugRender } from './components/DebugRender';
 import { VideoData } from '@/types/video';
 import { getConfig } from '@/lib/config';
 import RichTextEditor from '@/components/RichTextEditor';
@@ -624,7 +626,7 @@ export default function Home() {
               Tube2Link
             </h1>
             <p className="text-white text-2xl md:text-3xl font-medium break-words">
-              Transform your YouTube videos into engaging Social Media posts with just a few clicks
+              Transform your YouTube videos into engaging LinkedIn posts with just one click
             </p>
           </div>
         </div>
@@ -759,7 +761,7 @@ export default function Home() {
               <div className="space-y-6">
                 {!showTemplateOptions && !showEditor ? (
                   <div className="bg-black/20 rounded-lg p-6 border border-white/10">
-                    <h4 className="text-lg font-semibold text-white mb-4">Generate Social Media Post</h4>
+                    <h4 className="text-lg font-semibold text-white mb-4">Generate LinkedIn Post</h4>
                     <div className="space-y-4">
                       <button 
                         onClick={handlePreprocess}
@@ -1140,47 +1142,53 @@ export default function Home() {
                                 </div>
                               </div>
 
-{/* Personality Traits */}
-<div className="space-y-6">
-  <h5 className="text-white font-medium">Personality Traits</h5>
-  <div className="grid sm:grid-cols-2 gap-6">
-    {[
-      { key: 'charm', label: '✨ Charm', description: 'Warmth and appeal' },
-      { key: 'wit', label: '💭 Wit', description: 'Clever observations' },
-      { key: 'humor', label: '😊 Humor', description: 'Fun and light' },
-      { key: 'sarcasm', label: '😏 Sarcasm', description: 'Ironic edge' }
-    ].map((trait) => (
-      <div key={trait.key} className="space-y-2">
-        <div className="flex justify-between text-white">
-          <div>
-            <div className="font-medium">{trait.label}</div>
-            <p className="text-sm text-gray-400">{trait.description}</p>
-            <p className="text-xs text-blue-400">
-              {getToneHint(postSettings.tone).suggestions[trait.key]}
-            </p>
-          </div>
-          <span className="text-xs text-purple-400">
-            {postSettings.personality[trait.key as keyof typeof postSettings.personality]}%
-          </span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={postSettings.personality[trait.key as keyof typeof postSettings.personality]}
-          onChange={(e) => setPostSettings(prev => ({
-            ...prev,
-            personality: {
-              ...prev.personality,
-              [trait.key]: parseInt(e.target.value)
-            }
-          }))}
-          className="w-full"
-        />
-      </div>
-    ))}
-  </div>
-</div>
+                              {/* Personality Traits */}
+                              <div className="space-y-6">
+                                <h5 className="text-white font-medium">Personality Traits</h5>
+                                <div className="grid sm:grid-cols-2 gap-6">
+                                  {[
+                                    { key: 'charm', label: '✨ Charm', description: 'Warmth and appeal' },
+                                    { key: 'wit', label: '💭 Wit', description: 'Clever observations' },
+                                    { key: 'humor', label: '😊 Humor', description: 'Fun and light' },
+                                    { key: 'sarcasm', label: '😏 Sarcasm', description: 'Ironic edge' }
+                                  ].map((trait) => (
+                                    <div key={trait.key} className="space-y-2">
+                                      <div className="flex justify-between text-white">
+                                        <div>
+                                          <label>{trait.label}</label>
+                                          <p className="text-sm text-gray-400">{trait.description}</p>
+                                          <p className="text-xs text-blue-400">
+                                            <DebugRender 
+                                              value={getToneHint(postSettings.tone).suggestions[trait.key]} 
+                                              name={`tone-hint-${trait.key}`}
+                                            />
+                                          </p>
+                                        </div>
+                                        <span>
+                                          <DebugRender 
+                                            value={postSettings.personality[trait.key as keyof typeof postSettings.personality]} 
+                                            name={`personality-${trait.key}`}
+                                          />%
+                                        </span>
+                                      </div>
+                                      <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={postSettings.personality[trait.key as keyof typeof postSettings.personality]}
+                                        onChange={(e) => setPostSettings(prev => ({
+                                          ...prev,
+                                          personality: {
+                                            ...prev.personality,
+                                            [trait.key]: parseInt(e.target.value)
+                                          }
+                                        }))}
+                                        className="w-full"
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         )}
@@ -1249,7 +1257,7 @@ export default function Home() {
                                 </>
                               ) : (
                                 <>
-                                  <span>Generate Social Media Post</span>
+                                  <span>Generate LinkedIn Post</span>
                                 </>
                               )}
                             </button>
