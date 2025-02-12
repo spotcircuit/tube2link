@@ -1,18 +1,14 @@
 import axios from 'axios';
-import { OAuth2Client } from 'google-auth-library';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { preprocessTranscript, PreprocessedData } from './preprocessor';
+import { google } from 'googleapis';
+import { getConfig } from './config';
 
-const oauth2Client = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
-
-const execAsync = promisify(exec);
+const config = getConfig();
+const youtube = google.youtube('v3');
 
 interface TranscriptionData {
   transcription: string;
@@ -45,7 +41,7 @@ async function writeTranscriptionToFile(
 export async function transcribeYouTubeVideo(videoId: string): Promise<TranscriptionData | null> {
   try {
     // Get video details from YouTube API
-    const apiKey = process.env.NEXT_PUBLIC_YT_API_KEY;
+    const apiKey = config.youtubeApiKey;
     if (!apiKey) {
       throw new Error('YouTube API key is missing');
     }
@@ -61,7 +57,7 @@ export async function transcribeYouTubeVideo(videoId: string): Promise<Transcrip
 
     const title = videoResponse.data.items[0].snippet.title;
 
-    // Try to get transcript using youtube-transcript-api
+    // Try to get transcript using youtube API
     const transcript = await getTranscriptFast(videoId);
     if (!transcript) {
       console.log('Could not get transcript for video:', videoId);
@@ -91,24 +87,58 @@ export async function transcribeYouTubeVideo(videoId: string): Promise<Transcrip
 
 export async function getTranscriptFast(videoId: string): Promise<string | null> {
   try {
-    // Use the youtube-transcript-api module directly
-    const { YoutubeTranscript } = require('youtube-transcript');
-    const transcriptItems = await YoutubeTranscript.fetchTranscript(videoId);
-    
-    if (!transcriptItems || transcriptItems.length === 0) {
-      console.error('No transcript available for video:', videoId);
-      return null;
+    const response = await youtube.captions.list({
+      auth: config.youtubeApiKey,
+      part: ['snippet'],
+      videoId: videoId
+    });
+
+    if (!response.data.items || response.data.items.length === 0) {
+      throw new Error('No captions found for this video');
     }
 
-    // Combine all text parts into one string
-    const fullTranscript = transcriptItems
-      .map((item: { text: string }) => item.text)
-      .join(' ');
+    // Find English captions, preferring manual over auto-generated
+    const captions = response.data.items;
+    let captionId = '';
 
-    return fullTranscript;
-  } catch (error) {
+    // First try to find manual English captions
+    const manualEnglish = captions.find(
+      caption => caption.snippet?.language === 'en' && !caption.snippet?.trackKind?.includes('ASR')
+    );
+
+    if (manualEnglish) {
+      captionId = manualEnglish.id || '';
+    } else {
+      // Fall back to auto-generated English captions
+      const autoEnglish = captions.find(
+        caption => caption.snippet?.language === 'en'
+      );
+      if (autoEnglish) {
+        captionId = autoEnglish.id || '';
+      }
+    }
+
+    if (!captionId) {
+      throw new Error('No English captions found');
+    }
+
+    // Download the actual transcript
+    const transcript = await youtube.captions.download({
+      auth: config.youtubeApiKey,
+      id: captionId
+    });
+
+    if (!transcript.data) {
+      throw new Error('Failed to download transcript');
+    }
+
+    // Convert the transcript data to text
+    const text = transcript.data.toString();
+    return text;
+
+  } catch (error: any) {
     console.error('Error getting transcript:', error);
-    return null;
+    throw new Error(`Failed to get transcript: ${error.message}`);
   }
 }
 
@@ -122,5 +152,3 @@ export async function generateLinkedInPost(transcription: string, title: string,
   // Return a dummy LinkedIn post for now
   return `LinkedIn post for ${title}:\n${transcription}`;
 }
-
-export { oauth2Client };

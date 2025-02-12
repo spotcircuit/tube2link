@@ -1,16 +1,13 @@
 import { google } from 'googleapis';
 import { getConfig } from './config';
-import { oauth2Client } from './auth';
 
 const config = getConfig();
 const youtube = google.youtube('v3');
 
 export async function getVideoInfo(videoId: string) {
-  const auth = config.authMode === 'oauth' ? oauth2Client : config.youtubeApiKey;
-
   try {
     const response = await youtube.videos.list({
-      auth,
+      auth: config.youtubeApiKey,
       part: ['snippet', 'contentDetails', 'statistics'],
       id: [videoId]
     });
@@ -23,17 +20,27 @@ export async function getVideoInfo(videoId: string) {
 }
 
 export async function getVideoTranscript(videoId: string) {
-  const auth = config.authMode === 'oauth' ? oauth2Client : config.youtubeApiKey;
-
   try {
     const response = await youtube.captions.list({
-      auth,
+      auth: config.youtubeApiKey,
       part: ['snippet'],
       videoId
     });
 
-    // Process captions...
-    return response.data.items;
+    if (!response.data.items || response.data.items.length === 0) {
+      return null;
+    }
+
+    // Find English captions
+    const englishCaption = response.data.items.find(
+      item => item.snippet?.language === 'en'
+    );
+
+    if (!englishCaption) {
+      return null;
+    }
+
+    return englishCaption;
   } catch (error) {
     console.error('Error fetching video transcript:', error);
     throw error;

@@ -1,65 +1,12 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
-import { oauth2Client, getTranscriptFast } from '@/lib/transcription';
+import { getVideoInfo } from '@/lib/youtube';
+import { getTranscriptFast } from '@/lib/transcription';
 import { getConfig } from '@/lib/config';
-import { cookies } from 'next/headers';
-import { URL } from 'url';
 
-interface VideoMetadata {
-  id: string;
-  title: string;
-  description: string;
-  channelTitle: string;
-  thumbnails: {
-    default?: { url: string; width: number; height: number };
-    medium?: { url: string; width: number; height: number };
-    high?: { url: string; width: number; height: number };
-    standard?: { url: string; width: number; height: number };
-    maxres?: { url: string; width: number; height: number };
-  };
-  tags?: string[];
-  transcription?: string | null;
-}
+const config = getConfig();
 
 export async function POST(request: Request) {
   try {
-    const config = getConfig();
-    const cookieStore = await cookies();
-
-    // Get stored tokens
-    console.log('Checking for stored tokens...');
-    const storedTokens = await cookieStore.get('oauth_tokens');
-    console.log('Stored tokens:', storedTokens ? 'present' : 'missing');
-
-    if (!storedTokens?.value) {
-      console.log('No tokens found, redirecting to OAuth...');
-      // Redirect to OAuth flow
-      const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: [
-          'https://www.googleapis.com/auth/youtube.force-ssl',
-          'https://www.googleapis.com/auth/youtube.readonly',
-          'https://www.googleapis.com/auth/youtube.download'
-        ],
-        include_granted_scopes: true
-      });
-
-      return NextResponse.json({ 
-        needsAuth: true,
-        authUrl 
-      }, { status: 401 });
-    }
-
-    // Parse and set tokens
-    console.log('Setting tokens in OAuth client...');
-    const tokens = JSON.parse(storedTokens.value);
-    console.log('Token info:', {
-      access_token: tokens.access_token ? 'present' : 'missing',
-      refresh_token: tokens.refresh_token ? 'present' : 'missing',
-      expiry_date: tokens.expiry_date
-    });
-    oauth2Client.setCredentials(tokens);
-
     const { videoUrl } = await request.json();
     console.log('Processing URL:', videoUrl);
     
@@ -98,85 +45,43 @@ export async function POST(request: Request) {
 
     console.log('Extracted video ID:', videoId);
 
-    // Get video details from YouTube API
-    const apiKey = process.env.NEXT_PUBLIC_YT_API_KEY;
-    console.log('YouTube API Key check:', {
-      hasKey: !!apiKey,
-      keyLength: apiKey?.length,
-      key: apiKey?.substring(0, 5) + '...'
-    });
-
-    if (!apiKey) {
-      return NextResponse.json({
-        error: 'Configuration Error',
-        details: 'YouTube API key is missing. Please check your environment variables.'
-      }, { status: 500 });
-    }
-
     try {
-      const response = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${apiKey}`);
-      console.log('YouTube API response:', response.data);
-
-      if (!response.data.items?.length) {
-        return NextResponse.json({ 
-          error: 'Video not found',
-          details: `No video found with ID: ${videoId}`
-        }, { status: 404 });
+      // Get video info first
+      const videoInfo = await getVideoInfo(videoId);
+      if (!videoInfo) {
+        return NextResponse.json(
+          { error: 'Video not found' },
+          { status: 404 }
+        );
       }
-
-      const videoDetails = response.data.items[0];
-      
-      // Log description content
-      console.log('Video Description:', {
-        hasDescription: !!videoDetails.snippet.description,
-        length: videoDetails.snippet.description?.length,
-        content: videoDetails.snippet.description,
-        rawSnippet: videoDetails.snippet
-      });
-      
-      // Keep original structure from YouTube API
-      const videoMetadata: VideoMetadata = {
-        id: videoId,
-        title: videoDetails.snippet.title,
-        description: videoDetails.snippet.description,
-        channelTitle: videoDetails.snippet.channelTitle,
-        thumbnails: videoDetails.snippet.thumbnails,
-        tags: videoDetails.snippet.tags
-      };
 
       // Get transcription
-      try {
-        console.log('Getting transcription for video:', videoId);
-        const transcription = await getTranscriptFast(videoId);
-        videoMetadata.transcription = transcription;
-        
-        if (!transcription) {
-        return NextResponse.json({
-            error: 'Transcription Failed',
-            details: 'Failed to get transcription'
-          }, { status: 500 });
-        }
-      } catch (error: any) {
-        console.error('Transcription error:', error);
-        return NextResponse.json({
-          error: 'Transcription Failed',
-          details: error.message
-        }, { status: 400 });
-      }
+      const transcription = await getTranscriptFast(videoId);
 
-      return NextResponse.json(videoMetadata);
+      return NextResponse.json({
+        transcription,
+        videoInfo: {
+          id: videoId,
+          title: videoInfo.snippet?.title,
+          description: videoInfo.snippet?.description,
+          channelId: videoInfo.snippet?.channelId,
+          channelTitle: videoInfo.snippet?.channelTitle,
+          tags: videoInfo.snippet?.tags,
+          duration: videoInfo.contentDetails?.duration
+        }
+      });
     } catch (error: any) {
-      console.error('API Error:', error);
-      return NextResponse.json({ 
-        error: 'API Error',
-        details: error.message
-      }, { status: 500 });
+      console.error('Error processing video:', error);
+      return NextResponse.json(
+        { error: error.message || 'Failed to process video' },
+        { status: 500 }
+      );
     }
-  } catch (error: any) {
-    console.error('General Error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to process video',
-      details: error.message
-    }, { status: 500 });
+  } catch (error) {
+    console.error('Error parsing request:', error);
+    return NextResponse.json(
+      { error: 'Invalid request' },
+      { status: 400 }
+    );
   }
 }
