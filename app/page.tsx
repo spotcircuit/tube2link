@@ -415,12 +415,14 @@ export default function Home() {
         return;
       }
 
-      // Update video data with transcription
-      setVideoData(response.data);
+      // Update video data with transcription and video info
+      setVideoData({
+        ...response.data.videoInfo,
+        transcription: response.data.transcription
+      });
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || 'Failed to process video';
-      const errorDetails = error.response?.data?.details || error.message;
-      setError(`${errorMessage}\n\nDetails: ${errorDetails}`);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
