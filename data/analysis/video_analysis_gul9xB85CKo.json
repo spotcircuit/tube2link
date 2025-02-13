@@ -1,0 +1,196 @@
+{
+  "metadata": {
+    "videoId": "gul9xB85CKo",
+    "url": "https://www.youtube.com/watch?v=gul9xB85CKo&t=2s",
+    "title": "How to Build Better Automations ($2.3M Earned)",
+    "description": "Join Maker School & get your first automation customer ⤵️\nhttps://www.skool.com/makerschool/about\n\nSummary ⤵️\nHere are some foundational principles behind how to build better automations. These work across platforms, across use cases, and across programming languages, and I consider them core to how I do things.\n\nMy software, tools, & deals (some give me kickbacks—thank you!)\n🚀 Instantly: https://link.nicksaraev.com/instantly-short\n📧 Anymailfinder: https://link.nicksaraev.com/amf-short\n🤖 Apify: https://console.apify.com/sign-up (30% off with code 30NICKSARAEV)\n🧑🏽‍💻 n8n: https://n8n.partnerlinks.io/h372ujv8cw80\n📈 Rize: https://link.nicksaraev.com/rize-short (25% off with promo code NICK)\n\nFollow me on other platforms 😈\n📸 Instagram: https://www.instagram.com/nick_saraev\n🕊️ Twitter/X: https://twitter.com/nicksaraev\n🤙 Blog: https://nicksaraev.com\n\nWhy watch?\nIf this is your first view—hi, I’m Nick! TLDR: I spent six years building automated businesses with Make.com (most notably 1SecondCopy, a content company that hit 7 figures). Today a lot of people talk about automation, but I’ve noticed that very few have practical, real world success making money with it. So this channel is me chiming in and showing you what *real* systems that make *real* revenue look like.\n\nHopefully I can help you improve your business, and in doing so, the rest of your life 🙏\n\nLike, subscribe, and leave me a comment if you have a specific request! Thanks.\n\nChapters\n00:00:00 Introduction to Automation Principles\n00:01:27 The Importance of Reverse Engineering\n00:03:54 Example of Building an Automation\n00:05:27 Step-by-Step Approach to Building\n00:08:29 Test-Driven Development Explained\n00:13:22 Edge Cases and Practical Solutions\n00:16:13 Conclusion and Call to Action",
+    "channelTitle": "Nick Saraev",
+    "channelDescription": "",
+    "channelCategory": "28",
+    "publishedAt": "2025-02-13T03:27:13Z",
+    "duration": "PT16M45S",
+    "thumbnails": {
+      "default": {
+        "url": "https://i.ytimg.com/vi/gul9xB85CKo/default.jpg",
+        "width": 120,
+        "height": 90
+      },
+      "medium": {
+        "url": "https://i.ytimg.com/vi/gul9xB85CKo/mqdefault.jpg",
+        "width": 320,
+        "height": 180
+      },
+      "high": {
+        "url": "https://i.ytimg.com/vi/gul9xB85CKo/hqdefault.jpg",
+        "width": 480,
+        "height": 360
+      },
+      "standard": {
+        "url": "https://i.ytimg.com/vi/gul9xB85CKo/sddefault.jpg",
+        "width": 640,
+        "height": 480
+      },
+      "maxres": {
+        "url": "https://i.ytimg.com/vi/gul9xB85CKo/maxresdefault.jpg",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    "tags": [
+      "automation",
+      "make.com",
+      "content creation",
+      "ai content",
+      "google sheets",
+      "chatgpt",
+      "wordpress",
+      "openai",
+      "blogging",
+      "integromat",
+      "make",
+      "automating",
+      "automate",
+      "gpt-4",
+      "gpt",
+      "openai api",
+      "indie hacking",
+      "small business",
+      "$20K/mo",
+      "cold email",
+      "make money online",
+      "make.com for people who want to make real money",
+      "make.com money",
+      "AIAA",
+      "ai automation",
+      "ai automation agency",
+      "ai automation guide",
+      "n8n",
+      "n8n automations",
+      "n8n guide",
+      "n8n automation agency",
+      "aiaa",
+      "aiaa amodel",
+      "automation tips",
+      "automation ai"
+    ]
+  },
+  "analysis": {
+    "core_summary": {
+      "core_concepts": "The video discusses foundational principles for building better automations that can be applied across various platforms and programming languages.",
+      "key_insights": [
+        "Importance of reverse engineering in automation.",
+        "Practical examples of building automations.",
+        "Step-by-step approach and test-driven development."
+      ]
+    },
+    "extended_enrichment": {
+      "tutorial_details": {
+        "prerequisites": [
+          "Basic understanding of automation tools and programming concepts"
+        ],
+        "learning_objectives": [
+          "Learn how to create effective automation systems",
+          "Understand key principles and methodologies for successful automation"
+        ],
+        "steps": [
+          {
+            "title": "Introduction to Automation Principles",
+            "description": "Overview of the foundational principles behind automation.",
+            "timestamp": "00:00:00",
+            "key_points": [
+              "Core principles applicable across platforms."
+            ]
+          },
+          {
+            "title": "The Importance of Reverse Engineering",
+            "description": "Explains how reverse engineering can aid in building automations.",
+            "timestamp": "00:01:27",
+            "key_points": [
+              "Key strategies for analyzing existing systems."
+            ]
+          },
+          {
+            "title": "Example of Building an Automation",
+            "description": "Provides a practical example of creating an automation.",
+            "timestamp": "00:03:54",
+            "key_points": [
+              "Real-world application of automation principles."
+            ]
+          },
+          {
+            "title": "Step-by-Step Approach to Building",
+            "description": "Details a structured approach to developing automation.",
+            "timestamp": "00:05:27",
+            "key_points": [
+              "Structured methodology for building."
+            ]
+          },
+          {
+            "title": "Test-Driven Development Explained",
+            "description": "Covers the concept of test-driven development in automations.",
+            "timestamp": "00:08:29",
+            "key_points": [
+              "Importance of testing in automation."
+            ]
+          },
+          {
+            "title": "Edge Cases and Practical Solutions",
+            "description": "Discusses handling edge cases in automation.",
+            "timestamp": "00:13:22",
+            "key_points": [
+              "Strategies for dealing with unexpected scenarios."
+            ]
+          },
+          {
+            "title": "Conclusion and Call to Action",
+            "description": "Summarizes the key points and encourages viewer engagement.",
+            "timestamp": "00:16:13",
+            "key_points": [
+              "Encouragement to implement learned principles."
+            ]
+          }
+        ],
+        "best_practices": [
+          "Utilize reverse engineering techniques.",
+          "Adopt a test-driven development approach."
+        ],
+        "common_pitfalls": [
+          "Neglecting edge cases in automation.",
+          "Skipping testing phases."
+        ],
+        "resources": [
+          {
+            "name": "Instantly",
+            "type": "Tool",
+            "link": "https://link.nicksaraev.com/instantly-short"
+          },
+          {
+            "name": "Anymailfinder",
+            "type": "Tool",
+            "link": "https://link.nicksaraev.com/amf-short"
+          },
+          {
+            "name": "Apify",
+            "type": "Tool",
+            "link": "https://console.apify.com/sign-up"
+          },
+          {
+            "name": "n8n",
+            "type": "Tool",
+            "link": "https://n8n.partnerlinks.io/h372ujv8cw80"
+          },
+          {
+            "name": "Rize",
+            "type": "Tool",
+            "link": "https://link.nicksaraev.com/rize-short"
+          }
+        ]
+      }
+    },
+    "video_type": "tutorial",
+    "url": "https://www.youtube.com/watch?v=gul9xB85CKo&t=2s",
+    "title": "How to Build Better Automations ($2.3M Earned)",
+    "description": "Join Maker School & get your first automation customer ⤵️\nhttps://www.skool.com/makerschool/about\n\nSummary ⤵️\nHere are some foundational principles behind how to build better automations. These work across platforms, across use cases, and across programming languages, and I consider them core to how I do things.\n\nMy software, tools, & deals (some give me kickbacks—thank you!)\n🚀 Instantly: https://link.nicksaraev.com/instantly-short\n📧 Anymailfinder: https://link.nicksaraev.com/amf-short\n🤖 Apify: https://console.apify.com/sign-up (30% off with code 30NICKSARAEV)\n🧑🏽‍💻 n8n: https://n8n.partnerlinks.io/h372ujv8cw80\n📈 Rize: https://link.nicksaraev.com/rize-short (25% off with promo code NICK)\n\nFollow me on other platforms 😈\n📸 Instagram: https://www.instagram.com/nick_saraev\n🕊️ Twitter/X: https://twitter.com/nicksaraev\n🤙 Blog: https://nicksaraev.com\n\nWhy watch?\nIf this is your first view—hi, I’m Nick! TLDR: I spent six years building automated businesses with Make.com (most notably 1SecondCopy, a content company that hit 7 figures). Today a lot of people talk about automation, but I’ve noticed that very few have practical, real world success making money with it. So this channel is me chiming in and showing you what *real* systems that make *real* revenue look like.\n\nHopefully I can help you improve your business, and in doing so, the rest of your life 🙏\n\nLike, subscribe, and leave me a comment if you have a specific request! Thanks.\n\nChapters\n00:00:00 Introduction to Automation Principles\n00:01:27 The Importance of Reverse Engineering\n00:03:54 Example of Building an Automation\n00:05:27 Step-by-Step Approach to Building\n00:08:29 Test-Driven Development Explained\n00:13:22 Edge Cases and Practical Solutions\n00:16:13 Conclusion and Call to Action",
+    "channelTitle": "Nick Saraev"
+  }
+}

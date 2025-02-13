@@ -36,76 +36,93 @@ function CollapsibleSection({ title, defaultOpen = false, children }: Collapsibl
   );
 }
 
+function MetadataField({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-start space-x-2">
+      <span className="text-purple-300 block flex-shrink-0">{label}:</span>
+      <span className="text-white">{value}</span>
+    </div>
+  );
+}
+
+function formatDuration(duration: string): string {
+  // ISO 8601 duration to readable format
+  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return duration;
+  
+  const [, hours, minutes, seconds] = match;
+  const parts = [];
+  
+  if (hours) parts.push(`${hours}h`);
+  if (minutes) parts.push(`${minutes}m`);
+  if (seconds) parts.push(`${seconds}s`);
+  
+  return parts.join(' ');
+}
+
 export default function VideoMetadata({ videoData }: VideoMetadataProps) {
+  // Get the best available thumbnail URL
+  const thumbnailUrl = videoData.thumbnails?.maxres?.url ||
+                      videoData.thumbnails?.high?.url ||
+                      videoData.thumbnails?.medium?.url ||
+                      videoData.thumbnails?.default?.url ||
+                      `https://img.youtube.com/vi/${videoData.videoId}/hqdefault.jpg`;
+
   return (
     <div className="w-full space-y-6">
+      {/* Thumbnail Section */}
       <div className="flex justify-center">
         <div className="relative aspect-video w-full max-w-2xl rounded-xl overflow-hidden">
           <Image
-            src={videoData.thumbnails?.maxres?.url ||
-                 videoData.thumbnails?.high?.url ||
-                 videoData.thumbnails?.medium?.url || 
-                 videoData.thumbnails?.default?.url ||
-                 `https://img.youtube.com/vi/${videoData.videoId}/hqdefault.jpg`}
+            src={thumbnailUrl}
             alt={`Thumbnail for ${videoData.title || 'YouTube video'}`}
-            layout="fill"
-            objectFit="cover"
-            priority={true}
-            className="hover:scale-105 transition-transform duration-300"
+            fill
+            className="object-cover"
+            priority
           />
         </div>
       </div>
-      
-      <h2 className="text-2xl font-bold text-white">{videoData.title}</h2>
-      
-      {/* Video Info Section */}
+
+      {/* Basic Info Section */}
       <CollapsibleSection title="Video Information" defaultOpen={true}>
         <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-purple-300 block">Channel:</span>
-            <span className="text-white">{videoData.channelTitle}</span>
-          </div>
-          <div className="flex items-start space-x-2">
-            <span className="text-purple-300 block flex-shrink-0">Description:</span>
-            <span className="text-white break-words overflow-auto max-h-32">{videoData.description}</span>
-          </div>
-          {videoData.statistics && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-              <div className="text-center p-2 bg-white/10 rounded-lg">
-                <div className="text-purple-300 text-sm">Views</div>
-                <div className="text-white font-medium">{videoData.statistics.viewCount.toLocaleString()}</div>
-              </div>
-              <div className="text-center p-2 bg-white/10 rounded-lg">
-                <div className="text-purple-300 text-sm">Likes</div>
-                <div className="text-white font-medium">{videoData.statistics.likeCount.toLocaleString()}</div>
-              </div>
-              <div className="text-center p-2 bg-white/10 rounded-lg">
-                <div className="text-purple-300 text-sm">Comments</div>
-                <div className="text-white font-medium">{videoData.statistics.commentCount.toLocaleString()}</div>
-              </div>
-              <div className="text-center p-2 bg-white/10 rounded-lg">
-                <div className="text-purple-300 text-sm">Published</div>
-                <div className="text-white font-medium">{new Date(videoData.publishedAt).toLocaleDateString()}</div>
-              </div>
-            </div>
+          <MetadataField label="Title" value={videoData.title} />
+          <MetadataField label="Channel" value={videoData.channelTitle} />
+          {videoData.publishedAt && (
+            <MetadataField 
+              label="Published" 
+              value={new Date(videoData.publishedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })} 
+            />
           )}
+          {videoData.duration && (
+            <MetadataField 
+              label="Duration" 
+              value={formatDuration(videoData.duration)} 
+            />
+          )}
+          <MetadataField label="Description" value={videoData.description} />
         </div>
       </CollapsibleSection>
-      
+
       {/* Tags Section */}
-      <CollapsibleSection title="Tags">
-        {videoData.tags && videoData.tags.length > 0 ? (
+      {videoData.tags && videoData.tags.length > 0 && (
+        <CollapsibleSection title="Tags">
           <div className="flex flex-wrap gap-2">
             {videoData.tags.map((tag, index) => (
-              <span key={index} className="px-3 py-1 bg-purple-500/30 border border-purple-500/50 rounded-full text-white text-sm">
+              <span
+                key={index}
+                className="px-2 py-1 bg-purple-500/20 border border-purple-500/40 rounded-full text-sm text-white"
+              >
                 {tag}
               </span>
             ))}
           </div>
-        ) : (
-          <p className="text-white/60">No tags available</p>
-        )}
-      </CollapsibleSection>
+        </CollapsibleSection>
+      )}
     </div>
   );
 }

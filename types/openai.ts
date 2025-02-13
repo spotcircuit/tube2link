@@ -2,9 +2,10 @@ export interface VideoMetadata {
   title: string;
   channelTitle: string;
   description: string;
+  url: string;
 }
 
-interface CoreSummary {
+export interface CoreSummary {
   core_concepts: string;
   key_insights: string[];
   main_subject?: string;
@@ -16,26 +17,47 @@ interface CoreSummary {
   call_to_action?: string;
 }
 
-interface TutorialDetails {
-  prerequisites?: string[];
-  learning_objectives: string[];
-  steps: Array<{
-    title: string;
-    description: string;
-    timestamp?: string;
-    code_snippet?: string;
-    key_points?: string[];
+export interface EnrichedVideoMetadata {
+  core_summary: CoreSummary;
+  video_type: VideoType;
+  url: string;
+  extended_enrichment?: {
+    news_details?: NewsDetails;
+    review_details?: ReviewDetails;
+    comparison_details?: ComparisonDetails;
+    tutorial_details?: TutorialDetails;
+    recipe_details?: RecipeDetails;
+    commentary_details?: CommentaryDetails;
+  };
+}
+
+export type VideoType = 'news' | 'review' | 'comparison' | 'tutorial' | 'recipe' | 'commentary' | 'fallback';
+
+export interface NewsDetails {
+  headline: string;
+  key_points: string[];
+  sources_cited: string[];
+  expert_opinions?: string[];
+  related_topics?: string[];
+  impact_assessment?: string;
+  context: string;
+  quotes: Array<{
+    text: string;
+    speaker: string;
+    context: string;
   }>;
-  best_practices?: string[];
-  common_pitfalls?: string[];
-  resources?: Array<{
+  fact_check: Array<{
+    claim: string;
+    context: string;
+  }>;
+  participants: Array<{
     name: string;
-    type: string;
-    link?: string;
+    role: string;
+    affiliation: string;
   }>;
 }
 
-interface ReviewDetails {
+export interface ReviewDetails {
   product_name: string;
   manufacturer?: string;
   price_point?: string;
@@ -53,9 +75,12 @@ interface ReviewDetails {
     time: string;
     topic: string;
   }>;
+  overall_rating?: number;
+  best_suited_for?: string[];
+  comparison_products?: string[];
 }
 
-interface ComparisonDetails {
+export interface ComparisonDetails {
   items_compared: Array<{
     name: string;
     features: string[];
@@ -66,9 +91,41 @@ interface ComparisonDetails {
   }>;
   comparative_analysis: string;
   recommendations: string;
+  products: {
+    name: string;
+    key_features: string[];
+    pros: string[];
+    cons: string[];
+    rating?: number;
+  }[];
+  comparison_criteria: string[];
+  winner?: string;
 }
 
-interface RecipeDetails {
+export interface TutorialDetails {
+  prerequisites?: string[];
+  learning_objectives: string[];
+  steps: Array<{
+    title: string;
+    description: string;
+    timestamp?: string;
+    code_snippet?: string;
+    key_points?: string[];
+  }>;
+  best_practices?: string[];
+  common_pitfalls?: string[];
+  resources?: Array<{
+    name: string;
+    type: string;
+    link?: string;
+  }>;
+  topic: string;
+  tools_required?: string[];
+  skill_level?: string;
+  estimated_time?: string;
+}
+
+export interface RecipeDetails {
   recipes: Array<{
     name: string;
     cook_time?: string;
@@ -83,79 +140,40 @@ interface RecipeDetails {
     preparation_tips?: string[];
     storage_info?: string;
   };
+  dish_name: string;
+  cuisine_type?: string;
+  ingredients: string[];
+  steps: {
+    description: string;
+    timestamp?: string;
+  }[];
+  prep_time?: string;
+  cook_time?: string;
+  difficulty?: string;
+  serving_size?: string;
 }
 
-interface NewsDetails {
-  context: string;
-  key_points: string[];
-  quotes: Array<{
-    text: string;
-    speaker: string;
-    context: string;
-  }>;
-  fact_check: Array<{
-    claim: string;
-    context: string;
-  }>;
-  participants: Array<{
-    name: string;
-    role: string;
-    affiliation: string;
-  }>;
-}
-
-interface CommentaryTopic {
-  topic: string;
-  treatment: string;
-  key_points: string[];
-  comedic_elements: string[];
-}
-
-interface NotableSegment {
-  title: string;
-  description: string;
-  timestamp?: string;
-}
-
-interface CommentaryDetails {
+export interface CommentaryDetails {
   format: 'monologue' | 'desk_piece' | 'interview' | 'panel';
   tone: 'satirical' | 'serious' | 'mixed';
-  topics_covered: CommentaryTopic[];
+  topics_covered: Array<{
+    topic: string;
+    treatment: string;
+    key_points: string[];
+    comedic_elements: string[];
+  }>;
   host_perspective: string;
-  notable_segments: NotableSegment[];
+  notable_segments: Array<{
+    title: string;
+    description: string;
+    timestamp?: string;
+  }>;
   visual_elements: string[];
   audience_engagement?: string;
-}
-
-interface TutorialEnrichment {
-  tutorial_details: TutorialDetails;
-}
-
-interface ReviewEnrichment {
-  review_details: ReviewDetails;
-}
-
-interface ComparisonEnrichment {
-  items_compared: ComparisonDetails['items_compared'];
-  comparative_analysis: string;
-  recommendations: string;
-}
-
-interface RecipeEnrichment {
-  recipes: RecipeDetails['recipes'];
-  cooking_notes?: RecipeDetails['cooking_notes'];
-}
-
-interface NewsEnrichment {
-  news_details: NewsDetails;
-}
-
-interface CommentaryEnrichment {
-  commentary_details: CommentaryDetails;
-}
-
-export interface EnrichedVideoMetadata {
-  core_summary: CoreSummary;
-  extended_enrichment: TutorialEnrichment | ReviewEnrichment | ComparisonEnrichment | RecipeEnrichment | NewsEnrichment | CommentaryEnrichment;
-  video_type: 'tutorial' | 'review' | 'comparison' | 'recipe' | 'news' | 'commentary';
+  topic: string;
+  key_points: string[];
+  expert_credentials?: string;
+  supporting_evidence?: string[];
+  counter_arguments?: string[];
+  conclusions?: string[];
 }

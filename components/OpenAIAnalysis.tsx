@@ -7,10 +7,12 @@ import ReviewView from './video-analysis/ReviewView';
 import RecipeView from './video-analysis/RecipeView';
 import NewsView from './video-analysis/NewsView';
 import CommentaryView from './video-analysis/CommentaryView';
+import SocialPostGenerator from './SocialPostGenerator';
+import { useState } from 'react';
 
 interface OpenAIAnalysisProps {
   data: EnrichedVideoMetadata;
-  isToggled: boolean;
+  onReturn: () => void;
 }
 
 const RecipeDetails = ({ recipe }: { recipe: any }) => (
@@ -126,95 +128,105 @@ const CookingTips = ({ tips }: { tips: any }) => (
   </div>
 );
 
-export default function OpenAIAnalysis({ data, isToggled }: OpenAIAnalysisProps) {
-  if (!isToggled) {
-    return (
-      <div className="p-4 bg-gray-100 rounded-lg">
-        <p className="text-gray-600">Toggle OpenAI Analysis to view the enriched content.</p>
-      </div>
-    );
-  }
+export default function OpenAIAnalysis({ data, onReturn }: OpenAIAnalysisProps) {
+  const [showResponse, setShowResponse] = useState(false);
 
   return (
     <div className="space-y-8">
-      {/* Raw JSON Response */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-purple-300">OpenAI Analysis Response</h2>
-        </div>
-        <pre className="whitespace-pre-wrap text-gray-200 bg-gray-700/50 p-4 rounded-lg overflow-auto max-h-96">
-          {JSON.stringify(data, null, 2)}
-        </pre>
+      {/* Toggle Response Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => setShowResponse(!showResponse)}
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          {showResponse ? 'Hide OpenAI Response' : 'Show OpenAI Response'}
+        </button>
       </div>
+
+      {/* Raw JSON Response */}
+      {showResponse && (
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-purple-300">OpenAI Analysis Response</h2>
+          </div>
+          <pre className="whitespace-pre-wrap text-gray-200 bg-gray-700/50 p-4 rounded-lg overflow-auto max-h-96">
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        </div>
+      )}
 
       {/* Core Summary Section */}
       <section>
-        <h2 className="text-xl font-bold mb-4">Core Summary</h2>
-        <div className="space-y-4">
+        <h2 className="text-xl font-bold mb-4 text-white">Core Summary</h2>
+        <div className="space-y-6">
           {/* Core Concepts */}
-          <div>
-            <h3 className="font-medium text-purple-200 mb-2">Core Concepts</h3>
-            <p className="text-gray-300">{data.core_summary.core_concepts}</p>
-          </div>
+          {data.core_summary?.core_concepts && (
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="font-medium text-purple-300 mb-2">Core Concepts</h3>
+              <p className="text-gray-200">{data.core_summary.core_concepts}</p>
+            </div>
+          )}
 
           {/* Key Insights */}
-          <div>
-            <h3 className="font-medium text-purple-200 mb-2">Key Insights</h3>
-            <ul className="space-y-2">
-              {data.core_summary.key_insights.map((insight, i) => (
-                <li key={i} className="flex items-start">
-                  <span className="text-purple-400 mr-2">•</span>
-                  <span className="text-gray-300">{insight}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {data.core_summary?.key_insights && data.core_summary.key_insights.length > 0 && (
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="font-medium text-purple-300 mb-2">Key Insights</h3>
+              <ul className="space-y-2">
+                {data.core_summary.key_insights.map((insight, i) => (
+                  <li key={i} className="flex items-start">
+                    <span className="text-purple-400 mr-2">•</span>
+                    <span className="text-gray-200">{insight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Enhanced Short Content Details */}
-          {(data.core_summary.main_subject || 
-            data.core_summary.action_shown || 
-            data.core_summary.content_context || 
-            data.core_summary.content_purpose || 
-            (data.core_summary.visual_elements && data.core_summary.visual_elements.length > 0) || 
-            (data.core_summary.audio_elements && data.core_summary.audio_elements.length > 0) || 
-            data.core_summary.call_to_action) && (
+          {(data.core_summary?.main_subject || 
+            data.core_summary?.action_shown || 
+            data.core_summary?.content_context || 
+            data.core_summary?.content_purpose || 
+            (data.core_summary?.visual_elements && data.core_summary.visual_elements.length > 0) || 
+            (data.core_summary?.audio_elements && data.core_summary.audio_elements.length > 0) || 
+            data.core_summary?.call_to_action) && (
             <div className="space-y-4 mt-4">
               {/* Main Subject */}
-              {data.core_summary.main_subject && (
-                <div>
-                  <h3 className="font-medium text-purple-200 mb-2">Main Subject</h3>
-                  <p className="text-gray-300">{data.core_summary.main_subject}</p>
+              {data.core_summary?.main_subject && (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h3 className="font-medium text-purple-300 mb-2">Main Subject</h3>
+                  <p className="text-gray-200">{data.core_summary.main_subject}</p>
                 </div>
               )}
 
               {/* Action Shown */}
-              {data.core_summary.action_shown && (
-                <div>
-                  <h3 className="font-medium text-purple-200 mb-2">Action/Highlight</h3>
-                  <p className="text-gray-300">{data.core_summary.action_shown}</p>
+              {data.core_summary?.action_shown && (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h3 className="font-medium text-purple-300 mb-2">Action/Highlight</h3>
+                  <p className="text-gray-200">{data.core_summary.action_shown}</p>
                 </div>
               )}
 
               {/* Content Context */}
-              {data.core_summary.content_context && (
-                <div>
-                  <h3 className="font-medium text-purple-200 mb-2">Context</h3>
-                  <p className="text-gray-300">{data.core_summary.content_context}</p>
+              {data.core_summary?.content_context && (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h3 className="font-medium text-purple-300 mb-2">Context</h3>
+                  <p className="text-gray-200">{data.core_summary.content_context}</p>
                 </div>
               )}
 
               {/* Content Purpose */}
-              {data.core_summary.content_purpose && (
-                <div>
-                  <h3 className="font-medium text-purple-200 mb-2">Purpose</h3>
-                  <p className="text-gray-300">{data.core_summary.content_purpose}</p>
+              {data.core_summary?.content_purpose && (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h3 className="font-medium text-purple-300 mb-2">Purpose</h3>
+                  <p className="text-gray-200">{data.core_summary.content_purpose}</p>
                 </div>
               )}
 
               {/* Visual Elements */}
-              {data.core_summary.visual_elements && data.core_summary.visual_elements.length > 0 && (
-                <div>
-                  <h3 className="font-medium text-purple-200 mb-2">Visual Elements</h3>
+              {data.core_summary?.visual_elements && data.core_summary.visual_elements.length > 0 && (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h3 className="font-medium text-purple-300 mb-2">Visual Elements</h3>
                   <div className="flex flex-wrap gap-2">
                     {data.core_summary.visual_elements.map((element, i) => (
                       <span key={i} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
@@ -226,9 +238,9 @@ export default function OpenAIAnalysis({ data, isToggled }: OpenAIAnalysisProps)
               )}
 
               {/* Audio Elements */}
-              {data.core_summary.audio_elements && data.core_summary.audio_elements.length > 0 && (
-                <div>
-                  <h3 className="font-medium text-purple-200 mb-2">Audio Elements</h3>
+              {data.core_summary?.audio_elements && data.core_summary.audio_elements.length > 0 && (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h3 className="font-medium text-purple-300 mb-2">Audio Elements</h3>
                   <div className="flex flex-wrap gap-2">
                     {data.core_summary.audio_elements.map((element, i) => (
                       <span key={i} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
@@ -240,10 +252,10 @@ export default function OpenAIAnalysis({ data, isToggled }: OpenAIAnalysisProps)
               )}
 
               {/* Call to Action */}
-              {data.core_summary.call_to_action && (
-                <div>
-                  <h3 className="font-medium text-purple-200 mb-2">Call to Action</h3>
-                  <p className="text-gray-300">{data.core_summary.call_to_action}</p>
+              {data.core_summary?.call_to_action && (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h3 className="font-medium text-purple-300 mb-2">Call to Action</h3>
+                  <p className="text-gray-200">{data.core_summary.call_to_action}</p>
                 </div>
               )}
             </div>
@@ -309,12 +321,31 @@ export default function OpenAIAnalysis({ data, isToggled }: OpenAIAnalysisProps)
       )}
 
       {/* Video Type Specific Views */}
-      {data?.video_type === 'tutorial' && <TutorialView data={data} />}
-      {data?.video_type === 'recipe' && <RecipeView data={data} />}
-      {data?.video_type === 'comparison' && <ComparisonView data={data} />}
-      {data?.video_type === 'review' && <ReviewView data={data} />}
-      {data?.video_type === 'news' && <NewsView data={data} />}
-      {data?.video_type === 'commentary' && <CommentaryView data={data} />}
+      {data.video_type && (
+        <section className="mt-8">
+          <h2 className="text-xl font-bold mb-4">Type-Specific Analysis</h2>
+          {data.video_type.toLowerCase() === 'tutorial' && <TutorialView data={data} />}
+          {data.video_type.toLowerCase() === 'recipe' && <RecipeView data={data} />}
+          {data.video_type.toLowerCase() === 'comparison' && <ComparisonView data={data} />}
+          {data.video_type.toLowerCase() === 'review' && <ReviewView data={data} />}
+          {data.video_type.toLowerCase() === 'news' && <NewsView data={data} />}
+          {data.video_type.toLowerCase() === 'commentary' && <CommentaryView data={data} />}
+        </section>
+      )}
+
+      {/* Social Post Generator */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Generate Social Posts</h2>
+        <SocialPostGenerator
+          videoData={{
+            title: data.title,
+            url: data.url,
+            description: data.description,
+            channelTitle: data.channelTitle
+          }}
+          onReturn={onReturn}
+        />
+      </div>
     </div>
   );
 }

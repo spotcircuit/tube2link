@@ -1,0 +1,91 @@
+{
+  "video_type": "Educational",
+  "title": "How to Build Better Automations ($2.3M Earned)",
+  "description": {
+    "brief": "Join Maker School & get your first automation customer. Foundational principles on building better automations across platforms, programming languages, and use cases.",
+    "links": [
+      {
+        "name": "Maker School",
+        "url": "https://www.skool.com/makerschool/about"
+      },
+      {
+        "name": "Instantly",
+        "url": "https://link.nicksaraev.com/instantly-short"
+      },
+      {
+        "name": "Anymailfinder",
+        "url": "https://link.nicksaraev.com/amf-short"
+      },
+      {
+        "name": "Apify",
+        "url": "https://console.apify.com/sign-up",
+        "promo_code": "30NICKSARAEV"
+      },
+      {
+        "name": "n8n",
+        "url": "https://n8n.partnerlinks.io/h372ujv8cw80"
+      },
+      {
+        "name": "Rize",
+        "url": "https://link.nicksaraev.com/rize-short",
+        "promo_code": "NICK"
+      }
+    ],
+    "social_media": [
+      {
+        "platform": "Instagram",
+        "url": "https://www.instagram.com/nick_saraev"
+      },
+      {
+        "platform": "Twitter/X",
+        "url": "https://twitter.com/nicksaraev"
+      },
+      {
+        "platform": "Blog",
+        "url": "https://nicksaraev.com"
+      }
+    ],
+    "call_to_action": "Like, subscribe, and leave a comment if you have a specific request!"
+  },
+  "author": {
+    "name": "Nick Saraev",
+    "about": "Nick shares insights from six years of building automated businesses, emphasizing practical, real-world success in automation to improve businesses and lives."
+  },
+  "content": {
+    "chapters": [
+      {
+        "start": "00:00:00",
+        "title": "Introduction to Automation Principles"
+      },
+      {
+        "start": "00:01:27",
+        "title": "The Importance of Reverse Engineering"
+      },
+      {
+        "start": "00:03:54",
+        "title": "Example of Building an Automation"
+      },
+      {
+        "start": "00:05:27",
+        "title": "Step-by-Step Approach to Building"
+      },
+      {
+        "start": "00:08:29",
+        "title": "Test-Driven Development Explained"
+      },
+      {
+        "start": "00:13:22",
+        "title": "Edge Cases and Practical Solutions"
+      },
+      {
+        "start": "00:16:13",
+        "title": "Conclusion and Call to Action"
+      }
+    ]
+  },
+  "metadata": {
+    "channel": "Nick Saraev",
+    "duration": "PT16M45S",
+    "published_date": "2025-02-13T03:27:13Z"
+  }
+}

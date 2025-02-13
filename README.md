@@ -64,6 +64,104 @@ A Next.js application that converts YouTube videos into engaging LinkedIn posts 
 - Mobile/desktop view toggle
 - Image preview support
 
+## Video Types Implementation
+
+Below are the supported video types and their metadata templates:
+
+### 1. Technical / Instructional Videos
+- **General Overview**
+  - Title/Topic
+  - Summary of covered content
+- **Core Content**
+  - Key concepts and principles
+  - Main takeaways
+- **Practice & Application**
+  - Implementation steps
+  - Required tools/prerequisites
+  - Limitations and caveats
+  - Code examples/demos
+- **Additional Resources**
+  - Documentation links
+  - Related tutorials
+
+### 2. Product Reviews / Comparisons
+- **Overview**
+  - Category and type
+  - Target audience
+  - Comparison criteria
+- **Product Details**
+  - Name and brand
+  - Key features with ratings
+  - Strengths and weaknesses
+  - Best use cases
+- **Comparison Analysis**
+  - Feature-by-feature breakdown
+  - Winner per category
+  - Key differences
+- **Value Assessment**
+  - Price comparison
+  - Best value option
+  - Recommendations by user type
+  - Key takeaways
+
+### 3. News / Current Events
+- **Overview**
+  - Headline
+  - Summary and significance
+- **Detailed Breakdown**
+  - Key points
+  - Background context
+  - Expert analysis
+- **Supporting Information**
+  - Notable quotes
+  - Impact assessment
+  - Additional sources
+
+### 4. Entertainment / Shows
+- **General Overview**
+  - Show title
+  - Episode summary
+- **Segment Breakdown**
+  - Key moments
+  - Guest information
+  - Recurring segments
+- **Engagement**
+  - Audience reactions
+  - Behind-the-scenes info
+  - Related content
+
+### 5. Gaming Content
+- **Overview**
+  - Game title
+  - Gameplay summary
+- **Content Analysis**
+  - Gameplay highlights
+  - Tips and strategies
+  - Technical details
+- **Additional Elements**
+  - Review/rating
+  - Community feedback
+  - Resource links
+
+### 6. Educational / Lectures
+- **Overview**
+  - Topic
+  - Learning objectives
+- **Content Structure**
+  - Key concepts
+  - Detailed explanations
+  - Examples/case studies
+- **Supplementary**
+  - Discussion points
+  - Additional materials
+  - Further reading
+
+### Customization Tips
+1. **Flexibility**: Combine elements from multiple templates as needed
+2. **Audience Focus**: Prioritize information relevant to your viewers
+3. **Consistency**: Maintain similar structure for similar content types
+4. **Evolution**: Refine templates based on user feedback
+
 ## Setup
 
 1. Clone the repository

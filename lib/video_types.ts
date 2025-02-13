@@ -1,4 +1,4 @@
-export type VideoType = 'tutorial' | 'review' | 'commentary' | 'news' | 'lifestyle';
+export type VideoType = 'product' | 'other';
 
 export interface TutorialEnrichment {
   prerequisites: string[];
@@ -128,8 +128,5 @@ export interface LifestyleEnrichment {
 }
 
 export type VideoEnrichment = 
-  | { type: 'tutorial'; data: TutorialEnrichment }
-  | { type: 'review'; data: ReviewEnrichment }
-  | { type: 'commentary'; data: CommentaryEnrichment }
-  | { type: 'news'; data: NewsEnrichment }
-  | { type: 'lifestyle'; data: LifestyleEnrichment };
+  | { type: 'product'; data: ReviewEnrichment }
+  | { type: 'other'; data: TutorialEnrichment | CommentaryEnrichment | NewsEnrichment | LifestyleEnrichment };

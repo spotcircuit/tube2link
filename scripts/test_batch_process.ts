@@ -49,7 +49,7 @@ async function processBatchFromEnrichedPrompt(videoId: string) {
 
       // Generate post for this batch
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini-realtime-preview-2024-12-17",
+        model: "gpt-4o-mini-2024-07-18",
         messages: [
           {
             role: "system",
@@ -91,7 +91,7 @@ async function processBatchFromEnrichedPrompt(videoId: string) {
       batchId: `batch_${Date.now()}_${videoId}`,
       timestamp: new Date().toISOString(),
       status: 'completed',
-      model: 'gpt-4o-mini-realtime-preview-2024-12-17',
+      model: 'gpt-4o-mini-2024-07-18',
       inputFile: enrichedPromptPath,
       outputFile: batchResultPath,
       totalBatches: batches.length,

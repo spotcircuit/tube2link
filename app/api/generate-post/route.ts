@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server'
-import { generateLinkedInPost } from '@/lib/ai'
+import { generateSocialPost } from '@/lib/social_post_generator'
 import { VideoData } from '@/types/video'
+import { PostSettings } from '@/types/post'
 
 export async function POST(request: Request) {
   try {
     const { videoData, template, settings } = await request.json()
 
-    const content = await generateLinkedInPost(
-      videoData as VideoData,
+    // Validate required data
+    if (!videoData || !template || !settings) {
+      return NextResponse.json(
+        { error: 'Missing required data: videoData, template, or settings' },
+        { status: 400 }
+      )
+    }
+
+    // Generate post content
+    const content = await generateSocialPost(
+      videoData,
       template,
       settings
     )
@@ -15,8 +25,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ content })
   } catch (error) {
     console.error('Error generating post:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to generate post'
     return NextResponse.json(
-      { error: 'Failed to generate post' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

@@ -4,9 +4,9 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { VideoData } from '@/types/video';
+import { EnrichedVideoMetadata } from '@/types/openai';
 import VideoMetadata from '@/components/VideoMetadata';
-import VideoAnalysis from '@/components/VideoAnalysis';
-import SocialPostGenerator from '@/components/SocialPostGenerator';
+import OpenAIAnalysis from '@/components/OpenAIAnalysis';
 
 // Convert ISO 8601 duration to readable format
 const formatDuration = (duration: string): string => {
@@ -24,90 +24,6 @@ const formatDuration = (duration: string): string => {
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 };
-
-const POST_TEMPLATES = {
-  question: {
-    name: 'Question-Based',
-    structure: `
-1. Open with an intriguing industry question
-2. Share context from your experience
-3. Present the video's perspective
-4. Highlight key supporting evidence
-5. Invite thoughtful responses`
-  },
-  story: {
-    name: 'Story-Based',
-    structure: `
-1. Start with a relatable situation
-2. Share the learning journey
-3. Present key discoveries
-4. Connect to broader principles
-5. End with earned wisdom`
-  },
-  action: {
-    name: 'Action-Oriented',
-    structure: `
-1. State the goal clearly
-2. Explain why it matters now
-3. Present concrete steps
-4. Share a practical example
-5. Call to action`
-  },
-  insight: {
-    name: 'Insight-Based',
-    structure: `
-1. Lead with surprising data
-2. Explain the significance
-3. Reveal deeper understanding
-4. Support with evidence
-5. Challenge assumptions`
-  },
-  problem_solution: {
-    name: 'Problem-Solution',
-    structure: `
-1. Identify the pain point clearly
-2. Explain its impact
-3. Present the solution approach
-4. Share implementation details
-5. Highlight the benefits`
-  },
-  comparison: {
-    name: 'Comparison',
-    structure: `
-1. Introduce the approaches
-2. Compare key aspects
-3. Highlight innovations
-4. Present evidence
-5. Guide decision making`
-  }
-} as const;
-
-const LENGTH_SETTINGS = {
-  brief: {
-    label: "Brief",
-    icon: "📝",
-    description: "Quick, punchy post",
-    charRange: "300-500 characters",
-    bestFor: "Quick insights, busy feeds",
-    example: "🎯 Key takeaway from [Video]\n\n💡 Main insight explained in 1-2 sentences\n\n🔗 Watch more: [link]"
-  },
-  standard: {
-    label: "Standard",
-    icon: "📄",
-    description: "Balanced length",
-    charRange: "800-1200 characters",
-    bestFor: "Most content types",
-    example: "🎯 Main topic from [Video]\n\n💡 Key point 1\n💡 Key point 2\n\n🤔 Why this matters...\n\n🔗 Full video: [link]"
-  },
-  detailed: {
-    label: "Detailed",
-    icon: "📚",
-    description: "In-depth coverage",
-    charRange: "1500-2000 characters",
-    bestFor: "Complex topics, deep dives",
-    example: "🎯 Comprehensive look at [Topic]\n\n💡 Background\n💡 Key points (3-4)\n💡 Analysis\n\n🤔 Implications\n\n🔗 Watch here: [link]"
-  }
-} as const;
 
 const getToneLabel = (value: number) => {
   if (value <= 33) return 'Conversational';
@@ -149,169 +65,14 @@ const getToneHint = (tone: number): { label: string, suggestions: Record<string,
   };
 };
 
-const getTemplateGuide = (template: string, length: 'brief' | 'standard' | 'detailed') => {
-  console.debug('getTemplateGuide called with:', { template, length });
-  const guides = {
-    question: {
-      brief: "150-200 words. Create a thought-provoking question with minimal context to spark discussion.",
-      standard: "200-300 words. Present a main question with 2-3 follow-up points to guide the discussion.",
-      detailed: "300-500 words. Explore a complex question from multiple angles, with supporting questions and discussion prompts throughout."
-    },
-    story: {
-      brief: "150-200 words. Tell a focused micro-story highlighting one key moment or insight.",
-      standard: "200-300 words. Develop a narrative with clear beginning, middle, and end. Balance story elements with key takeaways.",
-      detailed: "300-500 words. Create a rich narrative with character development, detailed scenes, and multiple learning points woven throughout."
-    },
-    action: {
-      brief: "150-200 words. Single, clear call-to-action with immediate next step.",
-      standard: "200-300 words. Main call-to-action with 2-3 supporting steps or reasons.",
-      detailed: "300-500 words. Comprehensive action plan with preparation steps, implementation guide, and expected outcomes."
-    },
-    insight: {
-      brief: "150-200 words. Lead with surprising data and explain its significance.",
-      standard: "200-300 words. Present key discoveries and support with evidence.",
-      detailed: "300-500 words. Reveal deeper understanding and challenge assumptions."
-    },
-    problem_solution: {
-      brief: "150-200 words. Identify the pain point clearly and present the solution approach.",
-      standard: "200-300 words. Explain the impact and share implementation details.",
-      detailed: "300-500 words. Highlight the benefits and provide a clear call-to-action."
-    },
-    comparison: {
-      brief: "150-200 words. Introduce the approaches and compare key aspects.",
-      standard: "200-300 words. Highlight innovations and present evidence.",
-      detailed: "300-500 words. Guide decision making with a balanced analysis."
-    }
-  };
-
-  const guide = guides[template as keyof typeof guides]?.[length];
-  if (!guide) {
-    console.error('Invalid template or length:', { template, length });
-    return 'Guide not found';
-  }
-  return guide;
-};
-
-const templateOptions = Object.entries(POST_TEMPLATES).map(([id, template]) => ({
-  id: id as keyof typeof POST_TEMPLATES,
-  name: template.name,
-}));
-
-interface KeyActionsSectionProps {
-  actions: Array<{ content: string; importance: number }>;
-  onUseInPost?: (action: { content: string; importance: number }) => void;
-  onHighlight?: (action: { content: string; importance: number }) => void;
-}
-
-function KeyActionsSection({ actions, onUseInPost, onHighlight }: KeyActionsSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
-
-  // Group actions by importance
-  const groupedActions = actions.reduce((acc, action) => {
-    const importance = action.importance;
-    if (importance >= 0.8) acc.high.push(action);
-    else if (importance >= 0.5) acc.medium.push(action);
-    else acc.low.push(action);
-    return acc;
-  }, { high: [], medium: [], low: [] } as { high: typeof actions, medium: typeof actions, low: typeof actions });
-
-  return (
-    <div className="bg-black/20 rounded-lg p-4 border border-white/10">
-      <button 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between text-lg font-semibold text-white mb-2"
-      >
-        <span>🎯 Key Actions</span>
-        <span>{isExpanded ? '▼' : '▶'}</span>
-      </button>
-      
-      {isExpanded && (
-        <div className="space-y-4">
-          {groupedActions.high.length > 0 && (
-            <div>
-              <h5 className="text-red-400 font-medium mb-2">🔥 High Priority</h5>
-              {groupedActions.high.map((action, i) => (
-                <div key={i} className="flex items-start gap-2 mb-2 group">
-                  <p className="text-gray-300 flex-grow">{action.content}</p>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => onUseInPost?.(action)}
-                      className="text-xs bg-purple-900/50 hover:bg-purple-900 px-2 py-1 rounded mr-1"
-                    >
-                      Use in Post
-                    </button>
-                    <button 
-                      onClick={() => onHighlight?.(action)}
-                      className="text-xs bg-yellow-900/50 hover:bg-yellow-900 px-2 py-1 rounded"
-                    >
-                      Highlight
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {groupedActions.medium.length > 0 && (
-            <div>
-              <h5 className="text-orange-400 font-medium mb-2">⚡ Medium Priority</h5>
-              {groupedActions.medium.map((action, i) => (
-                <div key={i} className="flex items-start gap-2 mb-2 group">
-                  <p className="text-gray-300 flex-grow">{action.content}</p>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => onUseInPost?.(action)}
-                      className="text-xs bg-purple-900/50 hover:bg-purple-900 px-2 py-1 rounded mr-1"
-                    >
-                      Use in Post
-                    </button>
-                    <button 
-                      onClick={() => onHighlight?.(action)}
-                      className="text-xs bg-yellow-900/50 hover:bg-yellow-900 px-2 py-1 rounded"
-                    >
-                      Highlight
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {groupedActions.low.length > 0 && (
-            <div>
-              <h5 className="text-blue-400 font-medium mb-2">📝 Other Actions</h5>
-              {groupedActions.low.map((action, i) => (
-                <div key={i} className="flex items-start gap-2 mb-2 group">
-                  <p className="text-gray-300 flex-grow">{action.content}</p>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => onUseInPost?.(action)}
-                      className="text-xs bg-purple-900/50 hover:bg-purple-900 px-2 py-1 rounded mr-1"
-                    >
-                      Use in Post
-                    </button>
-                    <button 
-                      onClick={() => onHighlight?.(action)}
-                      className="text-xs bg-yellow-900/50 hover:bg-yellow-900 px-2 py-1 rounded"
-                    >
-                      Highlight
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Home() {
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
+  const [openAIResult, setOpenAIResult] = useState<EnrichedVideoMetadata | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savedUrl, setSavedUrl] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -324,6 +85,7 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
+      // First get video metadata from convert endpoint
       const response = await fetch('/api/convert', {
         method: 'POST',
         headers: {
@@ -338,8 +100,46 @@ export default function Home() {
       }
 
       const data = await response.json();
-      if (data.success && data.metadata) {
-        setVideoData(data.metadata);
+      if (data.status === 'success' && data.metadata) {
+        // Save the successful URL
+        setSavedUrl(videoUrl);
+        
+        setVideoData({
+          ...data.metadata,
+          isShort: data.isShort || false,
+          url: videoUrl // Use the input URL directly
+        });
+
+        // Get OpenAI analysis
+        setAnalysisLoading(true);
+        const analysisResponse = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            metadata: {
+              ...data.metadata,
+              url: videoUrl // Make sure analysis gets the URL too
+            }
+          })
+        });
+        
+        if (!analysisResponse.ok) {
+          console.error('OpenAI analysis failed:', await analysisResponse.text());
+          toast.error('OpenAI analysis failed. Please try again.');
+          return;
+        }
+
+        const analysisData = await analysisResponse.json();
+        console.log('OpenAI analysis:', analysisData);
+        
+        if (analysisData.status === 'success' && analysisData.analysis) {
+          setOpenAIResult(analysisData.analysis);
+        } else {
+          console.error('No valid analysis data found in response');
+          toast.error('Failed to get video analysis. Please try again.');
+        }
       } else {
         throw new Error('Invalid response format from server');
       }
@@ -349,6 +149,7 @@ export default function Home() {
       setError(error.message || 'Failed to process video');
     } finally {
       setLoading(false);
+      setAnalysisLoading(false);
     }
   };
 
@@ -430,7 +231,7 @@ export default function Home() {
                         {loading ? (
                           <div className="flex items-center justify-center">
                             <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                            Transcribing...
+                            Processing...
                           </div>
                         ) : (
                           'Convert'
@@ -452,15 +253,33 @@ export default function Home() {
                 <VideoMetadata videoData={videoData} />
               </div>
 
-              {/* Detailed Analysis Section */}
-              <div className="w-full">
-                <VideoAnalysis 
-                  videoData={videoData} 
-                  onUseInPost={(content) => {
-                    // Handle using content in post
-                  }} 
-                />
-              </div>
+              {/* OpenAI Analysis */}
+              {analysisLoading ? (
+                <div className="w-full backdrop-blur-lg bg-white/5 rounded-2xl p-8 border border-white/10">
+                  <div className="flex flex-col items-center justify-center space-y-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                    <p className="text-white text-lg">Analyzing video content...</p>
+                  </div>
+                </div>
+              ) : openAIResult && (
+                <div className="w-full backdrop-blur-lg bg-white/5 rounded-2xl p-8 border border-white/10">
+                  <OpenAIAnalysis 
+                    data={openAIResult} 
+                    isToggled={true} 
+                    onReturn={() => {
+                      setVideoData(null);
+                      setOpenAIResult(null);
+                      setError(null);
+                      setLoading(false);
+                      setAnalysisLoading(false);
+                      if (inputRef.current) {
+                        inputRef.current.value = '';
+                        inputRef.current.focus();
+                      }
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}

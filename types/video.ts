@@ -1,7 +1,7 @@
 export interface VideoMetadata {
   // Base Template (Core Metadata)
   videoId: string;
-  url?: string;
+  url: string;  // Required since users input it at the start
   title: string;
   description: string;
   channelTitle: string;
@@ -67,28 +67,7 @@ interface VideoSummary {
   };
 }
 
-export interface VideoData {
-  // Required base fields
-  id: string;
-  title: string;
-  description: string;
-  channelId: string;
-  channelTitle: string;
-
-  // Optional metadata and enrichment
-  metadata?: VideoMetadata;
-  transcription?: string;
-  tags?: string[];
-  duration?: string;
-  preprocessed?: any;
-
-  // Thumbnails
-  thumbnails?: {
-    default?: { url: string; width: number; height: number };
-    medium?: { url: string; width: number; height: number };
-    high?: { url: string; width: number; height: number };
-  };
-
-  // AI-generated content
-  gptQuickSummary?: string;
+// VideoData extends VideoMetadata to include isShort flag
+export interface VideoData extends VideoMetadata {
+  isShort?: boolean;
 }

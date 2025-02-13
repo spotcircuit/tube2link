@@ -342,7 +342,7 @@ async function analyzeWithOpenAI(metadata: VideoMetadata): Promise<EnrichedVideo
     const isShort = metadata.url?.includes('/shorts/');
     
     const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4o-mini-2024-07-18",
       messages: [
         { 
           role: "system", 

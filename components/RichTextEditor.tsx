@@ -9,7 +9,6 @@ import { Editor as TinyMCEEditorType } from 'tinymce'
 
 interface RichTextEditorProps {
   content: string
-  onReturn: () => void
   onCopy: () => void
   className?: string
   videoUrl?: string
@@ -25,7 +24,7 @@ const Editor = dynamic(
   { ssr: false }
 )
 
-const RichTextEditor = ({ content, onReturn, onCopy, className = '', videoUrl = '', videoTitle = '' }: RichTextEditorProps) => {
+const RichTextEditor = ({ content, onCopy, className = '', videoUrl = '', videoTitle = '' }: RichTextEditorProps) => {
   const editorRef = useRef<TinyMCEEditorType | null>(null)
 
   const handleCopy = () => {
@@ -94,14 +93,8 @@ const RichTextEditor = ({ content, onReturn, onCopy, className = '', videoUrl = 
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <div className="flex items-center justify-between gap-4 mb-4">
-        <button
-          onClick={onReturn}
-          className="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          ← Back to Templates
-        </button>
-        <div className="flex items-center gap-3 flex-wrap justify-end">
+      <div className="flex items-center justify-end gap-4 mb-4">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={() => handleShare('linkedin')}
             className="p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -151,7 +144,6 @@ const RichTextEditor = ({ content, onReturn, onCopy, className = '', videoUrl = 
       <div className="p-6">
         <Editor
           apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-          onInit={(evt, editor) => editorRef.current = editor}
           initialValue={content}
           init={{
             height: 900,
@@ -176,8 +168,9 @@ const RichTextEditor = ({ content, onReturn, onCopy, className = '', videoUrl = 
                 font-size: 16px;
                 color: #e5e7eb;
                 background: #1a1a1a;
-                padding: 1rem;
+                padding: 2rem;
                 line-height: 1.6;
+                margin-bottom: 2rem;
               }
               * {
                 color: #e5e7eb !important;
@@ -185,7 +178,11 @@ const RichTextEditor = ({ content, onReturn, onCopy, className = '', videoUrl = 
               .mce-content-body {
                 background: #1a1a1a !important;
               }
-            `
+            `,
+            forced_root_block: 'div',
+            remove_linebreaks: false,
+            convert_newlines_to_brs: true,
+            remove_redundant_brs: false
           }}
         />
       </div>
