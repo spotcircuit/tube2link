@@ -1,9 +1,28 @@
 export interface VideoMetadata {
-  title: string;
-  channelTitle: string;
-  description: string;
+  // Base Template (Core Metadata)
   videoId: string;
-  youtubeCategory?: string;
+  url?: string;
+  title: string;
+  description: string;
+  channelTitle: string;
+  channelDescription: string;
+  channelCategory: string;
+  publishedAt: string;
+  duration: string;
+  thumbnails: {
+    default?: { url: string; width: number; height: number };
+    high?: { url: string; width: number; height: number };
+    maxres?: { url: string; width: number; height: number };
+    medium?: { url: string; width: number; height: number };
+    standard?: { url: string; width: number; height: number };
+  };
+  tags?: string[];
+  category: string;
+  metrics: {
+    viewCount: number;
+    likeCount: number;
+    commentCount: number;
+  };
 }
 
 interface VideoSummary {
