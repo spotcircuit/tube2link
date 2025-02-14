@@ -22,6 +22,15 @@ function debugEnv(prefix: string) {
   });
 }
 
+export function getOpenAIModel(): string {
+  const model = process.env.OPENAI_MODEL;
+  if (!model) {
+    console.warn('OPENAI_MODEL not set in environment, using default model');
+    return 'gpt-4o-mini-2024-07-18';
+  }
+  return model;
+}
+
 export function getOpenAIClient(): OpenAI {
   console.log('\n=== Starting OpenAI Client Initialization ===');
   
@@ -63,4 +72,26 @@ export function getOpenAIClient(): OpenAI {
 
   console.log('=== Finished OpenAI Client Initialization ===\n');
   return openaiClient;
+}
+
+export enum PostGenerationMode {
+  LinkedIn = 'linkedin',
+  Twitter = 'twitter',
+  Facebook = 'facebook',
+  Instagram = 'instagram'
+}
+
+export async function generatePrompt(data: any, mode: PostGenerationMode, settings: any): Promise<string> {
+  // Implementation
+  return '';
+}
+
+export async function generateLinkedInPost(data: any, mode: PostGenerationMode, settings: any): Promise<string> {
+  // Implementation
+  return '';
+}
+
+export async function formatDetailedAnalysis(data: any): Promise<string> {
+  // Implementation
+  return '';
 }

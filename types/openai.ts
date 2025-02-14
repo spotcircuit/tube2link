@@ -17,44 +17,82 @@ export interface CoreSummary {
   call_to_action?: string;
 }
 
+export interface Recipe {
+  name: string;
+  cook_time?: string;
+  difficulty?: string;
+  ingredients: string[];
+  key_steps: string[];
+  tips?: string[];
+  serving_size?: string;
+}
+
+export interface ExtendedEnrichment {
+  recipes?: Recipe[];
+  news_details?: NewsDetails;
+  review_details?: ReviewDetails;
+  comparison_details?: ComparisonDetails;
+  tutorial_details?: TutorialDetails;
+  recipe_details?: RecipeDetails;
+  commentary_details?: CommentaryDetails;
+  cooking_notes?: {
+    equipment_needed?: string[];
+    preparation_tips?: string[];
+    storage_info?: string;
+  };
+}
+
 export interface EnrichedVideoMetadata {
   core_summary: CoreSummary;
   video_type: VideoType;
   url: string;
-  extended_enrichment?: {
-    news_details?: NewsDetails;
-    review_details?: ReviewDetails;
-    comparison_details?: ComparisonDetails;
-    tutorial_details?: TutorialDetails;
-    recipe_details?: RecipeDetails;
-    commentary_details?: CommentaryDetails;
+  videoTitle?: string;
+  videoDescription?: string;
+  channelName?: string;
+  videoId?: string;
+  channelDescription?: string;
+  channelCategory?: string;
+  publishedAt?: string;
+  duration?: string;
+  thumbnails?: {
+    default?: { url: string; width: number; height: number };
+    high?: { url: string; width: number; height: number };
+    maxres?: { url: string; width: number; height: number };
+    medium?: { url: string; width: number; height: number };
+    standard?: { url: string; width: number; height: number };
   };
+  category?: string;
+  viewCount?: number;
+  likeCount?: number;
+  commentCount?: number;
+  extended_enrichment?: ExtendedEnrichment;
 }
 
-export type VideoType = 'news' | 'review' | 'comparison' | 'tutorial' | 'recipe' | 'commentary' | 'fallback';
+export type VideoType = 'product' | 'news' | 'tutorial' | 'recipe' | 'commentary' | 'comparison' | 'review';
 
 export interface NewsDetails {
-  headline: string;
-  key_points: string[];
-  sources_cited: string[];
+  headline?: string;
+  key_points?: string[];
+  sources?: string[];
   expert_opinions?: string[];
   related_topics?: string[];
   impact_assessment?: string;
-  context: string;
-  quotes: Array<{
+  context?: string;
+  quotes?: Array<{
     text: string;
     speaker: string;
-    context: string;
+    context?: string;
   }>;
-  fact_check: Array<{
+  fact_check?: Array<{
     claim: string;
     context: string;
   }>;
-  participants: Array<{
+  participants?: Array<{
     name: string;
     role: string;
-    affiliation: string;
+    affiliation?: string;
   }>;
+  analysis?: string;
 }
 
 export interface ReviewDetails {

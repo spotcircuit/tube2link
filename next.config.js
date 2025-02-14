@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
@@ -13,15 +15,19 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    unoptimized: false, // Enable image optimization for production
   },
-  transpilePackages: ['debug', 'supports-color'],
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      'supports-color': false,
-    };
-    return config;
+  eslint: {
+    ignoreDuringBuilds: false, // Enable ESLint checking during builds
   },
-}
+  typescript: {
+    ignoreBuildErrors: false, // Enable TypeScript checking during builds
+  },
+  poweredByHeader: false, // Remove X-Powered-By header for security
+  compress: true, // Enable compression
+  generateEtags: true, // Enable ETags for caching
+  productionBrowserSourceMaps: false, // Disable source maps in production for better performance
+  swcMinify: true, // Use SWC minifier
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
