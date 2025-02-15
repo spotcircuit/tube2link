@@ -1,10 +1,12 @@
 import { VideoMetadata } from '@/types/video';
-import { getOpenAIClient } from '@/lib/openai';
+import OpenAI from 'openai';
+import { getOpenAIClient, getOpenAIModel } from '@/lib/openai';
+import { ComparisonDetails } from '@/types/openai';
 import { COMPARISON_TEMPLATE } from './comparison_template';
 
 const openai = getOpenAIClient();
 
-export async function analyzeComparison(metadata: VideoMetadata) {
+export async function analyzeComparison(metadata: VideoMetadata): Promise<ComparisonDetails> {
   const systemPrompt = COMPARISON_TEMPLATE.system + `\n\nImportant instructions:
 1. For EACH product, list at least 3 key features
 2. Rate EVERY feature on a 1-10 scale
@@ -13,15 +15,15 @@ export async function analyzeComparison(metadata: VideoMetadata) {
 5. Make clear recommendations based on user type`;
 
   const userPrompt = COMPARISON_TEMPLATE.user
-    .replace('{title}', metadata.title || '')
-    .replace('{description}', metadata.description || '')
-    .replace('{duration}', metadata.duration || '')
-    .replace('{channel}', metadata.channelTitle || '')
-    .replace('{tags}', metadata.tags?.join(', ') || 'None');
+    .replace('{title}', metadata.title ?? '')
+    .replace('{description}', metadata.description ?? '')
+    .replace('{duration}', metadata.duration ?? '')
+    .replace('{channel}', metadata.channelTitle ?? '')
+    .replace('{tags}', metadata.tags?.join(', ') ?? 'None');
 
   try {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini-2024-07-18',
+      model: getOpenAIModel(),
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt + '\n\n' + COMPARISON_TEMPLATE.template }
@@ -30,33 +32,45 @@ export async function analyzeComparison(metadata: VideoMetadata) {
       response_format: { type: 'json_object' }
     });
 
-    const result = JSON.parse(completion.choices[0].message.content);
-    
-    // Validate key features
-    if (result.products) {
-      result.products = result.products.map(product => {
-        if (!product.keyFeatures || product.keyFeatures.length === 0) {
-          product.keyFeatures = [{
-            name: 'Basic Features',
-            rating: '7/10',
-            description: 'Standard product features',
-            strengths: ['+ Basic functionality'],
-            weaknesses: ['- Limited information available']
-          }];
-        }
-        return product;
-      });
+    const message = completion.choices[0]?.message;
+    if (!message?.content) {
+      throw new Error('Failed to analyze comparison content');
     }
 
-    return {
-      success: true,
-      data: result
-    };
+    const response = JSON.parse(message.content) as ComparisonDetails;
+    
+    // Ensure required fields are present
+    if (!response.items_compared || response.items_compared.length === 0) {
+      response.items_compared = [{
+        name: metadata.title ?? 'Unknown Product',
+        features: ['Basic functionality'],
+        pros: ['Standard features'],
+        cons: ['Limited information available'],
+        best_for: 'General use'
+      }];
+    }
+
+    return response;
   } catch (error) {
-    console.error('Failed to analyze comparison:', error);
+    console.error('Error analyzing comparison content:', error);
+    // Return a minimal valid ComparisonDetails object
     return {
-      success: false,
-      error: 'Failed to analyze comparison'
+      items_compared: [{
+        name: metadata.title ?? 'Unknown Product',
+        features: ['Basic functionality'],
+        pros: ['Standard features'],
+        cons: ['Limited information available'],
+        best_for: 'General use'
+      }],
+      comparative_analysis: 'Analysis failed',
+      recommendations: 'Unable to provide recommendations',
+      products: [{
+        name: metadata.title ?? 'Unknown Product',
+        key_features: ['Basic functionality'],
+        pros: ['Standard features'],
+        cons: ['Limited information available']
+      }],
+      comparison_criteria: ['Basic functionality']
     };
   }
 }

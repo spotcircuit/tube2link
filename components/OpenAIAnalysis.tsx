@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import { EnrichedVideoMetadata } from '@/types/openai';
 import TutorialView from './video-analysis/TutorialView';
 import ComparisonView from './video-analysis/ComparisonView';
@@ -8,11 +9,12 @@ import RecipeView from './video-analysis/RecipeView';
 import NewsView from './video-analysis/NewsView';
 import CommentaryView from './video-analysis/CommentaryView';
 import SocialPostGenerator from './SocialPostGenerator';
-import { useState } from 'react';
+import VideoMetadata from './VideoMetadata';
 
 interface OpenAIAnalysisProps {
   data: EnrichedVideoMetadata;
-  onReturn: () => void;
+  onReturn?: () => void;
+  isToggled?: boolean;
 }
 
 const RecipeDetails = ({ recipe }: { recipe: any }) => (
@@ -128,51 +130,27 @@ const CookingTips = ({ tips }: { tips: any }) => (
   </div>
 );
 
-export default function OpenAIAnalysis({ data, onReturn }: OpenAIAnalysisProps) {
+export default function OpenAIAnalysis({ data, onReturn, isToggled = false }: OpenAIAnalysisProps) {
   const [showResponse, setShowResponse] = useState(false);
 
   return (
     <div className="space-y-8">
-      {/* Toggle Response Button */}
-      <div className="flex justify-end">
-        <button
-          onClick={() => setShowResponse(!showResponse)}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          {showResponse ? 'Hide OpenAI Response' : 'Show OpenAI Response'}
-        </button>
-      </div>
-
-      {/* Raw JSON Response */}
-      {showResponse && (
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-purple-300">OpenAI Analysis Response</h2>
-          </div>
-          <pre className="whitespace-pre-wrap text-gray-200 bg-gray-700/50 p-4 rounded-lg overflow-auto max-h-96">
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        </div>
-      )}
-
       {/* Core Summary Section */}
       <section>
         <h2 className="text-xl font-bold mb-4 text-white">Core Summary</h2>
         <div className="space-y-6">
-          {/* Core Concepts */}
-          {data.core_summary?.core_concepts && (
+          {(data.core_summary as any)?.core_concepts && (
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
               <h3 className="font-medium text-purple-300 mb-2">Core Concepts</h3>
-              <p className="text-gray-200">{data.core_summary.core_concepts}</p>
+              <p className="text-gray-200">{(data.core_summary as any).core_concepts}</p>
             </div>
           )}
 
-          {/* Key Insights */}
-          {data.core_summary?.key_insights && data.core_summary.key_insights.length > 0 && (
+          {Array.isArray((data.core_summary as any)?.key_insights) && (
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
               <h3 className="font-medium text-purple-300 mb-2">Key Insights</h3>
               <ul className="space-y-2">
-                {data.core_summary.key_insights.map((insight, i) => (
+                {(data.core_summary as any).key_insights.map((insight: string, i: number) => (
                   <li key={i} className="flex items-start">
                     <span className="text-purple-400 mr-2">•</span>
                     <span className="text-gray-200">{insight}</span>
@@ -181,171 +159,82 @@ export default function OpenAIAnalysis({ data, onReturn }: OpenAIAnalysisProps) 
               </ul>
             </div>
           )}
-
-          {/* Enhanced Short Content Details */}
-          {(data.core_summary?.main_subject || 
-            data.core_summary?.action_shown || 
-            data.core_summary?.content_context || 
-            data.core_summary?.content_purpose || 
-            (data.core_summary?.visual_elements && data.core_summary.visual_elements.length > 0) || 
-            (data.core_summary?.audio_elements && data.core_summary.audio_elements.length > 0) || 
-            data.core_summary?.call_to_action) && (
-            <div className="space-y-4 mt-4">
-              {/* Main Subject */}
-              {data.core_summary?.main_subject && (
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="font-medium text-purple-300 mb-2">Main Subject</h3>
-                  <p className="text-gray-200">{data.core_summary.main_subject}</p>
-                </div>
-              )}
-
-              {/* Action Shown */}
-              {data.core_summary?.action_shown && (
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="font-medium text-purple-300 mb-2">Action/Highlight</h3>
-                  <p className="text-gray-200">{data.core_summary.action_shown}</p>
-                </div>
-              )}
-
-              {/* Content Context */}
-              {data.core_summary?.content_context && (
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="font-medium text-purple-300 mb-2">Context</h3>
-                  <p className="text-gray-200">{data.core_summary.content_context}</p>
-                </div>
-              )}
-
-              {/* Content Purpose */}
-              {data.core_summary?.content_purpose && (
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="font-medium text-purple-300 mb-2">Purpose</h3>
-                  <p className="text-gray-200">{data.core_summary.content_purpose}</p>
-                </div>
-              )}
-
-              {/* Visual Elements */}
-              {data.core_summary?.visual_elements && data.core_summary.visual_elements.length > 0 && (
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="font-medium text-purple-300 mb-2">Visual Elements</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {data.core_summary.visual_elements.map((element, i) => (
-                      <span key={i} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
-                        {element}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Audio Elements */}
-              {data.core_summary?.audio_elements && data.core_summary.audio_elements.length > 0 && (
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="font-medium text-purple-300 mb-2">Audio Elements</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {data.core_summary.audio_elements.map((element, i) => (
-                      <span key={i} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
-                        {element}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Call to Action */}
-              {data.core_summary?.call_to_action && (
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="font-medium text-purple-300 mb-2">Call to Action</h3>
-                  <p className="text-gray-200">{data.core_summary.call_to_action}</p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </section>
 
-      {/* Tools & Resources Section */}
-      {data.extended_enrichment && 
-       'tools_mentioned' in data.extended_enrichment && 
-       data.extended_enrichment.tools_mentioned && 
-       data.extended_enrichment.tools_mentioned.length > 0 && (
+      <div className="flex justify-end">
+        <button
+          onClick={() => setShowResponse(!showResponse)}
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          {showResponse ? 'Hide Raw Analysis' : 'Show Raw Analysis'}
+        </button>
+      </div>
+
+      {showResponse && (
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-purple-300">Raw Analysis Data</h2>
+          </div>
+          <pre className="whitespace-pre-wrap text-gray-200 bg-gray-700/50 p-4 rounded-lg overflow-auto max-h-96">
+            {JSON.stringify({
+              core_summary: data.core_summary,
+              video_type: data.video_type,
+              extended_enrichment: data.extended_enrichment
+            }, null, 2)}
+          </pre>
+        </div>
+      )}
+
+      {Array.isArray((data.extended_enrichment as any)?.tools_mentioned) &&
+       (data.extended_enrichment as any).tools_mentioned.length > 0 && (
         <section>
-          <h2 className="text-xl font-bold mb-4">Tools & Resources</h2>
-          <div className="space-y-4">
-            {data.extended_enrichment.tools_mentioned.map((tool, idx) => (
-              <div key={idx} className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold">{tool.name}</h3>
-                <p className="text-gray-600">{tool.description}</p>
-                {tool.url && (
-                  <a
-                    href={tool.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Visit Website
-                  </a>
-                )}
-              </div>
+          <h2 className="text-xl font-bold mb-4 text-white">Tools & Resources</h2>
+          <div className="flex flex-wrap gap-2">
+            {(data.extended_enrichment as any).tools_mentioned.map((tool: string, i: number) => (
+              <span key={i} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
+                {tool}
+              </span>
             ))}
           </div>
         </section>
       )}
 
-      {/* Recipe Details Section */}
-      {data.extended_enrichment && 
-       'recipe_details' in data.extended_enrichment && 
-       data.extended_enrichment.recipe_details && (
+      {(data.extended_enrichment as any)?.recipe_details && (
         <section>
-          <h2 className="text-xl font-bold mb-4">Recipes</h2>
-          {data.extended_enrichment.recipe_details.cuisine_type && (
-            <div className="mb-4">
-              <span className="font-medium">Cuisine Type:</span> {data.extended_enrichment.recipe_details.cuisine_type}
-            </div>
-          )}
-          {data.extended_enrichment.recipe_details.skill_level && (
-            <div className="mb-4">
-              <span className="font-medium">Skill Level:</span> {data.extended_enrichment.recipe_details.skill_level}
-            </div>
-          )}
-          {data.extended_enrichment.recipe_details.recipes.map((recipe, idx) => (
-            <RecipeDetails key={idx} recipe={recipe} />
-          ))}
+          <h2 className="text-xl font-bold mb-4 text-white">Recipe Details</h2>
+          <RecipeDetails recipe={(data.extended_enrichment as any).recipe_details} />
         </section>
       )}
 
-      {/* Cooking Tips Section */}
-      {data.extended_enrichment && 
-       'cooking_tips' in data.extended_enrichment && 
-       data.extended_enrichment.cooking_tips && (
-        <CookingTips tips={data.extended_enrichment.cooking_tips} />
+      {(data.extended_enrichment as any)?.cooking_tips && (
+        <section>
+          <h2 className="text-xl font-bold mb-4 text-white">Cooking Tips</h2>
+          <CookingTips tips={(data.extended_enrichment as any).cooking_tips} />
+        </section>
       )}
 
-      {/* Video Type Specific Views */}
       {data.video_type && (
         <section className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Type-Specific Analysis</h2>
-          {data.video_type.toLowerCase() === 'tutorial' && <TutorialView data={data} />}
-          {data.video_type.toLowerCase() === 'recipe' && <RecipeView data={data} />}
-          {data.video_type.toLowerCase() === 'comparison' && <ComparisonView data={data} />}
-          {data.video_type.toLowerCase() === 'review' && <ReviewView data={data} />}
-          {data.video_type.toLowerCase() === 'news' && <NewsView data={data} />}
-          {data.video_type.toLowerCase() === 'commentary' && <CommentaryView data={data} />}
+          <h2 className="text-xl font-bold mb-4 text-white">Type-Specific Analysis</h2>
+          {data.video_type === 'tutorial' && <TutorialView data={data} />}
+          {data.video_type === 'comparison' && <ComparisonView data={data} />}
+          {data.video_type === 'review' && <ReviewView data={data} />}
+          {data.video_type === 'recipe' && <RecipeView data={data} />}
+          {data.video_type === 'news' && <NewsView data={data} />}
+          {data.video_type === 'commentary' && <CommentaryView data={data} />}
         </section>
       )}
 
-      {/* Social Post Generator */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Generate Social Posts</h2>
-        <SocialPostGenerator
-          videoData={{
-            title: data.title,
-            url: data.url,
-            description: data.description,
-            channelTitle: data.channelTitle
-          }}
-          onReturn={onReturn}
-        />
-      </div>
+      <h2 className="text-xl font-bold mb-4 text-white">Generate Social Posts</h2>
+      <SocialPostGenerator
+        videoData={{
+          title: data.title || '',
+          url: data.url || '',
+          description: data.description || '',
+          channelTitle: data.channelTitle || '',
+        }}
+      />
     </div>
   );
 }

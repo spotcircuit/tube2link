@@ -1,238 +1,454 @@
 import 'openai/shims/node';
 import OpenAI from 'openai';
 import { VideoData } from '@/types/video';
-import { PostSettings } from '@/types/post';
+import { PostSettings, PostGenerationMode } from '@/types/post';
 import { PreprocessedData } from './preprocessor';
+import { getOpenAIClient, getOpenAIModel } from '@/lib/openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = getOpenAIClient();
 
-export type PostGenerationMode = 'question' | 'insight' | 'howto' | 'story' | 'summary' | 'tips';
-
-export type PostTemplate = {
+interface PostTemplate {
   name: string;
   description: string;
   structure: string;
-};
+}
 
 export const POST_TEMPLATES: Record<PostGenerationMode, PostTemplate> = {
   question: {
     name: 'Question-Based',
     description: 'Start with an engaging question to hook readers',
-    structure: `1. Open with an intriguing question about what's happening
-2. Share the video's unique perspective
-3. Highlight interesting moments and reactions
-4. Invite thoughtful responses about similar experiences
-5. Add relevant hashtags`,
+    structure: `
+      1. Start with a thought-provoking question about the video content
+      2. Share 2-3 key insights from the video
+      3. Add a call-to-action to watch the video
+      4. Include relevant hashtags
+    `
   },
   insight: {
     name: 'Key Insight',
     description: 'Focus on main takeaways and valuable insights',
-    structure: `1. Start with a compelling observation from the video
-2. Explain why it's interesting or surprising
-3. Share specific moments and reactions
-4. Connect to relatable experiences
-5. Add relevant hashtags`,
+    structure: `
+      1. Start with the most impactful insight from the video
+      2. Explain why this insight matters
+      3. Share how viewers can apply this insight
+      4. Include relevant hashtags
+    `
   },
   howto: {
     name: 'How-To Guide',
     description: 'Step-by-step explanation of processes',
-    structure: `1. Introduce what's being attempted in the video
-2. Describe the approach taken
-3. Share the results and reactions
-4. Highlight any lessons learned
-5. Add relevant hashtags`,
+    structure: `
+      1. Introduce what will be learned from the video
+      2. List 2-3 key steps or methods shown
+      3. Highlight the end result or outcome
+      4. Include relevant hashtags
+    `
   },
   story: {
     name: 'Story Format',
     description: 'Narrative style with personal connection',
-    structure: `1. Set up the situation shown in the video
-2. Share the key moments and developments
-3. Describe reactions and outcomes
-4. End with a reflection or takeaway
-5. Add relevant hashtags`,
+    structure: `
+      1. Start with an engaging hook from the video
+      2. Share the journey or transformation shown
+      3. Connect with the viewer's own experience
+      4. Include relevant hashtags
+    `
   },
   summary: {
-    name: 'Quick Summary',
-    description: 'Concise overview of main points',
-    structure: `1. Lead with the main event or action
-2. List key moments and reactions
-3. Share the outcome or conclusion
-4. Add a brief reflection
-5. Add relevant hashtags`,
+    name: 'Summary',
+    description: 'Concise overview of the video content',
+    structure: `
+      1. Brief introduction of the video topic
+      2. 2-3 main points covered
+      3. Quick conclusion or key takeaway
+      4. Include relevant hashtags
+    `
+  },
+  reaction: {
+    name: 'Reaction',
+    description: 'Share your reaction and thoughts',
+    structure: `
+      1. Start with your initial reaction to the video
+      2. Highlight what stood out most to you
+      3. Share why others should watch it
+      4. Include relevant hashtags
+    `
   },
   tips: {
     name: 'Tips & Tricks',
-    description: 'Practical advice and quick wins',
-    structure: `1. Start with the main focus of the video
-2. Share key observations and reactions
-3. Point out interesting or unusual aspects
-4. Suggest what others might learn from it
-5. Add relevant hashtags`,
+    description: 'Share key learnings and takeaways',
+    structure: `
+      1. Start with "Here's what I learned from this video:"
+      2. List 3-4 key tips or insights
+      3. Add your perspective on the most valuable tip
+      4. Include relevant hashtags
+    `
   }
 };
 
 function getToneLabel(tone: number): string {
   if (tone >= 0.8) return 'professional and authoritative';
-  if (tone >= 0.5) return 'balanced and informative';
-  return 'casual and approachable';
+  if (tone >= 0.6) return 'balanced and informative';
+  if (tone >= 0.4) return 'casual and friendly';
+  if (tone >= 0.2) return 'fun and engaging';
+  return 'playful and entertaining';
 }
 
-function getPostLengthParams(length: 'brief' | 'standard' | 'detailed'): { charRange: string, maxPoints: number } {
+function getPostLengthParams(length: 'brief' | 'standard' | 'detailed'): { wordRange: string, maxPoints: number } {
   switch (length) {
-    case 'brief': return { charRange: '200-300', maxPoints: 3 };
-    case 'detailed': return { charRange: '500-700', maxPoints: 7 };
-    default: return { charRange: '300-500', maxPoints: 5 };
+    case 'brief': return { wordRange: '50-100', maxPoints: 2 };
+    case 'detailed': return { wordRange: '200-300', maxPoints: 4 };
+    default: return { wordRange: '100-200', maxPoints: 3 };
   }
 }
 
 async function generatePrompt(data: VideoData, template: PostGenerationMode, settings: PostSettings): Promise<string> {
-  const tone = getToneLabel(settings.tone);
-  const { charRange, maxPoints } = getPostLengthParams(settings.length);
-  
-  // Get video URL or use a placeholder
+  const selectedTemplate = POST_TEMPLATES[template];
+  if (!selectedTemplate) {
+    throw new Error(`Invalid template mode: ${template}`);
+  }
+
+  const { wordRange, maxPoints } = getPostLengthParams(settings.length || 'standard');
+  const toneLabel = getToneLabel(settings.tone || 0.5);
   const videoUrl = data.url || (data.videoId ? `https://www.youtube.com/watch?v=${data.videoId}` : '[Video URL will be added]');
-  
-  // Template-specific instructions
-  const templateInstructions = {
-    question: `Create a post that:
-1. Opens with an intriguing question about the video's content
-2. Describes what happens in the video
-3. Explores interesting aspects and reactions
-4. Invites discussion with a follow-up question`,
-    insight: `Create a post that:
-1. Leads with a key observation from the video
-2. Explains what makes it interesting
-3. Describes specific moments and reactions
-4. Connects to broader experiences`,
-    howto: `Create a post that:
-1. Introduces what's being attempted
-2. Describes the approach or process shown
-3. Shares the results and reactions
-4. Offers any lessons or takeaways`,
-    story: `Create a post that:
-1. Sets up the situation shown in the video
-2. Narrates the key moments
-3. Describes reactions and outcomes
-4. Ends with a reflection`,
-    summary: `Create a post that:
-1. Leads with the main event/action
-2. Lists key moments and reactions
-3. Shares the outcome
-4. Adds a brief reflection`,
-    tips: `Create a post that:
-1. Introduces what's happening in the video
-2. Describes the interesting or unusual aspects
-3. Shares specific reactions and responses
-4. Notes any surprising or memorable moments
-5. Focuses on observations, not advice`
-  };
 
-  return `Generate a ${tone} social media post about this video in ${charRange} characters.
+  // Calculate personality traits influence
+  const dominantTraits = Object.entries(settings.personality)
+    .filter(([_, value]) => value > 0.5)
+    .map(([trait]) => trait)
+    .join(', ');
 
-Video Title: ${data.title}
-Video Description: ${data.description}
-Channel: ${data.channelTitle}
-URL: ${videoUrl}
-
-${templateInstructions[template]}
-
-Guidelines:
-- Keep the post between ${charRange} characters
-- Focus on the ACTUAL content of this specific video
-- Be specific about what happens, reactions, and outcomes
-- For the Tips & Tricks template, focus on OBSERVATIONS from the video, not generic advice
-${settings.useEmojis 
-  ? '- Use relevant emojis to enhance key points (1-2 emojis per section)\n- Use emojis naturally, not excessively' 
-  : '- Do not use any emojis in the content'}
-- Add relevant hashtags at the end that match the video's content
-- End the post with: "Watch here: ${videoUrl}"
-
+  // Base video information
+  const videoInfo = `
 Video Information:
-Title: ${data.title || '[Title not available]'}
-Channel: ${data.channelTitle || '[Channel not available]'}
-Description: ${data.description || '[Description not available]'}
-Duration: ${data.duration || '[Duration not available]'}
+Title: ${data.title ?? '[Title not available]'}
+Channel: ${data.channelTitle ?? '[Channel not available]'}
+Description: ${data.description ?? '[Description not available]'}
+Duration: ${data.duration ?? '[Duration not available]'}
 URL: ${videoUrl}
-${data.tags ? `Tags: ${data.tags.join(', ')}` : ''}
+${data.tags ? `Tags: ${data.tags.join(', ')}` : ''}`;
+
+  // Template-specific instructions
+  let templateInstructions = '';
+  switch (template) {
+    case 'question':
+      templateInstructions = `
+Create an engaging question-based post that sparks curiosity.
+- Start with a thought-provoking question that makes viewers want to know more
+- Focus on an intriguing aspect or surprising element from the video
+- Use the question to highlight the value viewers will get
+- Make the question relatable to the viewer's interests or needs
+- Follow up with key points that hint at the answer
+- Create a sense of curiosity that drives viewers to watch
+Writing style: ${toneLabel}, ${dominantTraits ? `emphasizing ${dominantTraits}` : 'balanced personality'}`;
+      break;
+
+    case 'story':
+      templateInstructions = `
+Create a narrative-style post that tells a compelling story about this video.
+- Focus on the journey, transformation, or experience shown
+- Use storytelling elements (setup, progression, resolution)
+- Make an emotional connection with the viewer
+- Share relatable moments or experiences
+- Write in a more personal, conversational tone
+- Help viewers see themselves in the story
+Writing style: ${toneLabel}, ${dominantTraits ? `emphasizing ${dominantTraits}` : 'balanced personality'}`;
+      break;
+
+    case 'summary':
+      templateInstructions = `
+Create a concise, factual summary that captures the essence of this video.
+- Focus on the main points and key information
+- Be objective and informative in your overview
+- Highlight the most important facts and takeaways
+- Keep it clear and straightforward
+- Maintain a balanced, informative tone
+- Emphasize what viewers will learn or discover
+Writing style: ${toneLabel}, ${dominantTraits ? `emphasizing ${dominantTraits}` : 'balanced personality'}`;
+      break;
+
+    case 'howto':
+      templateInstructions = `
+Create a practical guide that showcases the instructional value of this video.
+- Focus on the specific steps or methods demonstrated
+- Be clear and actionable in your description
+- Include important details for each key step
+- Highlight any tools, requirements, or prerequisites
+- Emphasize the end result or what viewers will achieve
+- Make it practical and easy to understand
+Writing style: ${toneLabel}, ${dominantTraits ? `emphasizing ${dominantTraits}` : 'balanced personality'}`;
+      break;
+
+    case 'insight':
+      templateInstructions = `
+Share the most valuable insights and discoveries from this video.
+- Focus on the "aha moments" or key learnings
+- Explain why these insights are valuable or important
+- Connect insights to practical applications
+- Share the deeper meaning or implications
+- Help viewers understand the unique value
+- Make it thought-provoking and meaningful
+Writing style: ${toneLabel}, ${dominantTraits ? `emphasizing ${dominantTraits}` : 'balanced personality'}`;
+      break;
+
+    case 'reaction':
+      templateInstructions = `
+Create an authentic reaction post that captures your response to this video.
+- Share genuine reactions and impressions
+- Focus on what surprised, impressed, or moved you
+- Highlight standout moments or elements
+- Express why others should care or watch
+- Keep it personal yet relatable
+- Build excitement or interest in the content
+Writing style: ${toneLabel}, ${dominantTraits ? `emphasizing ${dominantTraits}` : 'balanced personality'}`;
+      break;
+  }
+
+  const prompt = `Generate a social media post about this video in ${wordRange} words.
+
+${selectedTemplate.structure}
+
+${templateInstructions}
+
+Post Settings:
+- Tone: ${toneLabel}
+${dominantTraits ? `- Personality: Emphasize ${dominantTraits}` : '- Personality: Balanced approach'}
+- Length: ${wordRange} words
+${settings.useEmojis ? '- Include relevant emojis for emphasis' : '- Avoid using emojis'}
+
+${videoInfo}
 
 Important: 
 - Your post must be SPECIFICALLY about this video's content
-- Do NOT generate generic advice or tips
 - Use the actual events, reactions, and content from the video
-- For Tips & Tricks posts, share observations about what happened, not general advice
+- Follow the template structure above
+- Make this post unique and engaging
+- Add relevant hashtags at the end
+- End with: "Watch here: ${videoUrl}"
+- IMPORTANT: The post must be ${wordRange} words long (not counting hashtags and URL)
 
-Generate a compelling social media post following the template structure above.`;
+Generate a compelling social media post following these instructions.`;
 
   return prompt;
 }
 
-function formatContentToHtml(content: string): string {
-  return content
-    .split('\n')
-    .map(line => {
-      // Convert URLs to links
-      line = line.replace(
-        /(https?:\/\/[^\s]+)/g,
-        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-      );
-      
-      // Convert hashtags to spans
-      line = line.replace(
-        /#(\w+)/g,
-        '<span class="text-blue-500">#$1</span>'
-      );
-      
-      return line;
-    })
-    .join('<br />');
+interface FormattedPost {
+  mainContent: string;
+  hashtags: string[];
+  url: string;
+}
+
+interface PostParagraph {
+  content: string;
+  hasEmoji: boolean;
+}
+
+class PostFormatter {
+  private static readonly URL_PATTERN = /Watch here: (https?:\/\/[^\s]+)$/;
+  private static readonly HASHTAG_PATTERN = /#[^\s#]+/g;
+  private static readonly SENTENCE_PATTERN = /[.!?] /;
+  private static readonly MIN_SENTENCES_PER_PARA = 1;
+  private static readonly MAX_SENTENCES_PER_PARA = 3;
+
+  /**
+   * Extracts URL, hashtags, and main content from the post
+   */
+  private static parsePost(content: string): FormattedPost {
+    if (!content?.trim()) {
+      throw new Error('Post content cannot be empty');
+    }
+
+    // Extract URL
+    const urlMatch = content.match(this.URL_PATTERN);
+    const url = urlMatch?.[1] ?? '';
+    const contentWithoutUrl = content.replace(this.URL_PATTERN, '').trim();
+
+    // Extract hashtags
+    const hashtags: string[] = [];
+    const mainContent = contentWithoutUrl.replace(this.HASHTAG_PATTERN, (match) => {
+      hashtags.push(match);
+      return '';
+    }).trim();
+
+    return {
+      mainContent,
+      hashtags,
+      url
+    };
+  }
+
+  /**
+   * Splits text into sentences and ensures each has proper punctuation
+   */
+  private static formatSentences(text: string): string[] {
+    return text
+      .split(this.SENTENCE_PATTERN)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => s.endsWith('.') || s.endsWith('!') || s.endsWith('?') ? s : s + '.');
+  }
+
+  /**
+   * Checks if a string contains an emoji
+   */
+  private static hasEmoji(text: string): boolean {
+    const emojiPattern = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+    return emojiPattern.test(text);
+  }
+
+  /**
+   * Groups sentences into paragraphs with emoji awareness
+   */
+  private static createParagraphs(sentences: string[]): PostParagraph[] {
+    const paragraphs: PostParagraph[] = [];
+    let currentParagraph: string[] = [];
+
+    sentences.forEach((sentence, index) => {
+      currentParagraph.push(sentence);
+
+      const isLastSentence = index === sentences.length - 1;
+      const reachedMaxSentences = currentParagraph.length >= this.MAX_SENTENCES_PER_PARA;
+      const hasMinSentences = currentParagraph.length >= this.MIN_SENTENCES_PER_PARA;
+
+      if ((isLastSentence || reachedMaxSentences) && hasMinSentences) {
+        const content = currentParagraph.join(' ');
+        paragraphs.push({
+          content,
+          hasEmoji: this.hasEmoji(content)
+        });
+        currentParagraph = [];
+      }
+    });
+
+    return paragraphs;
+  }
+
+  /**
+   * Formats the post with proper HTML structure
+   */
+  public static format(content: string): string {
+    try {
+      const { mainContent, hashtags, url } = this.parsePost(content);
+      const sentences = this.formatSentences(mainContent);
+      const paragraphs = this.createParagraphs(sentences);
+
+      const parts: string[] = [];
+
+      // Format main content paragraphs with proper styling
+      const formattedParagraphs = paragraphs.map((para, index) => {
+        let paraContent = para.content;
+        if (!para.hasEmoji) {
+          const defaultEmojis = ['🌯', '🔥', '✨', '🚀', '💫'];
+          paraContent = `${defaultEmojis[index % defaultEmojis.length]} ${paraContent}`;
+        }
+        return `<p style="margin-bottom: 1.5em; font-size: 1.1em; line-height: 1.5;">${paraContent}</p>`;
+      });
+      parts.push(formattedParagraphs.join('\n'));
+
+      // Add hashtags with styling
+      if (hashtags.length > 0) {
+        const hashtagsHtml = hashtags
+          .map(tag => `<span style="color: #1da1f2;">${tag}</span>`)
+          .join(' ');
+        parts.push(`<p style="margin-top: 1.5em; margin-bottom: 1.5em; color: #536471;">${hashtagsHtml}</p>`);
+      }
+
+      // Add URL with styling
+      if (url) {
+        parts.push(`<p style="margin-top: 1.5em; font-weight: 500;">Watch here: <a href="${url}" style="color: #1da1f2; text-decoration: none;">${url}</a></p>`);
+      }
+
+      return parts.join('\n');
+    } catch (error) {
+      console.error('Error formatting post:', error);
+      return content; // Return original content if formatting fails
+    }
+  }
 }
 
 export async function generateSocialPost(
   data: VideoData,
   mode: PostGenerationMode,
   settings: PostSettings
-): Promise<any> {
-  try {
-    const prompt = await generatePrompt(data, mode, settings);
-    
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
-      messages: [
-        {
-          role: "system",
-          content: `You are a professional social media content writer. Return a JSON object with a 'post' field containing the social media post content.
-
-Format the post with proper spacing using double line breaks (\\n\\n):
-1. Start with an engaging hook or question
-2. Add double line break after the hook
-3. Add main content in 1-2 paragraphs
-4. Add double line break after main content
-5. Add engagement question or call to action
-6. Add double line break before hashtags
-7. Group related hashtags together on one line
-8. Add double line break before the video link
-
-Example format:
-{
-  "post": "Hook or question\\n\\nMain content paragraph 1\\n\\nMain content paragraph 2\\n\\nEngagement question\\n\\n#Tag1 #Tag2 #Tag3\\n#Tag4 #Tag5\\n\\nhttps://..."
-}`
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: settings.length === 'detailed' ? 2500 : 2000,
-      response_format: { type: "json_object" }
-    });
-
-    const response = JSON.parse(completion.choices[0].message.content || '{}');
-    return response;
-  } catch (error) {
-    console.error('Error generating social media post:', error);
-    throw error;
+): Promise<{ content: string; html: string }> {
+  if (!data || !mode || !settings) {
+    throw new Error('Missing required parameters: data, mode, or settings');
   }
+
+  const prompt = await generatePrompt(data, mode, settings);
+  const model = getOpenAIModel();
+
+  // Calculate personality influence
+  const dominantTraits = Object.entries(settings.personality)
+    .filter(([_, value]) => value > 0.5)
+    .map(([trait, value]) => ({ trait, value }));
+
+  // Adjust temperature based on personality traits
+  const baseTemp = 0.7;
+  const personalityBoost = dominantTraits.reduce((acc, { value }) => acc + (value - 0.5) * 0.3, 0);
+  const temperature = Math.min(1, Math.max(0.5, baseTemp + personalityBoost));
+
+  // Build system message based on personality
+  let systemContent = "You are a social media expert who creates engaging, authentic posts about YouTube videos. ";
+  
+  if (dominantTraits.length > 0) {
+    systemContent += "Your writing style is ";
+    dominantTraits.forEach(({ trait, value }, index) => {
+      const intensity = value >= 0.8 ? "extremely " : value >= 0.6 ? "very " : "";
+      if (index > 0) {
+        systemContent += index === dominantTraits.length - 1 ? " and " : ", ";
+      }
+      switch (trait) {
+        case 'sarcasm':
+          systemContent += intensity + "sarcastic and witty";
+          break;
+        case 'humor':
+          systemContent += intensity + "humorous and playful";
+          break;
+        case 'wit':
+          systemContent += intensity + "clever and sharp";
+          break;
+        case 'charm':
+          systemContent += intensity + "charming and engaging";
+          break;
+      }
+    });
+    systemContent += ". ";
+  }
+
+  systemContent += "You focus on the actual content of each video and adapt your tone to match the requested style.";
+
+  const completion = await openai.chat.completions.create({
+    model,
+    messages: [
+      {
+        role: "system",
+        content: systemContent
+      },
+      {
+        role: "user",
+        content: prompt
+      }
+    ],
+    temperature,
+    max_tokens: 500,
+    presence_penalty: 0.3,
+    frequency_penalty: 0.3
+  });
+
+  const rawContent = completion.choices[0]?.message?.content;
+  if (!rawContent) {
+    throw new Error('Failed to generate post content');
+  }
+
+  // Format the content
+  const formattedContent = PostFormatter.format(rawContent);
+  
+  // Convert newlines to <br> for HTML display
+  const html = formattedContent.replace(/\n/g, '<br>');
+
+  return {
+    content: formattedContent,
+    html
+  };
 }

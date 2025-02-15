@@ -1,22 +1,21 @@
 import { NextResponse } from 'next/server';
-import { PostGenerationMode, generatePrompt, generateLinkedInPost } from '@/lib/ai';
+import { PostGenerationMode } from '@/types/post';
+import { generatePrompt } from '@/lib/openai';
+import { generateSocialPost } from '@/lib/social_post_generator';
+import { VideoData } from '@/types/video';
 
 export async function POST(request: Request) {
   try {
     const { data, mode, settings, preview } = await request.json();
     console.log('API received:', { data, mode, settings, preview });
 
-    // Both functions receive the same data structure
-    const videoData = {
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      channelId: data.channelId || data.id,
-      channelTitle: data.channelTitle,
-      gptQuickSummary: data.quick_summary,
-      patterns: data.patterns,
-      semantic: data.semantic,
-      roles: data.roles,
+    // Construct VideoData with required fields
+    const videoData: VideoData = {
+      videoId: data.id,
+      url: data.url,
+      title: data.title || '',
+      description: data.description || '',
+      channelTitle: data.channelTitle || '',
       summary: data.summary
     };
 
@@ -42,7 +41,7 @@ export async function POST(request: Request) {
     } else {
       // For LinkedIn post, generate enriched prompt and start batch processing
       try {
-        const prompt = await generateLinkedInPost(videoData, mode, settings);
+        const prompt = await generateSocialPost(videoData, mode, settings);
         
         // Start batch processing
         const batchResponse = await fetch(new URL('/api/batch/start', request.url), {

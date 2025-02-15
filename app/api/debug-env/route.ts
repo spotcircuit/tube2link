@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getConfig } from '@/lib/config';
 import { getOpenAIClient } from '@/lib/openai';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // 1. Direct environment variable

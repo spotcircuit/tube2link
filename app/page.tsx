@@ -100,6 +100,8 @@ export default function Home() {
       }
 
       const data = await response.json();
+      console.log('Server response:', data);
+
       if (data.status === 'success' && data.metadata) {
         // Save the successful URL
         setSavedUrl(videoUrl);
@@ -126,8 +128,9 @@ export default function Home() {
         });
         
         if (!analysisResponse.ok) {
-          console.error('OpenAI analysis failed:', await analysisResponse.text());
-          toast.error('OpenAI analysis failed. Please try again.');
+          const errorText = await analysisResponse.text();
+          console.error('OpenAI analysis failed:', errorText);
+          toast.error('Analysis failed. Please try again.');
           return;
         }
 
@@ -137,16 +140,20 @@ export default function Home() {
         if (analysisData.status === 'success' && analysisData.analysis) {
           setOpenAIResult(analysisData.analysis);
         } else {
-          console.error('No valid analysis data found in response');
-          toast.error('Failed to get video analysis. Please try again.');
+          const errorMessage = analysisData.error || 'No valid analysis data found';
+          console.error('Analysis error:', errorMessage, 'Full response:', analysisData);
+          toast.error('Analysis incomplete. Please try again.');
         }
       } else {
-        throw new Error('Invalid response format from server');
+        const errorMessage = data.error || 'Invalid response from server';
+        console.error('Server error:', errorMessage, 'Full response:', data);
+        toast.error(errorMessage);
       }
     } catch (error: any) {
       console.error('Error processing video:', error);
-      toast.error(error.message || 'Failed to process video');
-      setError(error.message || 'Failed to process video');
+      const errorMessage = error.message || 'Failed to process video';
+      toast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
       setAnalysisLoading(false);
@@ -166,7 +173,7 @@ export default function Home() {
             <Image
               src="/images/tube2linkedin.png"
               alt="Tube2Link Logo"
-              layout="fill"
+              fill
               className="rounded-2xl [filter:invert(1)_hue-rotate(180deg)] object-contain"
             />
           </div>

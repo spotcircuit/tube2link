@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { findExistingTranscription } from '@/lib/transcription';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { videoId } = await request.json();

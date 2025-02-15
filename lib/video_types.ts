@@ -1,4 +1,4 @@
-export type VideoType = 'product' | 'other';
+import { VideoType } from '@/types/openai';
 
 export interface TutorialEnrichment {
   prerequisites: string[];
@@ -49,24 +49,22 @@ export interface ReviewEnrichment {
 export interface CommentaryEnrichment {
   keyMoments: {
     timestamp: string;
+    title: string;
     description: string;
-    significance: string;
   }[];
   mainPoints: {
     point: string;
-    context: string;
+    evidence: string[];
   }[];
-  culturalReferences: {
-    reference: string;
-    explanation: string;
-  }[];
-  audience: {
-    primary: string[];
-    interests: string[];
+  analysis: {
+    perspective: string;
+    bias?: string;
+    credibility: string;
   };
-  moodAndTone: {
-    overall: string;
-    contentWarnings?: string[];
+  engagement: {
+    style: string;
+    audience: string;
+    effectiveness: string;
   };
 }
 
@@ -96,6 +94,39 @@ export interface NewsEnrichment {
     url?: string;
     credibility: string;
   }[];
+}
+
+export interface RecipeEnrichment {
+  recipe: {
+    name: string;
+    servings: string;
+    prepTime: string;
+    cookTime: string;
+    totalTime: string;
+    ingredients: {
+      item: string;
+      amount: string;
+      notes?: string;
+    }[];
+    instructions: {
+      step: string;
+      details: string;
+      timestamp?: string;
+      tips?: string[];
+    }[];
+    nutrition?: {
+      calories?: string;
+      protein?: string;
+      carbs?: string;
+      fat?: string;
+    };
+  };
+  tips: string[];
+  substitutions?: {
+    ingredient: string;
+    alternatives: string[];
+  }[];
+  equipment: string[];
 }
 
 export interface LifestyleEnrichment {
@@ -128,5 +159,9 @@ export interface LifestyleEnrichment {
 }
 
 export type VideoEnrichment = 
-  | { type: 'product'; data: ReviewEnrichment }
-  | { type: 'other'; data: TutorialEnrichment | CommentaryEnrichment | NewsEnrichment | LifestyleEnrichment };
+  | { type: VideoType; data: ReviewEnrichment }
+  | { type: VideoType; data: TutorialEnrichment }
+  | { type: VideoType; data: CommentaryEnrichment }
+  | { type: VideoType; data: NewsEnrichment }
+  | { type: VideoType; data: RecipeEnrichment }
+  | { type: VideoType; data: LifestyleEnrichment };

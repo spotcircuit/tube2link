@@ -1,153 +1,73 @@
 import OpenAI from 'openai';
 import { VideoMetadata } from '@/types/video';
-import { VideoType } from './video_types';
+import { VideoType } from '@/types/openai';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-// Base template for initial type detection
-const BASE_TEMPLATE = `
-1. BASE ANALYSIS:
-{
-  "type": {
-    "primary": "one_of_tutorial_review_commentary_news_lifestyle",
-    "confidence": 0.0 to 1.0,
-    "reasoning": "Brief explanation of why this type was chosen"
-  },
-  "content_signals": {
-    "title_indicators": [
-      {
-        "pattern": "Specific word or phrase found",
-        "strength": "strong|medium|weak"
-      }
-    ],
-    "description_indicators": [
-      {
-        "pattern": "Specific phrase or structure found",
-        "strength": "strong|medium|weak"
-      }
-    ]
-  }
-}`;
+interface ReviewTemplate {
+  type: 'single' | 'comparison';
+  template: string;
+}
 
-// Type-specific enrichment templates
-const TYPE_TEMPLATES = {
-  review: `
-2. REVIEW ENRICHMENT:
-{
-  "productDetails": {
-    "name": "Full product name",
+interface VideoTypeTemplate {
+  type: VideoType;
+  template: string;
+}
+
+const REVIEW_TEMPLATES: Record<'single' | 'comparison', ReviewTemplate> = {
+  single: {
+    type: 'single',
+    template: `{
+  "productInfo": {
+    "name": "Product name",
+    "manufacturer": "Company name",
     "category": "Product category",
-    "price": "Price if mentioned",
-    "specs": {
-      "key": "value",
-      "specification": "details"
-    }
+    "price": "Price if mentioned"
   },
   "keyFeatures": [
     {
-      "feature": "Specific feature name",
-      "rating": 0.0 to 5.0,
-      "comments": "Detailed analysis of the feature"
+      "name": "Feature name",
+      "description": "Feature details",
+      "rating": "Rating if given (1-10)",
+      "pros": ["Positive points"],
+      "cons": ["Negative points"]
     }
   ],
-  "prosAndCons": {
-    "pros": [
-      "Clear benefit or advantage",
-      "Another positive point"
-    ],
-    "cons": [
-      "Specific drawback or limitation",
-      "Another negative point"
-    ]
+  "overallRating": {
+    "score": "Overall score if given (1-10)",
+    "summary": "Brief rating summary"
   },
-  "comparisons": [
-    {
-      "product": "Competing product name",
-      "differences": [
-        "Specific difference or comparison point",
-        "Another comparison detail"
-      ]
-    }
-  ],
-  "verdict": {
-    "rating": 0.0 to 5.0,
-    "summary": "Final verdict summary",
-    "recommendedFor": [
-      "Specific user group or use case",
-      "Another recommendation"
-    ]
-  }
+  "recommendations": {
+    "bestFor": ["Ideal use cases"],
+    "notFor": ["Use cases where not recommended"]
+  },
+  "verdict": "Final verdict"
 }`
-} as const;
-
-// Review-specific templates
-const REVIEW_TEMPLATES = {
-  single: `
-2. SINGLE PRODUCT REVIEW ANALYSIS:
-{
-  "productDetails": {
-    "name": "Full product name",
-    "category": "Product category",
-    "price": "Price if mentioned",
-    "specs": {
-      "key specifications": "with values"
-    }
   },
-  "keyFeatures": [
-    {
-      "feature": "Feature name",
-      "rating": 0.0 to 5.0,
-      "comments": "Detailed analysis of the feature"
-    }
-  ],
-  "prosAndCons": {
-    "pros": [
-      "Key advantage 1",
-      "Key advantage 2"
-    ],
-    "cons": [
-      "Key disadvantage 1",
-      "Key disadvantage 2"
-    ]
-  },
-  "verdict": {
-    "rating": 0.0 to 5.0,
-    "summary": "Overall assessment",
-    "recommendedFor": [
-      "Specific use case or user type"
-    ]
-  }
-}`,
-
-  comparison: `
-2. PRODUCT COMPARISON ANALYSIS:
-{
-  "comparisonContext": {
-    "category": "Product category",
-    "criteria": [
-      "Key comparison criteria"
-    ],
-    "priceRange": "Price range covered"
-  },
+  comparison: {
+    type: 'comparison',
+    template: `{
   "products": [
     {
       "name": "Product name",
-      "price": "Product price",
-      "keyFeatures": [
-        {
-          "feature": "Feature name",
-          "rating": 0.0 to 5.0,
-          "notes": "Comparison notes"
-        }
-      ]
+      "manufacturer": "Company name",
+      "price": "Price if mentioned"
     }
   ],
-  "headToHead": [
+  "comparisonPoints": [
     {
-      "criterion": "Comparison criterion",
-      "winner": "Winning product name",
+      "feature": "Feature being compared",
+      "importance": "How important this feature is (1-10)",
+      "comparison": "Detailed comparison",
+      "winner": "Which product wins for this feature"
+    }
+  ],
+  "winners": [
+    {
+      "category": "Category (e.g., Performance, Value)",
+      "winner": "Winning product",
       "explanation": "Why this product wins"
     }
   ],
@@ -163,6 +83,17 @@ const REVIEW_TEMPLATES = {
     ]
   }
 }`
+  }
+};
+
+const TYPE_TEMPLATES: Record<VideoType, string> = {
+  'product': '',
+  'review': '',
+  'comparison': '',
+  'tutorial': '',
+  'news': '',
+  'commentary': '',
+  'recipe': ''
 };
 
 // Helper to get the appropriate template based on detected type
@@ -178,20 +109,20 @@ Focus on objective information and clear comparisons. If certain information is 
 
   const userPrompt = `Analyze this ${reviewType} video and provide structured information:
 
-Title: ${metadata.title}
-Description: ${metadata.description}
-Duration: ${metadata.duration}
-Tags: ${metadata.tags?.join(', ') || 'None'}
-Category: ${metadata.category || 'Unknown'}
+Title: ${metadata.title ?? ''}
+Description: ${metadata.description ?? ''}
+Duration: ${metadata.duration ?? ''}
+Tags: ${metadata.tags?.join(', ') ?? 'None'}
+Category: ${metadata.category ?? 'Unknown'}
 
 ${confidence <= 0.8 ? "Note: The video type is not certain, so please verify if this is actually a " + reviewType + " video first." : ""}
 
 Provide the analysis in the following JSON structure:`;
 
-  const template = REVIEW_TEMPLATES[reviewType];
+  const template = REVIEW_TEMPLATES[reviewType].template;
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini-2024-07-18",
+    model: "gpt-4",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt + template }
@@ -200,95 +131,166 @@ Provide the analysis in the following JSON structure:`;
     response_format: { type: "json_object" }
   });
 
-  return JSON.parse(completion.choices[0].message.content);
+  const message = completion.choices[0]?.message;
+  if (!message?.content) {
+    throw new Error('Failed to get valid analysis content');
+  }
+
+  try {
+    return JSON.parse(message.content);
+  } catch (error) {
+    console.error('Failed to parse review analysis:', error);
+    return {
+      type: reviewType,
+      confidence: 0.3,
+      analysis: {
+        title: metadata.title ?? 'Unknown Product',
+        description: 'Analysis failed',
+        key_points: ['Unable to analyze content'],
+        recommendations: ['Please try again']
+      }
+    };
+  }
 }
 
 export async function analyzeVideoContent(metadata: VideoMetadata): Promise<[VideoType, number]> {
+  const systemPrompt = `You are a video content analyzer. Your task is to:
+1. Determine the primary type of video content
+2. Look for specific signals in the title, description, and metadata
+3. Provide a confidence score for your classification
+4. Extract key content signals that support your classification
+
+Return your analysis as a JSON object with this structure:
+{
+  "type": {
+    "primary": "One of: product, review, comparison, tutorial, news, commentary, recipe",
+    "confidence": "0.0 to 1.0 score",
+    "reasoning": "Why you classified it this way"
+  },
+  "content_signals": {
+    "title_indicators": [
+      {
+        "pattern": "What was matched",
+        "type": "What this indicates",
+        "confidence": "0.0 to 1.0"
+      }
+    ],
+    "description_indicators": [
+      {
+        "pattern": "What was matched",
+        "type": "What this indicates",
+        "confidence": "0.0 to 1.0"
+      }
+    ]
+  }
+}`;
+
   try {
-    const videoUrl = `https://www.youtube.com/watch?v=${metadata.videoId}`;
-    
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
+      model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: `You are a video content analyzer specializing in product reviews and technical content.
-Analyze this video and provide a structured analysis following these templates:
-${BASE_TEMPLATE}
-
-Video URL: ${videoUrl}
-Important: Return ONLY the JSON structure(s) specified. No additional text.`
+          content: systemPrompt
         },
         {
           role: "user",
           content: `Analyze this video metadata:
-Title: ${metadata.title}
-Channel: ${metadata.channelTitle}
-Description: ${metadata.description}
-Tags: ${metadata.tags?.join(', ') || 'None'}
-Category: ${metadata.category || 'None'}
+Title: ${metadata.title ?? ''}
+Channel: ${metadata.channelTitle ?? ''}
+Description: ${metadata.description ?? ''}
+Tags: ${metadata.tags?.join(', ') ?? 'None'}
+Category: ${metadata.category ?? 'Unknown'}
 
-Provide your analysis in the specified JSON format.`
+Determine the type of content and provide your analysis in the specified JSON format.`
         }
       ],
       temperature: 0.3,
+      response_format: { type: "json_object" },
       max_tokens: 2000
     });
 
-    const response = JSON.parse(completion.choices[0].message.content || '{}');
-    const videoType = response.type.primary as VideoType;
-    const confidence = response.type.confidence;
+    const message = completion.choices[0]?.message;
+    if (!message?.content) {
+      throw new Error('Failed to get valid analysis content');
+    }
 
-    // If we have high confidence, get enrichment data
-    const enrichmentTemplate = getEnrichmentTemplate(videoType, confidence);
-    if (enrichmentTemplate) {
-      const enrichmentCompletion = await openai.chat.completions.create({
-        model: "gpt-4o-mini-2024-07-18",
-        messages: [
-          {
-            role: "system",
-            content: `You are a video content analyzer specializing in ${videoType} content.
+    try {
+      const response = JSON.parse(message.content) as {
+        type: {
+          primary: VideoType;
+          confidence: number;
+          reasoning: string;
+        };
+        content_signals: {
+          title_indicators: Array<{
+            pattern: string;
+            type: string;
+            confidence: number;
+          }>;
+        };
+      };
+
+      const videoType = response.type.primary;
+      const confidence = response.type.confidence;
+
+      // If we have high confidence, get enrichment data
+      const enrichmentTemplate = getEnrichmentTemplate(videoType, confidence);
+      if (enrichmentTemplate) {
+        const enrichmentCompletion = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: `You are a video content analyzer specializing in ${videoType} content.
 Analyze this video and provide enriched details following this template:
 ${enrichmentTemplate}
 
-Video URL: ${videoUrl}
+Return your analysis as a JSON object.
 Important: Return ONLY the JSON structure specified. No additional text.`
-          },
-          {
-            role: "user",
-            content: `Analyze this video metadata:
-Title: ${metadata.title}
-Channel: ${metadata.channelTitle}
-Description: ${metadata.description}
-Tags: ${metadata.tags?.join(', ') || 'None'}
-Category: ${metadata.category || 'None'}
+            },
+            {
+              role: "user",
+              content: `Analyze this video metadata:
+Title: ${metadata.title ?? ''}
+Channel: ${metadata.channelTitle ?? ''}
+Description: ${metadata.description ?? ''}
+Duration: ${metadata.duration ?? ''}
+Category: ${metadata.category ?? 'None'}
 
 Provide your detailed analysis in the specified JSON format.`
+            }
+          ],
+          temperature: 0.3,
+          response_format: { type: "json_object" },
+          max_tokens: 2000
+        });
+
+        const enrichmentMessage = enrichmentCompletion.choices[0]?.message;
+        if (enrichmentMessage?.content) {
+          try {
+            const enrichmentData = JSON.parse(enrichmentMessage.content);
+            console.log(`${videoType} enrichment data:`, enrichmentData);
+          } catch (e) {
+            console.error(`Invalid ${videoType} enrichment data:`, e);
           }
-        ],
-        temperature: 0.3,
-        max_tokens: 2000
-      });
-
-      try {
-        const enrichmentData = JSON.parse(enrichmentCompletion.choices[0].message.content || '{}');
-        // Store enrichment data for later use
-        console.log(`${videoType} enrichment data:`, enrichmentData);
-      } catch (e) {
-        console.error(`Invalid ${videoType} enrichment data:`, e);
+        }
       }
-    }
 
-    // Analyze review content if video type is review
-    if (videoType === 'review') {
-      const reviewType = response.content_signals.title_indicators[0].pattern.includes('vs') ? 'comparison' : 'single';
-      const reviewData = await analyzeReviewContent(metadata, reviewType, confidence);
-      console.log('Review data:', reviewData);
-    }
+      // Analyze review content if video type is review
+      if (videoType === 'review' && response.content_signals.title_indicators?.[0]) {
+        const reviewType = response.content_signals.title_indicators[0].pattern.includes('vs') ? 'comparison' : 'single';
+        const reviewData = await analyzeReviewContent(metadata, reviewType, confidence);
+        console.log('Review data:', reviewData);
+      }
 
-    return [videoType, confidence];
+      return [videoType, confidence];
+    } catch (error) {
+      console.error('Failed to parse video analysis:', error);
+      return ['tutorial', 0.6]; // Safe fallback
+    }
   } catch (error) {
     console.error('Error analyzing video content:', error);
-    return ['tutorial' as VideoType, 0.6]; // Safe fallback
+    return ['tutorial', 0.6]; // Safe fallback
   }
 }

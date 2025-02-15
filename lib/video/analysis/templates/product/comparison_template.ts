@@ -1,7 +1,7 @@
 export const COMPARISON_TEMPLATE = {
   system: `You are a product comparison expert. Your task is to analyze a YouTube video comparing two or more products and extract structured information about their comparison. Focus on:
 1. Key differences between products
-2. Feature-by-feature comparison with ratings (1-10 scale)
+2. Feature-by-feature comparison
 3. Target audience for each product
 4. Value proposition and price comparison
 5. Final recommendations based on user type`,
@@ -13,53 +13,22 @@ Duration: {duration}
 Channel: {channel}
 Tags: {tags}
 
-Extract a detailed comparison in this JSON format. For each feature, ALWAYS include a rating on a 1-10 scale and list both strengths (+) and weaknesses (-).`,
+Extract a detailed comparison in this JSON format. For each product, include features, pros, cons, and target audience.`,
 
   template: `{
-  "overview": {
-    "category": "Product category",
-    "type": "Type of comparison (e.g., Features, Value, Performance)",
-    "targetAudience": ["Who this comparison is for"],
-    "criteria": ["Main criteria used for comparison"]
-  },
-  "products": [
+  "items_compared": [
     {
-      "name": "Product full name",
-      "brand": "Brand name",
-      "keyFeatures": [
-        {
-          "name": "Feature name",
-          "rating": "X/10",
-          "description": "Feature details",
-          "strengths": ["+ Positive points"],
-          "weaknesses": ["- Negative points"]
-        }
-      ],
-      "bestFor": ["Specific use cases"]
+      "name": "Product name",
+      "features": ["List of features"],
+      "price": "Price if mentioned",
+      "pros": ["List of advantages"],
+      "cons": ["List of disadvantages"],
+      "best_for": "Target audience"
     }
   ],
-  "comparisonDetails": [
-    {
-      "feature": "Feature name",
-      "importance": "X/10",
-      "winner": "Product name",
-      "keyDifferences": ["Notable differences"]
-    }
-  ],
-  "value": {
-    "priceComparison": "Price comparison",
-    "bestValue": {
-      "product": "Product name",
-      "reasoning": "Why best value"
-    },
-    "recommendations": [
-      {
-        "for": "User type",
-        "product": "Product name",
-        "reason": "Why recommended"
-      }
-    ],
-    "keyTakeaways": ["Main points"]
-  }
+  "comparative_analysis": "Detailed analysis of the comparison",
+  "recommendations": "Final recommendations",
+  "comparison_criteria": ["List of criteria used for comparison"],
+  "winner": "Best product if clearly stated"
 }`
 };

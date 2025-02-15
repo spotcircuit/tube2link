@@ -1,4 +1,4 @@
-import { VideoType } from './video_types';
+import { VideoType } from '@/types/openai';
 
 interface VideoData {
   title: string;
@@ -8,182 +8,177 @@ interface VideoData {
 }
 
 const PROMPT_TEMPLATES: Record<VideoType, string> = {
-  tutorial: `You are a specialized video content analyzer. Analyze this educational video and extract structured information following these STRICT requirements:
+  product: `You are a product content analyzer. Analyze this product video and extract structured information about the product(s) being discussed.
 
-1. Prerequisites MUST be a non-empty list
-2. Key Learnings MUST be a non-empty list
-3. Steps MUST include at least one item, each with:
-   - A clear, specific title
-   - A detailed description
-   - Optional timestamp in MM:SS format (e.g., "05:30")
-4. Technical details should list all tools, versions, and platforms mentioned
-5. Resources should include valid URLs if mentioned
+Focus on:
+1. Product details and specifications
+2. Key features and benefits
+3. Target audience and use cases
+4. Price points and value proposition
+5. Comparisons with similar products
 
-Provide the response in this EXACT JSON format:
+Return the analysis in this JSON format:
 {
-  "prerequisites": [
-    "Basic JavaScript knowledge",
-    "Node.js installed"
-  ],
-  "keyLearnings": [
-    "How to set up a React project",
-    "Understanding component lifecycle"
-  ],
-  "steps": [
-    {
-      "title": "Install Dependencies",
-      "description": "Run npm install to set up project dependencies",
-      "timeStamp": "01:30"
-    }
-  ],
-  "technicalDetails": {
-    "tools": ["VS Code", "npm"],
-    "versions": ["Node.js v18", "React 18.2"],
-    "platforms": ["Windows", "MacOS"]
+  "product": {
+    "name": "Full product name",
+    "category": "Product category",
+    "manufacturer": "Company name",
+    "price": "Price if mentioned"
   },
-  "resources": [
+  "features": [
     {
-      "url": "https://reactjs.org",
-      "description": "Official React documentation"
+      "name": "Feature name",
+      "description": "Detailed description",
+      "benefits": ["List of benefits"],
+      "limitations": ["Any limitations"]
     }
-  ]
+  ],
+  "targetAudience": {
+    "primaryUsers": ["Main user types"],
+    "idealUseCase": "Best scenario for use",
+    "notRecommendedFor": ["Scenarios where not ideal"]
+  },
+  "valueProposition": {
+    "mainBenefits": ["Key benefits"],
+    "priceToValue": "Assessment of price vs value",
+    "alternatives": ["Competing products"]
+  }
 }
 
 Title: {{title}}
 Description: {{description}}
 Transcript: {{transcript}}`,
 
-  review: `You are a specialized video content analyzer. Analyze this review video and extract structured information following these STRICT requirements:
+  review: `You are a product review analyzer. Extract detailed information about the product review, focusing on objective analysis and clear recommendations.
 
-1. Product Details MUST include name and category
-2. Key Features MUST include at least one item with:
-   - Feature name
-   - Rating (1-5 only)
-   - Detailed comments
-3. Pros and Cons MUST each have at least one item
-4. Verdict MUST include:
-   - Rating (1-10 only)
-   - Clear summary
-   - Target audience recommendations
-
-Provide the response in this EXACT JSON format:
+Return the analysis in this JSON format:
 {
-  "productDetails": {
-    "name": "iPhone 15 Pro",
-    "category": "Smartphone",
-    "price": "$999",
-    "specs": {
-      "screen": "6.1-inch OLED",
-      "processor": "A17 Pro"
-    }
+  "productInfo": {
+    "name": "Product name",
+    "manufacturer": "Company name",
+    "category": "Product category",
+    "price": "Price if mentioned"
   },
   "keyFeatures": [
     {
-      "feature": "Camera System",
-      "rating": 5,
-      "comments": "Exceptional low-light performance with 48MP main sensor"
+      "name": "Feature name",
+      "description": "Feature details",
+      "rating": "Rating if given (1-10)",
+      "pros": ["Positive points"],
+      "cons": ["Negative points"]
     }
   ],
-  "prosAndCons": {
-    "pros": ["Excellent performance", "Great battery life"],
-    "cons": ["Expensive", "Limited customization"]
+  "overallRating": {
+    "score": "Overall score if given (1-10)",
+    "summary": "Brief rating summary"
   },
-  "comparisons": [
+  "recommendations": {
+    "bestFor": ["Ideal use cases"],
+    "notFor": ["Use cases where not recommended"]
+  },
+  "verdict": "Final verdict"
+}
+
+Title: {{title}}
+Description: {{description}}
+Transcript: {{transcript}}`,
+
+  comparison: `You are a product comparison analyzer. Extract detailed information about the products being compared, focusing on objective differences and clear recommendations.
+
+Return the analysis in this JSON format:
+{
+  "products": [
     {
-      "product": "Samsung S23",
-      "differences": ["Different OS", "Different camera approach"]
+      "name": "Product name",
+      "manufacturer": "Company name",
+      "price": "Price if mentioned"
+    }
+  ],
+  "comparisonPoints": [
+    {
+      "feature": "Feature being compared",
+      "importance": "How important this feature is (1-10)",
+      "comparison": "Detailed comparison",
+      "winner": "Which product wins for this feature"
+    }
+  ],
+  "winners": [
+    {
+      "category": "Category (e.g., Performance, Value)",
+      "winner": "Winning product",
+      "explanation": "Why this product wins"
     }
   ],
   "verdict": {
-    "rating": 9,
-    "summary": "Best iPhone yet with significant camera improvements",
-    "recommendedFor": ["Photography enthusiasts", "Power users"]
-  }
-}
-
-Title: {{title}}
-Description: {{description}}
-Transcript: {{transcript}}`,
-
-  commentary: `You are a specialized video content analyzer. Analyze this commentary/entertainment video and extract structured information following these STRICT requirements:
-
-1. Key Moments MUST include timestamps in MM:SS format when available
-2. Main Points MUST have at least one item with point and context
-3. Audience section MUST specify primary target groups and interests
-4. Mood and Tone MUST include overall tone description
-
-Provide the response in this EXACT JSON format:
-{
-  "keyMoments": [
-    {
-      "timestamp": "02:15",
-      "description": "First major argument presented",
-      "significance": "Sets up the main theme of the video"
-    }
-  ],
-  "mainPoints": [
-    {
-      "point": "Social media impact on society",
-      "context": "Discussion of recent studies and trends"
-    }
-  ],
-  "culturalReferences": [
-    {
-      "reference": "1984 by George Orwell",
-      "explanation": "Used to draw parallels with current privacy concerns"
-    }
-  ],
-  "audience": {
-    "primary": ["Tech-savvy adults", "Social media users"],
-    "interests": ["Technology", "Social issues"]
-  },
-  "moodAndTone": {
-    "overall": "Critical but humorous",
-    "contentWarnings": ["Discussion of privacy concerns"]
-  }
-}
-
-Title: {{title}}
-Description: {{description}}
-Transcript: {{transcript}}`,
-
-  news: `You are a specialized video content analyzer. Analyze this news video and extract structured information following these STRICT requirements:
-
-1. Summary MUST include headline and key points
-2. Context MUST provide background information
-3. Fact Check MUST include source for each claim
-4. Impact MUST identify affected groups
-5. Sources MUST include at least one credible source
-
-Provide the response in this EXACT JSON format:
-{
-  "summary": {
-    "headline": "Major Tech Company Announces AI Breakthrough",
-    "keyPoints": ["New AI model developed", "Potential applications in healthcare"]
-  },
-  "context": {
-    "background": "Part of ongoing AI developments in healthcare sector",
-    "relatedEvents": ["Previous healthcare AI announcements"]
-  },
-  "factCheck": {
-    "claims": [
+    "bestOverall": "Best overall product",
+    "bestValue": "Best value product",
+    "situationalRecommendations": [
       {
-        "claim": "First AI model to achieve this accuracy",
-        "verification": "Partially accurate",
-        "source": "AI Research Journal"
+        "scenario": "Use case or situation",
+        "recommendation": "Recommended product",
+        "reason": "Why this product is best for this case"
       }
     ]
-  },
-  "impact": {
-    "immediate": ["Healthcare diagnosis improvements"],
-    "longTerm": ["Potential job market changes"],
-    "affectedGroups": ["Healthcare workers", "Patients"]
-  },
+  }
+}
+
+Title: {{title}}
+Description: {{description}}
+Transcript: {{transcript}}`,
+
+  tutorial: `You are a tutorial content analyzer. Extract structured information about the educational content, focusing on clear steps and learning objectives.
+
+Return the analysis in this JSON format:
+{
+  "prerequisites": ["Required knowledge or tools"],
+  "learningObjectives": ["What will be learned"],
+  "steps": [
+    {
+      "title": "Step title",
+      "description": "Detailed description",
+      "timestamp": "Time in video (MM:SS)",
+      "keyPoints": ["Important points"]
+    }
+  ],
+  "resources": [
+    {
+      "type": "Type of resource",
+      "name": "Resource name",
+      "link": "URL if provided"
+    }
+  ],
+  "skillLevel": "Required skill level",
+  "estimatedTime": "Time to complete"
+}
+
+Title: {{title}}
+Description: {{description}}
+Transcript: {{transcript}}`,
+
+  news: `You are a news content analyzer. Extract structured information about the news content, focusing on facts, sources, and impact.
+
+Return the analysis in this JSON format:
+{
+  "headline": "Main news headline",
+  "summary": "Brief summary",
+  "keyPoints": ["Main points"],
   "sources": [
     {
-      "name": "AI Research Journal",
-      "url": "https://example.com/journal",
-      "credibility": "Peer-reviewed academic journal"
+      "name": "Source name",
+      "credibility": "Assessment of credibility",
+      "link": "URL if provided"
+    }
+  ],
+  "impact": {
+    "immediate": ["Immediate effects"],
+    "longTerm": ["Long-term implications"],
+    "affectedGroups": ["Groups impacted"]
+  },
+  "factCheck": [
+    {
+      "claim": "Specific claim",
+      "verification": "Fact check result",
+      "source": "Verification source"
     }
   ]
 }
@@ -192,59 +187,85 @@ Title: {{title}}
 Description: {{description}}
 Transcript: {{transcript}}`,
 
-  lifestyle: `You are a specialized video content analyzer. Analyze this lifestyle video and extract structured information following these STRICT requirements:
+  commentary: `You are a commentary content analyzer. Extract structured information about the commentary, focusing on analysis, perspective, and key arguments.
 
-1. Experience MUST include a rating (1-5 only)
-2. Highlights MUST include at least one item with title and description
-3. Tips MUST specify importance level (must-know, helpful, or optional only)
-4. Recommendations MUST include why for each item
-5. Preparation MUST list requirements if any are mentioned
-
-Provide the response in this EXACT JSON format:
+Return the analysis in this JSON format:
 {
-  "experience": {
-    "location": "Tokyo, Japan",
-    "duration": "2 weeks",
-    "cost": "$3000",
-    "rating": 5
+  "topic": "Main topic",
+  "perspective": {
+    "viewpoint": "Main viewpoint",
+    "bias": "Any potential bias",
+    "expertise": "Speaker's expertise"
   },
-  "highlights": [
+  "arguments": [
     {
-      "title": "Street Food Tour",
-      "description": "Exploring local markets and street vendors",
-      "timestamp": "05:30"
+      "point": "Key argument",
+      "evidence": ["Supporting evidence"],
+      "counterpoints": ["Opposing views"]
     }
   ],
-  "tips": [
+  "keyMoments": [
     {
-      "tip": "Get a rail pass before arriving",
-      "importance": "must-know"
+      "timestamp": "Time in video (MM:SS)",
+      "topic": "Topic discussed",
+      "significance": "Why important"
     }
   ],
-  "recommendations": [
-    {
-      "item": "Specific ramen shop",
-      "why": "Best quality-price ratio",
-      "where": "Shibuya district",
-      "cost": "$10-15 per bowl"
-    }
-  ],
-  "preparation": {
-    "requirements": ["Valid passport", "Rail pass"],
-    "bestTime": "Spring (March-May)",
-    "warnings": ["Book accommodations early"]
-  }
+  "conclusions": ["Main takeaways"]
 }
 
 Title: {{title}}
 Description: {{description}}
 Transcript: {{transcript}}`,
+
+  recipe: `You are a recipe content analyzer. Extract structured information about the recipe, focusing on ingredients, steps, and tips.
+
+Return the analysis in this JSON format:
+{
+  "recipe": {
+    "name": "Recipe name",
+    "difficulty": "Skill level required",
+    "servings": "Number of servings",
+    "prepTime": "Preparation time",
+    "cookTime": "Cooking time",
+    "totalTime": "Total time"
+  },
+  "ingredients": [
+    {
+      "item": "Ingredient name",
+      "amount": "Quantity",
+      "notes": "Special instructions"
+    }
+  ],
+  "steps": [
+    {
+      "number": "Step number",
+      "instruction": "Detailed instruction",
+      "timestamp": "Time in video (MM:SS)",
+      "tips": ["Helpful tips"]
+    }
+  ],
+  "equipment": ["Required tools"],
+  "tips": ["General tips"],
+  "nutrition": {
+    "calories": "Calorie count",
+    "servingSize": "Size per serving"
+  }
+}
+
+Title: {{title}}
+Description: {{description}}
+Transcript: {{transcript}}`
 };
 
 export function generatePrompt(videoData: VideoData): string {
   const template = PROMPT_TEMPLATES[videoData.type];
+  if (!template) {
+    throw new Error(`No template found for video type: ${videoData.type}`);
+  }
+
   return template
     .replace('{{title}}', videoData.title)
     .replace('{{description}}', videoData.description)
-    .replace('{{transcript}}', videoData.transcript || 'No transcript available');
+    .replace('{{transcript}}', videoData.transcript || '');
 }

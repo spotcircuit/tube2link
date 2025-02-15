@@ -1,28 +1,29 @@
 export interface VideoMetadata {
   // Base Template (Core Metadata)
-  videoId: string;
-  url: string;  // Required since users input it at the start
-  title: string;
-  description: string;
-  channelTitle: string;
-  channelDescription: string;
-  channelCategory: string;
-  publishedAt: string;
-  duration: string;
-  thumbnails: {
-    default?: { url: string; width: number; height: number };
-    high?: { url: string; width: number; height: number };
-    maxres?: { url: string; width: number; height: number };
-    medium?: { url: string; width: number; height: number };
-    standard?: { url: string; width: number; height: number };
+  videoId?: string;
+  url?: string;  // Required since users input it at the start
+  title?: string;
+  description?: string;
+  channelTitle?: string;
+  channelDescription?: string;
+  channelCategory?: string;
+  publishedAt?: string;
+  duration?: string;
+  thumbnails?: {
+    default?: { url?: string; width?: number; height?: number };
+    high?: { url?: string; width?: number; height?: number };
+    maxres?: { url?: string; width?: number; height?: number };
+    medium?: { url?: string; width?: number; height?: number };
+    standard?: { url?: string; width?: number; height?: number };
   };
   tags?: string[];
-  category: string;
-  metrics: {
-    viewCount: number;
-    likeCount: number;
-    commentCount: number;
+  category?: string;
+  metrics?: {
+    viewCount?: number;
+    likeCount?: number;
+    commentCount?: number;
   };
+  isShort?: boolean;  // Flag for YouTube Shorts
 }
 
 interface VideoSummary {
@@ -67,7 +68,7 @@ interface VideoSummary {
   };
 }
 
-// VideoData extends VideoMetadata to include isShort flag
+// VideoData extends VideoMetadata to include additional metadata
 export interface VideoData extends VideoMetadata {
-  isShort?: boolean;
+  summary?: VideoSummary;
 }

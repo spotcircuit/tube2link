@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getVideoInfo } from '@/lib/youtube';
 import { VideoMetadata } from '@/types/video';
+import { youtube_v3 } from 'googleapis';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
@@ -20,11 +23,15 @@ export async function POST(request: Request) {
         if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
           if (url.pathname.includes('/shorts/')) {
             // Handle YouTube Shorts URL
-            videoId = url.pathname.split('/shorts/')[1].split('/')[0];
-            isShort = true;
+            const shortsPath = url.pathname.split('/shorts/')[1];
+            if (shortsPath) {
+              videoId = shortsPath.split('/')[0] || null;
+              isShort = !!videoId;
+            }
           } else if (url.hostname === 'youtu.be') {
             // Handle youtu.be URLs
-            videoId = url.pathname.slice(1);
+            const path = url.pathname.slice(1);
+            videoId = path || null;
           } else {
             // Handle regular YouTube URL
             videoId = url.searchParams.get('v');
@@ -46,35 +53,81 @@ export async function POST(request: Request) {
       throw new Error('Could not fetch video info from YouTube');
     }
 
+    const { rawVideoData: video } = videoInfo;
+    if (!video || !video.snippet) {
+      throw new Error('Invalid video data received from YouTube');
+    }
+
     // Prepare metadata
     const metadata: VideoMetadata = {
       videoId,
-      url: isShort 
-        ? `https://www.youtube.com/shorts/${videoId}`
-        : `https://www.youtube.com/watch?v=${videoId}`,
-      title: videoInfo.snippet?.title || '',
-      description: videoInfo.snippet?.description || '',
-      channelTitle: videoInfo.snippet?.channelTitle || '',
-      channelDescription: videoInfo.snippet?.channelDescription || '',
-      channelCategory: videoInfo.snippet?.categoryId || '',
-      publishedAt: videoInfo.snippet?.publishedAt || '',
-      duration: videoInfo.contentDetails?.duration || '',
-      thumbnails: videoInfo.snippet?.thumbnails || {},
-      tags: videoInfo.snippet?.tags || []
+      url: videoUrl,
+      title: video.snippet.title || '',
+      channelTitle: video.snippet.channelTitle || '',
+      description: video.snippet.description || '',
+      channelDescription: '',  // We'll populate this later if needed
+      channelCategory: video.snippet.categoryId || '',
+      publishedAt: video.snippet.publishedAt || '',
+      duration: video.contentDetails?.duration || '',
+      category: video.snippet.categoryId || '',
+      thumbnails: {
+        ...(video.snippet.thumbnails?.default && {
+          default: {
+            url: video.snippet.thumbnails.default.url || '',
+            width: video.snippet.thumbnails.default.width || 0,
+            height: video.snippet.thumbnails.default.height || 0
+          }
+        }),
+        ...(video.snippet.thumbnails?.high && {
+          high: {
+            url: video.snippet.thumbnails.high.url || '',
+            width: video.snippet.thumbnails.high.width || 0,
+            height: video.snippet.thumbnails.high.height || 0
+          }
+        }),
+        ...(video.snippet.thumbnails?.maxres && {
+          maxres: {
+            url: video.snippet.thumbnails.maxres.url || '',
+            width: video.snippet.thumbnails.maxres.width || 0,
+            height: video.snippet.thumbnails.maxres.height || 0
+          }
+        }),
+        ...(video.snippet.thumbnails?.medium && {
+          medium: {
+            url: video.snippet.thumbnails.medium.url || '',
+            width: video.snippet.thumbnails.medium.width || 0,
+            height: video.snippet.thumbnails.medium.height || 0
+          }
+        }),
+        ...(video.snippet.thumbnails?.standard && {
+          standard: {
+            url: video.snippet.thumbnails.standard.url || '',
+            width: video.snippet.thumbnails.standard.width || 0,
+            height: video.snippet.thumbnails.standard.height || 0
+          }
+        })
+      },
+      metrics: {
+        viewCount: parseInt(video.statistics?.viewCount || '0', 10),
+        likeCount: parseInt(video.statistics?.likeCount || '0', 10),
+        commentCount: parseInt(video.statistics?.commentCount || '0', 10)
+      },
+      tags: video.snippet.tags || [],
+      isShort
     };
 
-    return NextResponse.json({
-      status: 'success',
-      videoId,
-      isShort,
-      metadata
+    return NextResponse.json({ 
+      status: 'success', 
+      metadata 
     });
 
   } catch (error) {
-    console.error('Error in convert endpoint:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'An error occurred' },
-      { status: 500 }
-    );
+    console.error('Error processing video URL:', error);
+    return NextResponse.json({ 
+      status: 'error', 
+      error: error instanceof Error ? error.message : 'An unknown error occurred' 
+    }, { 
+      status: 400 
+    });
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { VideoData } from '@/types/video';
-import { PostSettings } from '@/types/post';
+import { PostSettings, PostGenerationMode, PersonalityTrait } from '@/types/post';
 import { toast } from 'react-hot-toast';
 import RichTextEditor from './RichTextEditor';
 
@@ -11,6 +11,24 @@ interface SocialPostGeneratorProps {
   onReturn?: () => void;
   onCopy?: () => void;
 }
+
+interface GenerateResponse {
+  content: string;
+  html: string;
+}
+
+interface PersonalityTraitConfig {
+  trait: PersonalityTrait;
+  emoji: string;
+  desc: string;
+}
+
+const personalityTraits: PersonalityTraitConfig[] = [
+  { trait: 'charm', emoji: '✨', desc: 'Engaging and appealing' },
+  { trait: 'wit', emoji: '🎯', desc: 'Clever and sharp' },
+  { trait: 'humor', emoji: '😄', desc: 'Fun and entertaining' },
+  { trait: 'sarcasm', emoji: '😏', desc: 'Ironic and playful' }
+];
 
 export default function SocialPostGenerator({ videoData, onReturn, onCopy }: SocialPostGeneratorProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<PostGenerationMode>('question');
@@ -28,8 +46,8 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
   const [generating, setGenerating] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [editorContent, setEditorContent] = useState('');
-  const [rawResponse, setRawResponse] = useState<any>(null);
-  const [showResponse, setShowResponse] = useState(false);
+  const [rawResponse, setRawResponse] = useState<GenerateResponse | null>(null);
+  const [showResponse, setShowResponse] = useState(false); // Default to collapsed
 
   const handleGeneratePost = async () => {
     if (!videoData) {
@@ -51,17 +69,18 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
         }),
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to generate post');
+        throw new Error(data.error || 'Failed to generate post');
       }
 
-      const data = await response.json();
-      setRawResponse(data.content);
-      setEditorContent(data.content.post.replace(/\\n/g, '\n') || '');
+      setRawResponse(data);
+      setEditorContent(data.content);
       setShowEditor(true);
     } catch (error) {
       console.error('Error generating post:', error);
-      toast.error('Failed to generate post');
+      toast.error(error instanceof Error ? error.message : 'Failed to generate post');
     } finally {
       setGenerating(false);
     }
@@ -138,13 +157,6 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
     review: ['⭐', '💯', '📝', '🏆', '💪']
   };
 
-  const personalityTraits = {
-    charm: 'How charming and engaging the post should be',
-    wit: 'Level of clever wordplay and intelligent humor',
-    humor: 'Amount of general humor and fun elements',
-    sarcasm: 'Degree of playful sarcasm (use sparingly)'
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -175,15 +187,15 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
           },
           {
             id: 'summary',
-            name: 'Quick Summary',
+            name: 'Summary',
             description: 'Concise overview of main points',
             icon: '📋'
           },
           {
-            id: 'tips',
-            name: 'Tips & Tricks',
-            description: 'Practical advice and quick wins',
-            icon: '💪'
+            id: 'reaction',
+            name: 'Reaction',
+            description: 'Share your reaction and thoughts',
+            icon: '🎭'
           }
         ].map((template) => (
           <button
@@ -282,12 +294,7 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
                 <label className="text-white">Personality</label>
                 <span className="text-gray-400 text-sm">Adjust writing style</span>
               </div>
-              {[
-                { trait: 'charm', emoji: '✨', desc: 'Engaging and appealing' },
-                { trait: 'wit', emoji: '🎯', desc: 'Clever and sharp' },
-                { trait: 'humor', emoji: '😄', desc: 'Fun and entertaining' },
-                { trait: 'sarcasm', emoji: '😏', desc: 'Ironic and playful' }
-              ].map(({ trait, emoji, desc }) => (
+              {personalityTraits.map(({ trait, emoji, desc }) => (
                 <div key={trait}>
                   <div className="flex justify-between text-sm text-gray-400 mb-1">
                     <span className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { preprocessTranscript } from '@/lib/preprocessor';
 import { getVideoType } from '@/lib/video_context';
-import { formatDetailedAnalysis } from '@/lib/ai';
+import { formatDetailedAnalysis } from '@/lib/openai';
 import fs from 'fs/promises';
 import path from 'path';
 

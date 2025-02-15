@@ -120,7 +120,7 @@ export default function TestDetection() {
             </section>
 
             {/* OpenAI Analysis */}
-            {openAIResult && <OpenAIAnalysis data={openAIResult} isToggled={true} />}
+            {openAIResult && <OpenAIAnalysis data={openAIResult} />}
           </div>
         )}
       </div>

@@ -46,10 +46,10 @@ export interface EnrichedVideoMetadata {
   core_summary: CoreSummary;
   video_type: VideoType;
   url: string;
-  videoTitle?: string;
-  videoDescription?: string;
-  channelName?: string;
-  videoId?: string;
+  videoId: string;
+  title: string;
+  description: string;
+  channelTitle: string;
   channelDescription?: string;
   channelCategory?: string;
   publishedAt?: string;
@@ -62,9 +62,12 @@ export interface EnrichedVideoMetadata {
     standard?: { url: string; width: number; height: number };
   };
   category?: string;
-  viewCount?: number;
-  likeCount?: number;
-  commentCount?: number;
+  metrics?: {
+    viewCount: number;
+    likeCount: number;
+    commentCount: number;
+  };
+  tags?: string[];
   extended_enrichment?: ExtendedEnrichment;
 }
 

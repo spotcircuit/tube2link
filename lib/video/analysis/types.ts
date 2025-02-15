@@ -55,6 +55,18 @@ export interface ProductSignals {
   hasRatingWords: boolean;
 }
 
+export interface ComparisonItem {
+  product: string;
+  advantage: string;
+  disadvantage: string;
+}
+
+export interface Recommendation {
+  userType: string;
+  recommendation: string;
+  reasoning: string;
+}
+
 export interface ProductReviewAnalysis {
   metadata: {
     category: string;
@@ -93,11 +105,16 @@ export interface ProductReviewAnalysis {
     pros: string[];
     cons: string[];
     userFeedback: string[];
+    highlights: string[];
+    painPoints: string[];
+    comparedTo: ComparisonItem[];
   };
   verdict: {
     summary: string;
     rating: number;
-    recommendations: string[];
+    recommendations: Recommendation[];
     alternatives: string[];
+    pros: string[];
+    cons: string[];
   };
 }

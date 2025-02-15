@@ -3,10 +3,12 @@ import { getOpenAIClient } from '@/lib/openai';
 import { getConfig } from '@/lib/config';
 import { VideoData } from '@/types/video';
 import { PostSettings } from '@/types/post';
-import { PostGenerationMode } from '@/lib/ai';
+import { PostGenerationMode } from '@/lib/openai';
 import { PreprocessedData } from '@/lib/preprocessor';
 import * as path from 'path';
 import * as fs from 'fs/promises';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {

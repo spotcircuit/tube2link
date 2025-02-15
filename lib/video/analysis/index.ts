@@ -1,8 +1,9 @@
 import { VideoMetadata } from '@/types/video';
-import { VideoType } from '../types';
+import { VideoType } from '@/types/openai';
 import { detectVideoType } from './detection';
 import { analyzeProductContent } from './templates/product';
-import { getOpenAIClient } from '@/lib/openai';
+import OpenAI from 'openai';
+import { getOpenAIClient, getOpenAIModel } from '@/lib/openai';
 import { analyzeComparison } from './templates/product/comparison';
 import { analyzeReview } from './templates/review';
 
@@ -63,8 +64,10 @@ export async function analyzeVideoContent(metadata: VideoMetadata) {
       };
 
     // We'll add these as we implement them
-    case 'educational':
+    case 'tutorial':
     case 'news':
+    case 'commentary':
+    case 'recipe':
     default:
       throw new Error(`Content type ${primaryType} analysis not yet implemented`);
   }
@@ -78,10 +81,10 @@ Your task is to:
 3. Identify main points and conclusions`;
 
   const userPrompt = `Analyze this video:
-Title: ${metadata.title}
-Description: ${metadata.description}
-Duration: ${metadata.duration}
-Tags: ${metadata.tags?.join(', ') || 'None'}
+Title: ${metadata.title ?? ''}
+Description: ${metadata.description ?? ''}
+Duration: ${metadata.duration ?? ''}
+Tags: ${metadata.tags?.join(', ') ?? 'None'}
 
 Provide analysis in this JSON format:`;
 
@@ -99,27 +102,67 @@ Provide analysis in this JSON format:`;
     }
   ],
   "analysis": {
-    "mainTopics": ["Key topics covered"],
-    "conclusions": ["Main takeaways"],
-    "targetAudience": ["Who this video is for"]
+    "mainPoints": ["Key observations"],
+    "conclusions": ["Final thoughts"],
+    "recommendations": ["Suggestions"]
   }
 }`;
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt + '\n\n' + template }
-    ],
-    temperature: 0.7,
-    response_format: { type: 'json_object' }
-  });
-
   try {
-    return JSON.parse(completion.choices[0].message.content);
+    const completion = await openai.chat.completions.create({
+      model: getOpenAIModel(),
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt + '\n\n' + template }
+      ],
+      temperature: 0.3,
+      response_format: { type: 'json_object' }
+    });
+
+    const message = completion.choices[0]?.message;
+    if (!message?.content) {
+      throw new Error('Failed to analyze ambiguous product content');
+    }
+
+    const response = JSON.parse(message.content) as {
+      videoType: {
+        primary: 'review' | 'comparison';
+        confidence: number;
+        reasoning: string;
+      };
+      products: Array<{
+        name: string;
+        type: string;
+        keyPoints: string[];
+      }>;
+      analysis: {
+        mainPoints: string[];
+        conclusions: string[];
+        recommendations: string[];
+      };
+    };
+
+    return response;
   } catch (error) {
     console.error('Failed to parse ambiguous product analysis:', error);
-    return null;
+    // Return a minimal valid response
+    return {
+      videoType: {
+        primary: 'review',
+        confidence: 0.3,
+        reasoning: 'Analysis failed'
+      },
+      products: [{
+        name: metadata.title ?? 'Unknown Product',
+        type: 'Unknown',
+        keyPoints: ['Analysis failed']
+      }],
+      analysis: {
+        mainPoints: ['Analysis failed'],
+        conclusions: ['Unable to analyze content'],
+        recommendations: ['Please try again']
+      }
+    };
   }
 }
 

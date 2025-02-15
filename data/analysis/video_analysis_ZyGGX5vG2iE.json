@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "videoId": "ZyGGX5vG2iE",
+    "url": "https://www.youtube.com/watch?v=ZyGGX5vG2iE",
+    "title": "Not Your Average Meatloaf",
+    "channelTitle": "BBQ Southern Style",
+    "description": "Not your Average Meatloaf",
+    "channelDescription": "",
+    "channelCategory": "22",
+    "publishedAt": "2025-02-14T22:05:34Z",
+    "duration": "PT45M10S",
+    "category": "22",
+    "thumbnails": {
+      "default": {
+        "url": "https://i.ytimg.com/vi/ZyGGX5vG2iE/default.jpg",
+        "width": 120,
+        "height": 90
+      },
+      "high": {
+        "url": "https://i.ytimg.com/vi/ZyGGX5vG2iE/hqdefault.jpg",
+        "width": 480,
+        "height": 360
+      },
+      "maxres": {
+        "url": "https://i.ytimg.com/vi/ZyGGX5vG2iE/maxresdefault.jpg",
+        "width": 1280,
+        "height": 720
+      },
+      "medium": {
+        "url": "https://i.ytimg.com/vi/ZyGGX5vG2iE/mqdefault.jpg",
+        "width": 320,
+        "height": 180
+      },
+      "standard": {
+        "url": "https://i.ytimg.com/vi/ZyGGX5vG2iE/sddefault.jpg",
+        "width": 640,
+        "height": 480
+      }
+    },
+    "metrics": {
+      "viewCount": 352,
+      "likeCount": 59,
+      "commentCount": 6
+    },
+    "tags": [],
+    "isShort": false
+  },
+  "analysis": {
+    "core_summary": {
+      "core_concepts": "Overview of a unique meatloaf recipe that stands out from traditional versions.",
+      "key_insights": [
+        "Innovative ingredients and techniques for making meatloaf"
+      ]
+    },
+    "extended_enrichment": {
+      "recipes": [
+        {
+          "name": "Not Your Average Meatloaf",
+          "cook_time": "Approximately 1 hour",
+          "difficulty": "Medium",
+          "ingredients": [
+            "Ground beef",
+            "Breadcrumbs",
+            "Eggs",
+            "Onions",
+            "Garlic",
+            "Ketchup",
+            "Various spices"
+          ],
+          "key_steps": [
+            "Preheat the oven to 350°F (175°C).",
+            "Mix all ingredients in a large bowl.",
+            "Shape the mixture into a loaf and place in a baking dish.",
+            "Bake for 45 minutes or until cooked through."
+          ],
+          "tips": [
+            "Let the meatloaf rest before slicing for better texture.",
+            "Experiment with different sauces for topping."
+          ],
+          "serving_size": "Serves 6"
+        }
+      ],
+      "cooking_notes": {
+        "equipment_needed": [
+          "Mixing bowl",
+          "Baking dish",
+          "Meat thermometer"
+        ],
+        "preparation_tips": [
+          "Chop vegetables finely for even mixing.",
+          "Use lean meat for a healthier option."
+        ],
+        "storage_info": "Store leftovers in an airtight container in the refrigerator for up to 3 days."
+      }
+    },
+    "video_type": "recipe",
+    "url": "https://www.youtube.com/watch?v=ZyGGX5vG2iE",
+    "videoTitle": "Not Your Average Meatloaf",
+    "videoDescription": "Not your Average Meatloaf",
+    "channelName": "BBQ Southern Style"
+  }
+}

@@ -27,7 +27,6 @@ const nextConfig = {
   compress: true, // Enable compression
   generateEtags: true, // Enable ETags for caching
   productionBrowserSourceMaps: false, // Disable source maps in production for better performance
-  swcMinify: true, // Use SWC minifier
 };
 
 module.exports = nextConfig;

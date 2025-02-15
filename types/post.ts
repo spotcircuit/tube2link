@@ -1,13 +1,12 @@
-export type PostGenerationMode = 'question' | 'insight' | 'howto' | 'story' | 'summary' | 'tips';
+export type PostGenerationMode = 'question' | 'insight' | 'howto' | 'story' | 'summary' | 'reaction' | 'tips';
+
+export type PersonalityTrait = 'charm' | 'wit' | 'humor' | 'sarcasm';
 
 export interface PostSettings {
   tone: number;
   length: 'brief' | 'standard' | 'detailed';
   personality: {
-    charm: number;
-    wit: number;
-    humor: number;
-    sarcasm: number;
+    [key in PersonalityTrait]: number;
   };
   useEmojis: boolean;
 }

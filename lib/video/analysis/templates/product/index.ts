@@ -50,22 +50,42 @@ Your response must be a valid JSON object matching the template structure.`;
         content: `Analyze this video and respond with a JSON object:\n${JSON.stringify(metadata, null, 2)}`
       }
     ],
-    response_format: { type: "json_object" },
     temperature: 0.7,
+    response_format: { type: "json_object" }
   });
 
-  const analysisContent = completion.choices[0].message.content;
+  const message = completion.choices[0]?.message;
+  if (!message?.content) {
+    throw new Error('Failed to get valid analysis content');
+  }
+
+  const analysisContent = message.content;
   if (typeof analysisContent !== 'string') {
     throw new Error('Failed to get valid analysis content');
   }
-  const analysisResult = JSON.parse(analysisContent);
-  
-  return {
-    type: BASE_PRODUCT_TEMPLATE.type,
-    confidence: 1.0,
-    data: analysisResult,
-    reasoning: 'Using base template due to low confidence in specific type'
-  };
+
+  try {
+    const analysisResult = JSON.parse(analysisContent);
+    return {
+      type: BASE_PRODUCT_TEMPLATE.type,
+      confidence: 1.0,
+      data: analysisResult,
+      reasoning: 'Using base template due to low confidence in specific type'
+    };
+  } catch (error) {
+    console.error('Failed to parse base template analysis:', error);
+    return {
+      type: BASE_PRODUCT_TEMPLATE.type,
+      confidence: 0.3,
+      data: {
+        title: metadata.title ?? 'Unknown Product',
+        description: 'Analysis failed',
+        key_points: ['Unable to analyze content'],
+        recommendations: ['Please try again']
+      },
+      reasoning: 'Failed to parse analysis result'
+    };
+  }
 }
 
 async function analyzeSingleTemplate(metadata: VideoMetadata, type: 'single' | 'comparison') {
@@ -89,22 +109,42 @@ Your response must be a valid JSON object matching the template structure.`;
         content: `Analyze this video and respond with a JSON object:\n${JSON.stringify(metadata, null, 2)}`
       }
     ],
-    response_format: { type: "json_object" },
     temperature: 0.7,
+    response_format: { type: "json_object" }
   });
 
-  const content = completion.choices[0].message.content;
+  const message = completion.choices[0]?.message;
+  if (!message?.content) {
+    throw new Error('AI response missing valid content');
+  }
+
+  const content = message.content;
   if (typeof content !== 'string') {
     throw new Error('AI response missing valid content');
   }
-  const result = JSON.parse(content);
-  
-  return {
-    type: template.type,
-    confidence: 1.0,
-    data: result,
-    reasoning: `Analyzed as ${type} based on high confidence detection`
-  };
+
+  try {
+    const result = JSON.parse(content);
+    return {
+      type: template.type,
+      confidence: 1.0,
+      data: result,
+      reasoning: `Analyzed as ${type} based on high confidence detection`
+    };
+  } catch (error) {
+    console.error('Failed to parse single template analysis:', error);
+    return {
+      type: template.type,
+      confidence: 0.3,
+      data: {
+        title: metadata.title ?? 'Unknown Product',
+        description: 'Analysis failed',
+        key_points: ['Unable to analyze content'],
+        recommendations: ['Please try again']
+      },
+      reasoning: 'Failed to parse analysis result'
+    };
+  }
 }
 
 async function analyzeDualTemplates(metadata: VideoMetadata) {
@@ -135,20 +175,40 @@ Your response must be a valid JSON object matching one of the template structure
         content: `Analyze this video and respond with a JSON object:\n${JSON.stringify(metadata, null, 2)}`
       }
     ],
-    response_format: { type: "json_object" },
     temperature: 0.7,
+    response_format: { type: "json_object" }
   });
 
-  const comparisonContent = completion.choices[0].message.content;
+  const message = completion.choices[0]?.message;
+  if (!message?.content) {
+    throw new Error('Comparison analysis content invalid');
+  }
+
+  const comparisonContent = message.content;
   if (typeof comparisonContent !== 'string') {
     throw new Error('Comparison analysis content invalid');
   }
-  const comparisonResult = JSON.parse(comparisonContent);
-  
-  return {
-    type: comparisonResult.type,
-    confidence: 1.0,
-    data: comparisonResult,
-    reasoning: 'Type determined by content analysis'
-  };
+
+  try {
+    const comparisonResult = JSON.parse(comparisonContent);
+    return {
+      type: comparisonResult.type,
+      confidence: 1.0,
+      data: comparisonResult,
+      reasoning: 'Type determined by content analysis'
+    };
+  } catch (error) {
+    console.error('Failed to parse dual templates analysis:', error);
+    return {
+      type: 'product',
+      confidence: 0.3,
+      data: {
+        title: metadata.title ?? 'Unknown Product',
+        description: 'Analysis failed',
+        key_points: ['Unable to analyze content'],
+        recommendations: ['Please try again']
+      },
+      reasoning: 'Failed to parse analysis result'
+    };
+  }
 }

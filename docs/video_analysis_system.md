@@ -15,6 +15,37 @@ The video analysis system uses a tiered approach to detect and analyze different
   - News
   - Lifestyle
 
+  Based on the error snippet, Next.js is having trouble exporting your custom error routes—specifically for /_error and /500. This usually happens when the error page (or pages) isn't correctly implemented or when something in the component causes a runtime error during the export phase.
+
+Here are some steps to help troubleshoot and fix the issue:
+
+Check Your Custom Error Pages:
+
+Ensure you have either a proper _error or dedicated 500 error page. If you’re using the Pages Router, for example, create a file at pages/_error.js (or /pages/500.js for server error handling) that exports a valid React component.
+For a minimal custom error page, try something like:
+jsx
+Copy
+// pages/500.js
+export default function Custom500() {
+  return <h1>500 - Server Error</h1>;
+}
+If you already have one, check that there are no runtime errors (such as accessing browser-only APIs like window without guards).
+Review File Structure:
+
+Make sure that non-page components or files aren’t accidentally placed in the pages directory. Next.js treats every file in that folder as a route, which can lead to unexpected behavior if you have extra files.
+Examine Strict Compile Issues:
+
+Since you’re compiling in strict mode, type or runtime errors that don’t show up in development might surface. Run your build locally with a strict configuration (using npm run build) and check for any warnings or errors related to your error pages.
+Deprecation Warnings:
+
+The warning about punyco (likely referring to the deprecated punycode library) is usually just a warning and may not be the cause of the export error, but it’s worth ensuring all your dependencies are updated.
+Temporarily Simplify the Error Page:
+
+To isolate the issue, replace your custom error page’s content with a very simple component (like a plain <h1> tag) to see if the error persists. If the build then succeeds, you can incrementally add back your custom logic to pinpoint what’s causing the failure.
+Check for Dynamic Imports or SSR-Only Code:
+
+If your error page (or any components it uses) includes dynamic imports or code that relies on client-side-only APIs, make sure to conditionally load them (or disable SSR for that component using Next.js’s dynamic import with { ssr: false }).
+
 ### 2. Subtype Detection (Second Tier)
 For videos that pass first tier (>40% confidence):
 

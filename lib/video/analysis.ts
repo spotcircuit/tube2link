@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { VideoMetadata } from '@/types/video';
 import { VideoType, EnrichedVideoMetadata } from '@/types/openai';
-import { getOpenAIClient } from '@/lib/openai';
+import { getOpenAIClient, getOpenAIModel } from '@/lib/openai';
 
 // System prompts
 const SHORTS_SYSTEM_PROMPT = `You are analyzing a YouTube Short (short-form video). Your task is to provide a rich, detailed analysis as a JSON object in this specific format:
@@ -318,7 +318,7 @@ export async function analyzeVideo(metadata: VideoMetadata): Promise<EnrichedVid
     const isShort = metadata.url?.includes('/shorts/');
     
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
+      model: getOpenAIModel(),
       messages: [
         { 
           role: "system", 
@@ -333,16 +333,23 @@ export async function analyzeVideo(metadata: VideoMetadata): Promise<EnrichedVid
       response_format: { type: "json_object" }
     });
 
-    const response = JSON.parse(completion.choices[0].message.content);
+    const message = completion.choices[0]?.message;
+    if (!message?.content) {
+      throw new Error('Failed to generate analysis content');
+    }
+
+    const response = JSON.parse(message.content) as Omit<EnrichedVideoMetadata, 'url' | 'title' | 'description' | 'channelTitle'>;
     
     // Ensure URL is included in the response
-    return {
+    const enrichedMetadata: EnrichedVideoMetadata = {
       ...response,
-      url: metadata.url,
-      title: metadata.title,
-      description: metadata.description,
-      channelTitle: metadata.channelTitle
+      url: metadata.url ?? '',
+      title: metadata.title ?? '',
+      description: metadata.description ?? '',
+      channelTitle: metadata.channelTitle ?? ''
     };
+
+    return enrichedMetadata;
 
   } catch (error) {
     console.error('OpenAI analysis error:', error);

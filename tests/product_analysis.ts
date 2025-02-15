@@ -15,19 +15,45 @@ async function testVideoAnalysis(videoId: string) {
     // Convert to our metadata format
     const metadata: VideoMetadata = {
       videoId,
-      title: videoInfo.snippet?.title || '',
-      description: videoInfo.snippet?.description || '',
-      channelTitle: videoInfo.snippet?.channelTitle || '',
-      publishedAt: videoInfo.snippet?.publishedAt || '',
-      duration: videoInfo.contentDetails?.duration || '',
-      thumbnails: videoInfo.snippet?.thumbnails || {},
-      tags: videoInfo.snippet?.tags || [],
-      category: videoInfo.snippet?.categoryId || '',
+      url: `https://youtube.com/watch?v=${videoId}`,
+      title: videoInfo.rawVideoData?.snippet?.title ?? '',
+      description: videoInfo.rawVideoData?.snippet?.description ?? '',
+      channelTitle: videoInfo.rawVideoData?.snippet?.channelTitle ?? '',
+      publishedAt: videoInfo.rawVideoData?.snippet?.publishedAt ?? '',
+      duration: videoInfo.rawVideoData?.contentDetails?.duration ?? '',
+      thumbnails: {
+        default: videoInfo.rawVideoData?.snippet?.thumbnails?.default?.url ? {
+          url: videoInfo.rawVideoData.snippet.thumbnails.default.url,
+          width: videoInfo.rawVideoData.snippet.thumbnails.default.width ?? undefined,
+          height: videoInfo.rawVideoData.snippet.thumbnails.default.height ?? undefined
+        } : undefined,
+        high: videoInfo.rawVideoData?.snippet?.thumbnails?.high?.url ? {
+          url: videoInfo.rawVideoData.snippet.thumbnails.high.url,
+          width: videoInfo.rawVideoData.snippet.thumbnails.high.width ?? undefined,
+          height: videoInfo.rawVideoData.snippet.thumbnails.high.height ?? undefined
+        } : undefined,
+        maxres: videoInfo.rawVideoData?.snippet?.thumbnails?.maxres?.url ? {
+          url: videoInfo.rawVideoData.snippet.thumbnails.maxres.url,
+          width: videoInfo.rawVideoData.snippet.thumbnails.maxres.width ?? undefined,
+          height: videoInfo.rawVideoData.snippet.thumbnails.maxres.height ?? undefined
+        } : undefined,
+        medium: videoInfo.rawVideoData?.snippet?.thumbnails?.medium?.url ? {
+          url: videoInfo.rawVideoData.snippet.thumbnails.medium.url,
+          width: videoInfo.rawVideoData.snippet.thumbnails.medium.width ?? undefined,
+          height: videoInfo.rawVideoData.snippet.thumbnails.medium.height ?? undefined
+        } : undefined,
+        standard: videoInfo.rawVideoData?.snippet?.thumbnails?.standard?.url ? {
+          url: videoInfo.rawVideoData.snippet.thumbnails.standard.url,
+          width: videoInfo.rawVideoData.snippet.thumbnails.standard.width ?? undefined,
+          height: videoInfo.rawVideoData.snippet.thumbnails.standard.height ?? undefined
+        } : undefined
+      },
       metrics: {
-        viewCount: Number(videoInfo.statistics?.viewCount) || 0,
-        likeCount: Number(videoInfo.statistics?.likeCount) || 0,
-        commentCount: Number(videoInfo.statistics?.commentCount) || 0
-      }
+        viewCount: videoInfo.rawVideoData?.statistics?.viewCount ? Number(videoInfo.rawVideoData.statistics.viewCount) : undefined,
+        likeCount: videoInfo.rawVideoData?.statistics?.likeCount ? Number(videoInfo.rawVideoData.statistics.likeCount) : undefined,
+        commentCount: videoInfo.rawVideoData?.statistics?.commentCount ? Number(videoInfo.rawVideoData.statistics.commentCount) : undefined
+      },
+      tags: videoInfo.rawVideoData?.snippet?.tags ?? undefined
     };
 
     // Mock context for testing - we can adjust these
@@ -42,14 +68,14 @@ async function testVideoAnalysis(videoId: string) {
     console.log('Title:', metadata.title);
     console.log('Channel:', metadata.channelTitle);
     console.log('Duration:', metadata.duration);
-    console.log('Tags:', metadata.tags.join(', '));
+    console.log('Tags:', (metadata.tags || []).join(', '));
     console.log('\n=== Analysis Result ===');
 
     const result = await analyzeProductContent(metadata, context);
     console.log(JSON.stringify(result, null, 2));
 
   } catch (error) {
-    console.error('Error analyzing video:', error);
+    console.error('Error in video analysis:', error);
   }
 }
 
@@ -57,44 +83,25 @@ async function testVideoAnalysis(videoId: string) {
 const TEST_VIDEOS = {
   // Clear single product reviews
   singleReview: [
-    'dQw4w9WgXcQ',  // Replace with actual review video IDs
+    'dQw4w9WgXcQ', // Example video ID
   ],
-  
-  // Clear comparison videos
-  comparison: [
-    'dQw4w9WgXcQ',  // Replace with actual comparison video IDs
+  // Comparison reviews
+  comparisonReview: [
+    'dQw4w9WgXcQ', // Example video ID
   ],
-  
-  // Videos that mention products but aren't reviews
-  productMention: [
-    'dQw4w9WgXcQ',  // Replace with actual product mention video IDs
-  ],
-  
-  // Ambiguous cases
-  ambiguous: [
-    'dQw4w9WgXcQ',  // Replace with actual ambiguous video IDs
+  // First impressions
+  firstImpressions: [
+    'dQw4w9WgXcQ', // Example video ID
   ]
 };
 
 async function runTests() {
-  console.log('=== Testing Single Reviews ===');
-  for (const id of TEST_VIDEOS.singleReview) {
-    await testVideoAnalysis(id);
-  }
-
-  console.log('\n=== Testing Comparisons ===');
-  for (const id of TEST_VIDEOS.comparison) {
-    await testVideoAnalysis(id);
-  }
-
-  console.log('\n=== Testing Product Mentions ===');
-  for (const id of TEST_VIDEOS.productMention) {
-    await testVideoAnalysis(id);
-  }
-
-  console.log('\n=== Testing Ambiguous Cases ===');
-  for (const id of TEST_VIDEOS.ambiguous) {
-    await testVideoAnalysis(id);
+  for (const [category, videos] of Object.entries(TEST_VIDEOS)) {
+    console.log(`\n=== Testing ${category} ===`);
+    for (const videoId of videos) {
+      console.log(`\nTesting video: ${videoId}`);
+      await testVideoAnalysis(videoId);
+    }
   }
 }
 

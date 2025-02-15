@@ -1,119 +1,125 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getVideoInfo } from '@/lib/youtube';
-import { VideoType } from '@/lib/video_types';
+import { VideoType } from '@/types/openai';
 import { generatePrompt } from '@/lib/video_prompts';
 
 // Helper to detect video type from metadata
-function detectVideoType(metadata: any): Array<{ type: VideoType; confidence: number }> {
-  const types: Array<{ type: VideoType; confidence: number }> = [];
+function detectVideoType(title: string, description: string): VideoType {
+  // Convert to lowercase for easier matching
+  const lowerTitle = title.toLowerCase();
+  const lowerDesc = description.toLowerCase();
 
-  // Check title and description for type indicators
-  const text = `${metadata.snippet?.title || ''} ${metadata.snippet?.description || ''}`.toLowerCase();
-
-  // Tutorial detection
+  // Look for review indicators
   if (
-    text.includes('tutorial') ||
-    text.includes('how to') ||
-    text.includes('learn') ||
-    text.includes('guide')
+    lowerTitle.includes('review') ||
+    lowerDesc.includes('review') ||
+    lowerTitle.includes('hands on') ||
+    lowerDesc.includes('hands on')
   ) {
-    types.push({ type: 'tutorial', confidence: 0.8 });
+    return 'review';
   }
 
-  // Review detection
+  // Look for comparison indicators
   if (
-    text.includes('review') ||
-    text.includes('hands on') ||
-    text.includes('unboxing') ||
-    text.includes('vs')
+    lowerTitle.includes('vs') ||
+    lowerTitle.includes('versus') ||
+    lowerDesc.includes('vs') ||
+    lowerDesc.includes('versus') ||
+    lowerTitle.includes('comparison') ||
+    lowerDesc.includes('comparison')
   ) {
-    types.push({ type: 'review', confidence: 0.8 });
+    return 'comparison';
   }
 
-  // Commentary detection
+  // Look for tutorial indicators
   if (
-    text.includes('thoughts on') ||
-    text.includes('my take') ||
-    text.includes('opinion') ||
-    text.includes('reaction')
+    lowerTitle.includes('how to') ||
+    lowerTitle.includes('tutorial') ||
+    lowerTitle.includes('guide') ||
+    lowerDesc.includes('how to') ||
+    lowerDesc.includes('tutorial') ||
+    lowerDesc.includes('guide')
   ) {
-    types.push({ type: 'commentary', confidence: 0.7 });
+    return 'tutorial';
   }
 
-  // News detection
+  // Look for recipe indicators
   if (
-    text.includes('news') ||
-    text.includes('update') ||
-    text.includes('announcement') ||
-    text.includes('breaking')
+    lowerTitle.includes('recipe') ||
+    lowerTitle.includes('cooking') ||
+    lowerTitle.includes('baking') ||
+    lowerDesc.includes('recipe') ||
+    lowerDesc.includes('cooking') ||
+    lowerDesc.includes('baking')
   ) {
-    types.push({ type: 'news', confidence: 0.8 });
+    return 'recipe';
   }
 
-  // Lifestyle detection
+  // Look for news indicators
   if (
-    text.includes('vlog') ||
-    text.includes('lifestyle') ||
-    text.includes('day in the life') ||
-    text.includes('experience')
+    lowerTitle.includes('news') ||
+    lowerTitle.includes('announcement') ||
+    lowerTitle.includes('update') ||
+    lowerDesc.includes('news') ||
+    lowerDesc.includes('announcement') ||
+    lowerDesc.includes('update')
   ) {
-    types.push({ type: 'lifestyle', confidence: 0.7 });
+    return 'news';
   }
 
-  // Sort by confidence
-  return types.sort((a, b) => b.confidence - a.confidence);
+  // Look for commentary indicators
+  if (
+    lowerTitle.includes('analysis') ||
+    lowerTitle.includes('opinion') ||
+    lowerTitle.includes('thoughts on') ||
+    lowerDesc.includes('analysis') ||
+    lowerDesc.includes('opinion') ||
+    lowerDesc.includes('thoughts on')
+  ) {
+    return 'commentary';
+  }
+
+  // Default to product if no other type is detected
+  return 'product';
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const videoId = searchParams.get('videoId');
+
+  if (!videoId) {
+    return NextResponse.json({ error: 'Missing videoId parameter' }, { status: 400 });
+  }
+
   try {
-    const url = request.nextUrl.searchParams.get('url');
-    if (!url) {
-      return NextResponse.json({ error: 'URL parameter is required' }, { status: 400 });
-    }
-
-    // Extract video ID from URL
-    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
-    if (!videoId) {
-      return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
-    }
-
-    // Get video info
     const videoInfo = await getVideoInfo(videoId);
-    if (!videoInfo) {
-      return NextResponse.json({ error: 'Could not fetch video info' }, { status: 404 });
+    if (!videoInfo || !videoInfo.rawVideoData || !videoInfo.rawVideoData.snippet) {
+      return NextResponse.json({ error: 'Video not found' }, { status: 404 });
     }
 
-    // Detect possible video types
-    const detectedTypes = detectVideoType(videoInfo);
+    const videoType = detectVideoType(
+      videoInfo.rawVideoData.snippet.title || '',
+      videoInfo.rawVideoData.snippet.description || ''
+    );
 
-    // Generate prompt for most likely type
-    const mostLikelyType = detectedTypes[0]?.type || 'tutorial';
     const prompt = generatePrompt({
-      title: videoInfo.snippet?.title || '',
-      description: videoInfo.snippet?.description || '',
-      type: mostLikelyType
+      title: videoInfo.rawVideoData.snippet.title || '',
+      description: videoInfo.rawVideoData.snippet.description || '',
+      type: videoType,
     });
 
     return NextResponse.json({
-      metadata: {
-        title: videoInfo.snippet?.title,
-        description: videoInfo.snippet?.description?.slice(0, 200) + '...',
-        channelTitle: videoInfo.snippet?.channelTitle,
-        publishedAt: videoInfo.snippet?.publishedAt,
-        statistics: videoInfo.statistics
-      },
-      typeDetection: {
-        possibleTypes: detectedTypes,
-        mostLikelyType
-      },
-      prompt: {
-        type: mostLikelyType,
-        prompt
-      }
+      type: videoType,
+      prompt,
+      videoInfo,
     });
-
   } catch (error) {
-    console.error('Error in debug endpoint:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Unknown error occurred' },
+      { status: 500 }
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ProductReviewAnalysis } from '@/lib/video/analysis/types';
+import { ProductReviewAnalysis, ComparisonItem, Recommendation } from '@/lib/video/analysis/types';
 
 interface ProductReviewProps {
   analysis: ProductReviewAnalysis;
@@ -198,7 +198,7 @@ export default function ProductReview({ analysis, onUseInPost }: ProductReviewPr
             <div className="bg-black/30 p-4 rounded-lg">
               <div className="text-purple-300 font-medium mb-2">Compared To</div>
               <div className="space-y-2">
-                {analysis.experience.comparedTo.map((comparison: any, i: number) => (
+                {analysis.experience.comparedTo.map((comparison: ComparisonItem, i: number) => (
                   <div key={i} className="bg-black/20 p-2 rounded">
                     <div className="font-medium text-purple-200">{comparison.product}</div>
                     <div className="text-sm text-green-400 mt-1">+ {comparison.advantage}</div>
@@ -246,7 +246,7 @@ export default function ProductReview({ analysis, onUseInPost }: ProductReviewPr
           <div className="bg-black/30 p-4 rounded-lg">
             <div className="text-purple-300 font-medium mb-2">Recommendations</div>
             <div className="space-y-2">
-              {analysis.verdict.recommendations.map((rec: any, i: number) => (
+              {analysis.verdict.recommendations.map((rec: Recommendation, i: number) => (
                 <div key={i} className="bg-black/20 p-2 rounded">
                   <div className="flex items-start gap-2">
                     <button

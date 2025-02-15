@@ -4,6 +4,8 @@ import { VideoMetadata } from '@/types/video';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { metadata } = await request.json();
