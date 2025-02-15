@@ -45,6 +45,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 }) => {
   const editorRef = useRef<TinyMCEEditorType | null>(null);
 
+  const decodeHtmlEntities = (text: string): string => {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value
+      .replace(/[\u2018\u2019]/g, "'") // Smart quotes to regular single quotes
+      .replace(/[\u201C\u201D]/g, '"') // Smart quotes to regular double quotes
+      .replace(/&rsquo;/g, "'")
+      .replace(/&ldquo;|&rdquo;/g, '"')
+      .replace(/&mdash;/g, '—')
+      .replace(/&nbsp;/g, ' ');
+  };
+
   const handleCopy = useCallback(() => {
     if (!editorRef.current?.getContent) {
       toast.error('Editor not initialized');
@@ -52,7 +64,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
     
     const content = editorRef.current.getContent();
-    const plainText = content.replace(/<[^>]*>/g, '');
+    const plainText = decodeHtmlEntities(content.replace(/<[^>]*>/g, ''));
     navigator.clipboard.writeText(plainText).then(() => {
       onCopy();
     }).catch(() => {
@@ -67,7 +79,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
 
     const content = editorRef.current.getContent();
-    const text = content.replace(/<[^>]*>/g, '').trim();
+    const text = decodeHtmlEntities(content.replace(/<[^>]*>/g, '')).trim();
     const encodedUrl = encodeURIComponent(videoUrl || '');
 
     try {
