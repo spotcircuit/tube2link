@@ -4,6 +4,8 @@ import { useState, type FC, type MouseEvent, Suspense } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import type { FAQItem, FAQCategory, CategoryButtonProps, FAQItemProps } from '@/types/faq';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import Link from 'next/link';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const faqItems: readonly FAQItem[] = [
   {
@@ -217,12 +219,18 @@ const FAQContent: FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900">
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold text-white text-center mb-8">
-          Frequently Asked Questions
-        </h1>
-
+    <div className="min-h-screen bg-gray-900 text-white py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center mb-8">
+          <Link 
+            href="/" 
+            className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            <FaArrowLeft className="mr-2" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+        <h1 className="text-4xl font-bold text-center mb-12">Frequently Asked Questions</h1>
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           {categories.map((category) => (
             <CategoryButton
