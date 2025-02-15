@@ -33,7 +33,7 @@ const personalityTraits: PersonalityTraitConfig[] = [
 export default function SocialPostGenerator({ videoData, onReturn, onCopy }: SocialPostGeneratorProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<PostGenerationMode>('question');
   const [postSettings, setPostSettings] = useState<PostSettings>({
-    tone: 0.5,
+    tone: 50, // Default to balanced tone
     length: 'standard',
     personality: {
       charm: 0,
@@ -47,7 +47,6 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
   const [showEditor, setShowEditor] = useState(false);
   const [editorContent, setEditorContent] = useState('');
   const [rawResponse, setRawResponse] = useState<GenerateResponse | null>(null);
-  const [showResponse, setShowResponse] = useState(false); // Default to collapsed
 
   const handleGeneratePost = async () => {
     if (!videoData) {
@@ -90,48 +89,30 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
     return (
       <div className="space-y-4">
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setShowEditor(false);
-                setEditorContent('');
-                setRawResponse(null);
-              }}
-              className="bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-              </svg>
-              Back to Templates
-            </button>
-            <button
-              onClick={onReturn}
-              className="bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 12h18M3 12l6-6M3 12l6 6"/>
-              </svg>
-              New URL
-            </button>
-          </div>
+        <div className="flex items-center gap-2 mb-4">
           <button
-            onClick={() => setShowResponse(!showResponse)}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={() => {
+              setShowEditor(false);
+              setEditorContent('');
+              setRawResponse(null);
+            }}
+            className="bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
           >
-            {showResponse ? 'Hide OpenAI Response' : 'Show OpenAI Response'}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Templates
+          </button>
+          <button
+            onClick={onReturn}
+            className="bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12h18M3 12l6-6M3 12l6 6"/>
+            </svg>
+            New URL
           </button>
         </div>
-
-        {/* OpenAI Response */}
-        {showResponse && rawResponse && (
-          <div className="bg-gray-800/50 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-200 mb-4">OpenAI Post Generation Response</h2>
-            <pre className="whitespace-pre-wrap text-gray-300 bg-gray-900/50 p-4 rounded-lg overflow-auto">
-              {JSON.stringify(rawResponse, null, 2).replace(/\\n/g, '\n')}
-            </pre>
-          </div>
-        )}
 
         <RichTextEditor
           content={editorContent}
@@ -221,22 +202,26 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
           
           <div className="space-y-6">
             <div>
-              <label className="text-white">Tone</label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={postSettings.tone * 100}
-                onChange={(e) => setPostSettings(prev => ({
-                  ...prev,
-                  tone: parseInt(e.target.value) / 100
-                }))}
-                className="w-full"
-              />
-              <div className="flex justify-between text-sm text-gray-400">
-                <span>Casual</span>
-                <span className="text-center">Balanced</span>
-                <span>Professional</span>
+              <label className="text-white mb-2 block">Tone</label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 0, label: 'Casual', desc: 'Friendly & relaxed' },
+                  { value: 50, label: 'Balanced', desc: 'Professional yet approachable' },
+                  { value: 100, label: 'Professional', desc: 'Formal & authoritative' }
+                ].map(({ value, label, desc }) => (
+                  <button
+                    key={value}
+                    onClick={() => setPostSettings(prev => ({ ...prev, tone: value }))}
+                    className={`p-3 rounded text-left transition-all ${
+                      postSettings.tone === value
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-black/20 text-gray-300 hover:bg-black/30'
+                    }`}
+                  >
+                    <div className="font-medium">{label}</div>
+                    <div className="text-sm opacity-80">{desc}</div>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -325,13 +310,21 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
         </div>
       </div>
 
-      <button
-        onClick={handleGeneratePost}
-        disabled={generating}
-        className="w-full px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {generating ? 'Generating...' : 'Generate Post'}
-      </button>
+      <div className="flex gap-4">
+        <button
+          onClick={handleGeneratePost}
+          disabled={generating}
+          className="flex-1 px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {generating ? 'Generating...' : 'Generate Post'}
+        </button>
+        <button
+          onClick={onReturn}
+          className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+        >
+          New URL
+        </button>
+      </div>
     </div>
   );
 }

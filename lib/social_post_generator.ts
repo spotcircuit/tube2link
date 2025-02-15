@@ -87,11 +87,12 @@ export const POST_TEMPLATES: Record<PostGenerationMode, PostTemplate> = {
 };
 
 function getToneLabel(tone: number): string {
-  if (tone >= 0.8) return 'professional and authoritative';
-  if (tone >= 0.6) return 'balanced and informative';
-  if (tone >= 0.4) return 'casual and friendly';
-  if (tone >= 0.2) return 'fun and engaging';
-  return 'playful and entertaining';
+  // Convert tone from 0-100 scale to 0-1 scale
+  const normalizedTone = tone / 100;
+  
+  if (normalizedTone <= 0.33) return 'Casual';
+  if (normalizedTone <= 0.66) return 'Balanced';
+  return 'Professional';
 }
 
 function getPostLengthParams(length: 'brief' | 'standard' | 'detailed'): { wordRange: string, maxPoints: number } {
@@ -109,7 +110,9 @@ async function generatePrompt(data: VideoData, template: PostGenerationMode, set
   }
 
   const { wordRange, maxPoints } = getPostLengthParams(settings.length || 'standard');
-  const toneLabel = getToneLabel(settings.tone || 0.5);
+  // Convert tone from 0-100 scale to 0-1 scale for the API
+  const normalizedTone = typeof settings.tone === 'number' ? settings.tone / 100 : 0.5;
+  const toneLabel = getToneLabel(typeof settings.tone === 'number' ? settings.tone : 50);
   const videoUrl = data.url || (data.videoId ? `https://www.youtube.com/watch?v=${data.videoId}` : '[Video URL will be added]');
 
   // Calculate personality traits influence

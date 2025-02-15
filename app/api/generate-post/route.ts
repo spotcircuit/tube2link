@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const { videoData, template, settings } = body;
 
     // Type guard for required data
-    if (!videoData?.url || !template || !settings?.tone) {
+    if (!videoData?.url || !template || typeof settings?.tone !== 'number') {
       return NextResponse.json(
         { error: 'Missing required data: videoData.url, template, or settings.tone' },
         { status: 400 }

@@ -131,8 +131,6 @@ const CookingTips = ({ tips }: { tips: any }) => (
 );
 
 export default function OpenAIAnalysis({ data, onReturn, isToggled = false }: OpenAIAnalysisProps) {
-  const [showResponse, setShowResponse] = useState(false);
-
   return (
     <div className="space-y-8">
       {/* Core Summary Section */}
@@ -162,41 +160,33 @@ export default function OpenAIAnalysis({ data, onReturn, isToggled = false }: Op
         </div>
       </section>
 
-      <div className="flex justify-end">
-        <button
-          onClick={() => setShowResponse(!showResponse)}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          {showResponse ? 'Hide Raw Analysis' : 'Show Raw Analysis'}
-        </button>
-      </div>
-
-      {showResponse && (
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-purple-300">Raw Analysis Data</h2>
-          </div>
-          <pre className="whitespace-pre-wrap text-gray-200 bg-gray-700/50 p-4 rounded-lg overflow-auto max-h-96">
-            {JSON.stringify({
-              core_summary: data.core_summary,
-              video_type: data.video_type,
-              extended_enrichment: data.extended_enrichment
-            }, null, 2)}
-          </pre>
-        </div>
-      )}
-
       {Array.isArray((data.extended_enrichment as any)?.tools_mentioned) &&
        (data.extended_enrichment as any).tools_mentioned.length > 0 && (
         <section>
           <h2 className="text-xl font-bold mb-4 text-white">Tools & Resources</h2>
-          <div className="flex flex-wrap gap-2">
-            {(data.extended_enrichment as any).tools_mentioned.map((tool: string, i: number) => (
-              <span key={i} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
-                {tool}
-              </span>
-            ))}
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <ul className="space-y-2">
+              {(data.extended_enrichment as any).tools_mentioned.map((tool: any, i: number) => (
+                <li key={i} className="flex items-start">
+                  <span className="text-purple-400 mr-2">•</span>
+                  <span className="text-gray-200">{tool}</span>
+                </li>
+              ))}
+            </ul>
           </div>
+        </section>
+      )}
+
+      {/* Video Type Specific Views */}
+      {data.video_type && (
+        <section>
+          <h2 className="text-xl font-bold mb-4 text-white">Type-Specific Analysis</h2>
+          {data.video_type === 'tutorial' && <TutorialView data={data} />}
+          {data.video_type === 'comparison' && <ComparisonView data={data} />}
+          {data.video_type === 'review' && <ReviewView data={data} />}
+          {data.video_type === 'recipe' && <RecipeView data={data} />}
+          {data.video_type === 'news' && <NewsView data={data} />}
+          {data.video_type === 'commentary' && <CommentaryView data={data} />}
         </section>
       )}
 
@@ -214,18 +204,6 @@ export default function OpenAIAnalysis({ data, onReturn, isToggled = false }: Op
         </section>
       )}
 
-      {data.video_type && (
-        <section className="mt-8">
-          <h2 className="text-xl font-bold mb-4 text-white">Type-Specific Analysis</h2>
-          {data.video_type === 'tutorial' && <TutorialView data={data} />}
-          {data.video_type === 'comparison' && <ComparisonView data={data} />}
-          {data.video_type === 'review' && <ReviewView data={data} />}
-          {data.video_type === 'recipe' && <RecipeView data={data} />}
-          {data.video_type === 'news' && <NewsView data={data} />}
-          {data.video_type === 'commentary' && <CommentaryView data={data} />}
-        </section>
-      )}
-
       <h2 className="text-xl font-bold mb-4 text-white">Generate Social Posts</h2>
       <SocialPostGenerator
         videoData={{
@@ -234,6 +212,8 @@ export default function OpenAIAnalysis({ data, onReturn, isToggled = false }: Op
           description: data.description || '',
           channelTitle: data.channelTitle || '',
         }}
+        onReturn={onReturn}
+        onCopy={() => {}}
       />
     </div>
   );
