@@ -1,4 +1,31 @@
-export interface WebApplicationSchema {
+export interface Template {
+  type: 'technical' | 'review' | 'news' | 'recipe' | 'comparison' | 'commentary';
+  name: string;
+  description: string;
+  structure: {
+    sections: string[];
+    keyElements: string[];
+  };
+}
+
+export interface Tone {
+  type: 'casual' | 'neutral' | 'formal';
+  name: string;
+  description: string;
+  characteristics: string[];
+}
+
+export interface Length {
+  type: 'brief' | 'regular' | 'detailed';
+  name: string;
+  description: string;
+  wordCount: {
+    min: number;
+    max: number;
+  };
+}
+
+export interface WebApplication {
   '@context': 'https://schema.org';
   '@type': 'WebApplication';
   name: string;
@@ -13,7 +40,7 @@ export interface WebApplicationSchema {
   url: string;
 }
 
-export interface OrganizationSchema {
+export interface Organization {
   '@context': 'https://schema.org';
   '@type': 'Organization';
   name: string;
@@ -22,7 +49,7 @@ export interface OrganizationSchema {
   sameAs: string[];
 }
 
-export interface FAQPageSchema {
+export interface FAQPage {
   '@context': 'https://schema.org';
   '@type': 'FAQPage';
   mainEntity: Array<{
@@ -35,8 +62,8 @@ export interface FAQPageSchema {
   }>;
 }
 
-export type SchemaData = {
-  webApplication: WebApplicationSchema;
-  organization: OrganizationSchema;
-  faqPage: FAQPageSchema;
-};
+export interface SchemaData {
+  webApplication: WebApplication;
+  organization: Organization;
+  faqPage: FAQPage;
+}
