@@ -207,8 +207,8 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { value: 0, label: 'Casual', desc: 'Friendly & relaxed' },
-                  { value: 50, label: 'Neutral', desc: 'Professional yet approachable' },
-                  { value: 100, label: 'Professional', desc: 'Formal & authoritative' }
+                  { value: 50, label: 'Neutral', desc: 'Balanced tone' },
+                  { value: 100, label: 'Formal', desc: 'Formal & authoritative' }
                 ].map(({ value, label, desc }) => (
                   <button
                     key={value}
@@ -233,20 +233,20 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { value: 'short', label: 'Short', desc: '~50 words' },
-                  { value: 'standard', label: 'Standard', desc: '~100 words' },
+                  { value: 'standard', label: 'Regular', desc: '~100 words' },
                   { value: 'long', label: 'Long', desc: '~200 words' }
                 ].map(({ value, label, desc }) => (
                   <button
                     key={value}
                     onClick={() => setPostSettings(prev => ({ ...prev, length: value as typeof postSettings.length }))}
-                    className={`p-3 rounded text-left ${
+                    className={`p-3 rounded text-left flex flex-col items-start ${
                       postSettings.length === value
                         ? 'bg-purple-500 text-white'
                         : 'bg-black/20 text-gray-300 hover:bg-black/30'
                     }`}
                   >
                     <div className="font-medium">{label}</div>
-                    <div className="text-sm opacity-80">{desc}</div>
+                    <div className="text-xs sm:text-sm opacity-80 w-full">{desc}</div>
                   </button>
                 ))}
               </div>
