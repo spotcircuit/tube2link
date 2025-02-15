@@ -140,7 +140,7 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {[
           {
             id: 'question',
@@ -202,24 +202,24 @@ export default function SocialPostGenerator({ videoData, onReturn, onCopy }: Soc
           
           <div className="space-y-6">
             <div>
-              <label className="text-white mb-2 block">Tone</label>
+              <label className="text-white">Tone</label>
+              <span className="text-gray-400 text-sm">Set the overall tone</span>
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { value: 0, label: 'Casual', desc: 'Friendly & relaxed' },
-                  { value: 50, label: 'Balanced', desc: 'Professional yet approachable' },
+                  { value: 50, label: 'Neutral', desc: 'Professional yet approachable' },
                   { value: 100, label: 'Professional', desc: 'Formal & authoritative' }
                 ].map(({ value, label, desc }) => (
                   <button
                     key={value}
                     onClick={() => setPostSettings(prev => ({ ...prev, tone: value }))}
-                    className={`p-3 rounded text-left transition-all ${
+                    className={`p-3 rounded text-left flex flex-col items-start ${
                       postSettings.tone === value
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-black/20 text-gray-300 hover:bg-black/30'
+                        ? 'bg-purple-500 text-white' : 'bg-black/20 text-gray-300 hover:bg-black/30'
                     }`}
                   >
                     <div className="font-medium">{label}</div>
-                    <div className="text-sm opacity-80">{desc}</div>
+                    <div className="text-xs sm:text-sm opacity-80 w-full">{desc}</div>
                   </button>
                 ))}
               </div>

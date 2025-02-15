@@ -15,5 +15,8 @@ module.exports = {
       },
     },
   },
+  safelist: [
+    'text-xs',
+  ],
   plugins: [],
 }

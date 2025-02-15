@@ -167,9 +167,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-transparent to-blue-500/20 animate-pulse"></div>
       </div>
 
-      <div className="relative z-10 w-full">
-        <div className="flex flex-row items-center gap-32 pl-4 -mt-8">
-          <div className="relative w-[32rem] h-[32rem] transform hover:scale-105 transition-transform duration-300 perspective-1000 drop-shadow-2xl flex-shrink-0">
+      <div className="relative z-10 w-full text-center">
+        <div className="flex flex-col items-center gap-4 pl-4 -mt-8 md:flex-row md:items-center md:gap-32">
+          <div className="relative w-[20rem] h-[20rem] md:w-[32rem] md:h-[32rem] transform hover:scale-105 transition-transform duration-300 perspective-1000 drop-shadow-2xl flex-shrink-0">
             <Image
               src="/images/tube2linkedin.png"
               alt="Tube2Link Logo"
@@ -177,8 +177,8 @@ export default function Home() {
               className="rounded-2xl [filter:invert(1)_hue-rotate(180deg)] object-contain"
             />
           </div>
-          <div className="flex flex-col gap-2 max-w-xl ml-16">
-            <h1 className="text-5xl md:text-6xl font-bold text-white">
+          <div className="flex flex-col gap-2 max-w-full">
+            <h1 className="text-4xl md:text-6xl font-bold text-white">
               Tube2Link
             </h1>
             <p className="text-white text-2xl md:text-3xl font-medium break-words">
