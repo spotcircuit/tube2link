@@ -189,6 +189,57 @@ GOOGLE_CLIENT_SECRET=your_client_secret
 npm run dev
 ```
 
+## 🐳 Docker Setup
+
+You can run Tube2Link using Docker in two ways:
+
+### Option 1: Using Docker Compose (Recommended)
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/spotcircuit/tube2link.git
+   cd tube2link
+   ```
+
+2. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and add your API keys:
+   - OPENAI_API_KEY
+   - OPENAI_ORGANIZATION_ID
+   - NEXT_PUBLIC_YT_API_KEY
+   - NEXT_PUBLIC_TINYMCE_API_KEY
+
+3. Start the application:
+   ```bash
+   # Development mode with hot reloading
+   docker-compose up
+
+   # Production mode
+   NODE_ENV=production TARGET=runner docker-compose up
+   ```
+
+### Option 2: Using Docker Hub
+
+1. Pull and run the image directly:
+   ```bash
+   docker pull spotcircuit/tube2link:latest
+   docker run -p 3000:3000 \
+     --env-file .env \
+     spotcircuit/tube2link:latest
+   ```
+
+The application will be available at http://localhost:3000
+
+## 🔑 Environment Variables
+
+Required environment variables:
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `OPENAI_ORGANIZATION_ID`: Your OpenAI Organization ID
+- `NEXT_PUBLIC_YT_API_KEY`: Your YouTube API key
+- `NEXT_PUBLIC_TINYMCE_API_KEY`: Your TinyMCE API key
+
 ## Project Structure
 ```
 tube2link/
