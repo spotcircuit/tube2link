@@ -3,11 +3,11 @@
 import dynamic from 'next/dynamic'
 import React, { useRef, useCallback } from 'react'
 import { toast } from 'react-hot-toast'
-import { FaLinkedin, FaFacebookSquare, FaTwitter, FaInstagram, FaTiktok, FaCopy } from 'react-icons/fa'
+import { FaLinkedin, FaFacebookSquare, FaTwitter, FaPinterest, FaReddit, FaTumblr, FaEnvelope, FaCopy } from 'react-icons/fa'
 import type { Editor as TinyMCEEditor, IAllProps } from '@tinymce/tinymce-react'
 import { Editor as TinyMCEEditorType } from 'tinymce'
 
-type SocialPlatform = 'linkedin' | 'facebook' | 'twitter' | 'instagram' | 'tiktok';
+type SocialPlatform = 'linkedin' | 'facebook' | 'twitter' | 'pinterest' | 'reddit' | 'tumblr' | 'email';
 
 interface RichTextEditorProps {
   content: string;
@@ -86,6 +86,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       await navigator.clipboard.writeText(text);
 
       let shareUrl = '';
+      // Consistent window features for all platforms
+      const windowFeatures = 'width=550,height=700,left=200,top=100,scrollbars=yes,resizable=yes';
+
       switch (platform) {
         case 'linkedin':
           shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
@@ -93,6 +96,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             duration: 5000,
             icon: '📋'
           });
+          window.open(shareUrl, '_blank', windowFeatures);
           break;
         case 'facebook':
           shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
@@ -100,6 +104,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             duration: 5000,
             icon: '📋'
           });
+          window.open(shareUrl, '_blank', windowFeatures);
           break;
         case 'twitter':
           const twitterText = text.length > 280 ? text.slice(0, 277) + '...' : text;
@@ -108,31 +113,73 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             duration: 3000,
             icon: '🐦'
           });
+          window.open(shareUrl, '_blank', windowFeatures);
           break;
-        case 'instagram':
-          shareUrl = 'https://www.instagram.com';
-          toast.success('Content copied! Open Instagram Stories and paste your content', {
-            duration: 6000,
-            icon: '📸'
+        case 'pinterest':
+          // Get first line as title, rest as description
+          const lines = text.split('\n');
+          const title = lines[0];
+          const description = lines.slice(1).join('\n');
+          
+          // Get video thumbnail URL from YouTube URL
+          const videoId = videoUrl.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/) || [];
+          const thumbnailUrl = videoId[1] ? `https://img.youtube.com/vi/${videoId[1]}/maxresdefault.jpg` : '';
+          
+          shareUrl = `https://pinterest.com/pin/create/button/` +
+            `?url=${encodeURIComponent(videoUrl)}` +
+            `&media=${encodeURIComponent(thumbnailUrl)}` +
+            `&description=${encodeURIComponent(title + '\n\n' + description)}`;
+          
+          toast.success('Opening Pinterest...', {
+            duration: 3000,
+            icon: '📌'
           });
+          window.open(shareUrl, '_blank', windowFeatures);
           break;
-        case 'tiktok':
-          shareUrl = 'https://www.tiktok.com/upload';
-          toast.success('Content copied! Open TikTok and paste your content in the caption', {
-            duration: 6000,
-            icon: '🎵'
+        case 'reddit':
+          // Get first line as title
+          const redditTitle = text.split('\n')[0];
+          shareUrl = `https://www.reddit.com/submit` +
+            `?url=${encodeURIComponent(videoUrl)}` +
+            `&title=${encodeURIComponent(redditTitle)}` +
+            `&resubmit=true`;
+          
+          toast.success('Opening Reddit...', {
+            duration: 3000,
+            icon: '🤖'
           });
+          window.open(shareUrl, '_blank', windowFeatures);
+          break;
+        case 'tumblr':
+          // Use /widgets/share endpoint for better post creation
+          shareUrl = `https://www.tumblr.com/widgets/share/tool` +
+            `?canonicalUrl=${encodeURIComponent(videoUrl)}` +
+            `&title=${encodeURIComponent(text.split('\n')[0])}` +
+            `&caption=${encodeURIComponent(text)}` +
+            `&tags=youtube,video` +
+            `&posttype=link`;
+          
+          toast.success('Opening Tumblr...', {
+            duration: 3000,
+            icon: '📝'
+          });
+          window.open(shareUrl, '_blank', windowFeatures);
+          break;
+        case 'email':
+          shareUrl = `mailto:?subject=${encodeURIComponent(text.split('\n')[0])}` +
+            `&body=${encodeURIComponent(text + '\n\n' + videoUrl)}`;
+          
+          toast.success('Opening email client...', {
+            duration: 3000,
+            icon: '✉️'
+          });
+          window.open(shareUrl, '_blank', windowFeatures);
           break;
       }
-
-      // Short delay to ensure clipboard is ready
-      setTimeout(() => {
-        window.open(shareUrl, '_blank', 'width=600,height=600');
-      }, 100);
     } catch (error) {
       toast.error('Failed to share content');
     }
-  }, [videoUrl]);
+  }, [editorRef, onCopy, videoUrl]);
 
   return (
     <div className={`bg-gray-900 rounded-lg overflow-hidden ${className}`}>
@@ -163,24 +210,38 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </button>
           <button
             onClick={() => handleShare('twitter')}
-            className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
+            className="p-2 text-gray-400 hover:text-sky-400 transition-colors"
             title="Share on Twitter"
           >
             <FaTwitter className="w-5 h-5" />
           </button>
           <button
-            onClick={() => handleShare('instagram')}
-            className="p-2 text-gray-400 hover:text-pink-500 transition-colors"
-            title="Share on Instagram"
+            onClick={() => handleShare('pinterest')}
+            className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+            title="Share on Pinterest"
           >
-            <FaInstagram className="w-5 h-5" />
+            <FaPinterest className="w-5 h-5" />
           </button>
           <button
-            onClick={() => handleShare('tiktok')}
-            className="p-2 text-gray-400 hover:text-gray-300 transition-colors"
-            title="Share on TikTok"
+            onClick={() => handleShare('reddit')}
+            className="p-2 text-gray-400 hover:text-orange-500 transition-colors"
+            title="Share on Reddit"
           >
-            <FaTiktok className="w-5 h-5" />
+            <FaReddit className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => handleShare('tumblr')}
+            className="p-2 text-gray-400 hover:text-blue-500 transition-colors"
+            title="Share on Tumblr"
+          >
+            <FaTumblr className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => handleShare('email')}
+            className="p-2 text-gray-400 hover:text-yellow-500 transition-colors"
+            title="Share via Email"
+          >
+            <FaEnvelope className="w-5 h-5" />
           </button>
         </div>
       </div>
