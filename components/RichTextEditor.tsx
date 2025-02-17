@@ -137,8 +137,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           window.open(shareUrl, '_blank', windowFeatures);
           break;
         case 'reddit':
-          // Get first line as title
-          const redditTitle = text.split('\n')[0];
+          // Get first line as title, fallback to video title if no text
+          const redditTitle = text.split('\n')[0] || videoTitle || 'Check out this video';
           shareUrl = `https://www.reddit.com/submit` +
             `?url=${encodeURIComponent(videoUrl)}` +
             `&title=${encodeURIComponent(redditTitle)}` +
@@ -151,11 +151,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           window.open(shareUrl, '_blank', windowFeatures);
           break;
         case 'tumblr':
+          // Get first line as title, fallback to video title
+          const tumblrTitle = text.split('\n')[0] || videoTitle || 'Check out this video';
           // Use /widgets/share endpoint for better post creation
           shareUrl = `https://www.tumblr.com/widgets/share/tool` +
             `?canonicalUrl=${encodeURIComponent(videoUrl)}` +
-            `&title=${encodeURIComponent(text.split('\n')[0])}` +
-            `&caption=${encodeURIComponent(text)}` +
+            `&title=${encodeURIComponent(tumblrTitle)}` +
+            `&caption=${encodeURIComponent(text || '')}` +
             `&tags=youtube,video` +
             `&posttype=link`;
           
@@ -166,8 +168,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           window.open(shareUrl, '_blank', windowFeatures);
           break;
         case 'email':
-          shareUrl = `mailto:?subject=${encodeURIComponent(text.split('\n')[0])}` +
-            `&body=${encodeURIComponent(text + '\n\n' + videoUrl)}`;
+          // Use mailto: protocol for email sharing
+          const emailTitle = text.split('\n')[0] || videoTitle || 'Check out this video';
+          const emailBody = text ? `${text}\n\n${videoUrl}` : `Check out this video: ${videoUrl}`;
+          shareUrl = `mailto:?` +
+            `subject=${encodeURIComponent(emailTitle)}` +
+            `&body=${encodeURIComponent(emailBody)}`;
           
           toast.success('Opening email client...', {
             duration: 3000,
