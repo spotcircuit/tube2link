@@ -2,121 +2,319 @@
   "name": "Tube2Link",
   "nodes": [
     {
-      "id": "webhook-1",
       "parameters": {
         "httpMethod": "POST",
-        "path": "/tube2link"
+        "path": "/tube2link",
+        "responseMode": "lastNode",
+        "options": {}
       },
+      "id": "80ac2260-60d3-4e0f-bfef-682b02e4e3da",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [250, 300]
+      "position": [
+        -300,
+        0
+      ],
+      "webhookId": "84d9eeaa-094e-434e-bc01-ef3070e94170"
     },
     {
-      "id": "extract-video-id-2",
       "parameters": {
-        "functionCode": "const url = $node['Webhook'].json.body.videoUrl;\nconst videoId = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)[1];\nreturn [{ json: { videoId } }];"
+        "functionCode": "const url = $node['Webhook'].json.body.videoUrl;\nconst videoId = url.match(/(?:v=|\\/)([a-zA-Z0-9_-]{11})/)[1];\nreturn [{ json: { videoId } }];"
       },
+      "id": "1cd55ae4-ae84-4c09-ac93-50cad3b78f89",
       "name": "Extract Video ID",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
-      "position": [450, 300]
+      "position": [
+        -120,
+        0
+      ]
     },
     {
-      "id": "youtube-api-3",
       "parameters": {
-        "url": "=https://www.googleapis.com/youtube/v3/videos",
+        "authentication": "queryAuth",
+        "httpMethod": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/videos",
         "options": {},
-        "queryParameters": {
-          "part": "snippet",
-          "id": "={{ $node['Extract Video ID'].json.videoId }}",
-          "key": "={{ $env.YOUTUBE_API_KEY }}"
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (compatible; n8n)"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
         },
-        "authentication": "oAuth2",
-        "clientId": "778476329160-2mlncv04kil6lp4jcpr1agoe44abuuks.apps.googleusercontent.com",
-        "clientSecret": "{{ $env.GOOGLE_CLIENT_SECRET }}",
-        "accessTokenUrl": "https://oauth2.googleapis.com/token",
-        "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-        "scope": "https://www.googleapis.com/auth/youtube.readonly",
-        "authQueryParameters": "access_type=offline&prompt=consent"
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails,statistics"
+            },
+            {
+              "name": "id",
+              "value": "={{$node[\"Extract Video ID\"].json.videoId}}"
+            }
+          ]
+        }
       },
+      "id": "1689fa7c-214e-477c-aebb-cb2dc468ec1b",
       "name": "YouTube Data API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
-      "position": [650, 300]
-    },
-    {
-      "id": "fetch-transcript-4",
-      "parameters": {
-        "url": "https://youtube-transcript-api.some-service.com/transcript",
-        "options": {},
-        "queryParameters": {
-          "videoId": "={{ $node['Extract Video ID'].json.videoId }}"
+      "position": [
+        1020,
+        -260
+      ],
+      "credentials": {
+        "queryAuth": {
+          "id": "youtubeApi",
+          "name": "YouTube API"
         }
-      },
-      "name": "Fetch Transcript",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [750, 300]
+      }
     },
     {
-      "id": "ai-summarization-5",
       "parameters": {
-        "model": "gpt-3.5-turbo",
-        "messages": {
-          "role": "system",
-          "content": "Summarize this transcript into a LinkedIn post. Highlight key insights and include a call-to-action."
+        "functionCode": "// Check if video is a short\nconst videoData = $node['YouTube Data API'].json.items[0];\nconst url = $node['Webhook'].json.body.videoUrl;\nconst isShort = url.includes('/shorts/');\n\n// Get the system prompt based on whether it's a short or not\nconst SHORTS_SYSTEM_PROMPT = `You are analyzing a YouTube Short (short-form video). Your task is to provide a rich, detailed analysis as a JSON object in this specific format:\n\n{\n  \"core_summary\": {\n    \"core_concepts\": \"Brief overview of the main content\",\n    \"key_insights\": [\"Key points or highlights\"],\n    \"main_subject\": \"Primary person, event, or topic\",\n    \"action_shown\": \"Description of what's happening in the video\",\n    \"content_context\": \"Background information and context\",\n    \"content_purpose\": \"Intent of the content (promotional, entertainment, etc.)\",\n    \"visual_elements\": [\"List of key visual components\"],\n    \"audio_elements\": [\"List of key audio components\"],\n    \"call_to_action\": \"Any calls to action in the content\"\n  },\n  \"video_type\": \"fallback\"\n}\n\nReturn your analysis as a valid JSON object following this exact structure.`;\n\nconst STANDARD_SYSTEM_PROMPT = `You are a video metadata enrichment engine. Your task is to analyze YouTube video metadata and generate structured JSON responses about the content.\n\nStep 0: Content Length Detection\nFirst, determine if this is a short-form video (YouTube Shorts, less than 60 seconds) by checking:\n- URL format (contains /shorts/)\n- Video duration\n- Content style and metadata\n\nFor short-form content, use this response format:\n{\n  \"core_summary\": {\n    \"core_concepts\": \"Brief overview of the main content\",\n    \"key_insights\": [\"Key points or highlights\"],\n    \"main_subject\": \"Primary person, event, or topic\",\n    \"action_shown\": \"Description of what's happening in the video\",\n    \"content_context\": \"Background information and context\",\n    \"content_purpose\": \"Intent of the content (promotional, entertainment, etc.)\",\n    \"visual_elements\": [\"List of key visual components\"],\n    \"audio_elements\": [\"List of key audio components\"],\n    \"call_to_action\": \"Any calls to action in the content\"\n  },\n  \"video_type\": \"fallback\"\n}`;\n\nreturn {\n  json: {\n    videoData,\n    systemPrompt: isShort ? SHORTS_SYSTEM_PROMPT : STANDARD_SYSTEM_PROMPT,\n    userPrompt: `Please analyze this YouTube video metadata:\n\nTitle: ${videoData.snippet.title}\nDescription: ${videoData.snippet.description}\nChannel: ${videoData.snippet.channelTitle}\n\nGenerate a detailed analysis following the specified JSON structure.`\n  }\n}"
+      },
+      "id": "prompt-selector",
+      "name": "Select Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        300,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini-2024-07-18",
+          "mode": "id"
         },
-        "messageProperty": "transcript",
-        "useAutoParseInput": true
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $node[\"Select Prompt\"].json.systemPrompt }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $node[\"Select Prompt\"].json.userPrompt }}",
+              "role": "user"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
       },
-      "name": "AI Summarization",
-      "type": "n8n-nodes-base.openAi",
-      "typeVersion": 1,
-      "position": [850, 300]
+      "id": "openai-analysis",
+      "name": "OpenAI Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        500,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "npSIvyU5NYva2xOo",
+          "name": "OpenAi account"
+        }
+      }
     },
     {
-      "id": "linkedin-template-6",
       "parameters": {
-        "template": "**{{ $node['YouTube Data API'].json.items[0].snippet.title }}**\n\n{{ $node['AI Summarization'].json.choices[0].message.content }}\n\n🔗 Watch full video: https://youtu.be/{{ $node['Extract Video ID'].json.videoId }}"
+        "functionCode": "// Check if we have a response from OpenAI\nif (!$node['OpenAI Analysis'].json || !$node['OpenAI Analysis'].json.message || !$node['OpenAI Analysis'].json.message.content) {\n  throw new Error('No response from OpenAI');\n}\n\nconst content = $node['OpenAI Analysis'].json.message.content;\nconst videoId = $node['Extract Video ID'].json.videoId;\nconst videoData = $node['YouTube Data API'].json;\n\nreturn [{\n  json: {\n    status: 'success',\n    data: {\n      content: content,\n      type: 'video_analysis',\n      format: 'json',\n      videoUrl: `https://youtu.be/${videoId}`\n    },\n    metadata: {\n      generated: new Date().toISOString(),\n      model: 'gpt-4',\n      template: $node['Select Prompt'].json.template,\n      videoData: {\n        title: videoData.items[0].snippet.title,\n        channelTitle: videoData.items[0].snippet.channelTitle,\n        description: videoData.items[0].snippet.description,\n        publishedAt: videoData.items[0].snippet.publishedAt\n      }\n    }\n  }\n}];"
       },
-      "name": "LinkedIn Template",
-      "type": "n8n-nodes-base.template",
+      "id": "2983cc23-71e4-444d-ba64-5a84f74aba79",
+      "name": "Format Content",
+      "type": "n8n-nodes-base.function",
       "typeVersion": 1,
-      "position": [950, 300]
+      "position": [
+        700,
+        0
+      ]
     },
     {
-      "id": "webhook-response-7",
       "parameters": {
-        "operation": "respondToWebhook",
-        "responseMode": "lastNode"
+        "httpMethod": "POST",
+        "path": "/tube2link/social",
+        "responseMode": "lastNode",
+        "options": {}
       },
-      "name": "Webhook Response",
+      "id": "social-webhook",
+      "name": "Social Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [1050, 300]
+      "position": [
+        -300,
+        200
+      ],
+      "webhookId": "social-post-generator"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Get social post settings from request\nconst { videoData, template, settings } = $node['Social Webhook'].json.body;\n\n// Get the system prompt based on template and settings\nconst systemPrompt = `You are a social media expert. Your task is to create an engaging social media post about a video. Follow these guidelines:\n\n1. Use the specified template: ${template}\n2. Match the tone (0 = casual, 100 = formal): ${settings.tone}\n3. Adjust length: ${settings.length}\n4. Apply personality traits:\n   - Charm: ${settings.personality.charm}\n   - Wit: ${settings.personality.wit}\n   - Humor: ${settings.personality.humor}\n   - Sarcasm: ${settings.personality.sarcasm}\n5. ${settings.useEmojis ? 'Include relevant emojis' : 'Do not use emojis'}\n\nReturn your response as a JSON object with a single field 'post' containing the social media post text.`;\n\n// Format user prompt with video data\nconst userPrompt = `Generate a social media post about this video:\n\nTitle: ${videoData.title}\nChannel: ${videoData.channelTitle}\nDescription: ${videoData.description}\nURL: ${videoData.url}`;\n\nreturn [{ json: { systemPrompt, userPrompt } }];"
+      },
+      "id": "social-prompt",
+      "name": "Social Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini-2024-07-18",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $node[\"Social Prompt\"].json.systemPrompt }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $node[\"Social Prompt\"].json.userPrompt }}",
+              "role": "user"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "id": "social-openai",
+      "name": "Social OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        60,
+        200
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "npSIvyU5NYva2xOo",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Check if we have a response from OpenAI\nif (!$node['Social OpenAI'].json || !$node['Social OpenAI'].json.message || !$node['Social OpenAI'].json.message.content || !$node['Social OpenAI'].json.message.content.post) {\n  throw new Error('No response from OpenAI');\n}\n\nconst post = $node['Social OpenAI'].json.message.content.post;\n\nreturn [{\n  json: {\n    formattedContent: post\n  }\n}];"
+      },
+      "id": "social-format",
+      "name": "Format Social Post",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        240,
+        200
+      ]
     }
   ],
   "connections": {
-    "webhook-1": {
-      "main": [["extract-video-id-2"]]
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Video ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "extract-video-id-2": {
-      "main": [["youtube-api-3"]]
+    "Extract Video ID": {
+      "main": [
+        [
+          {
+            "node": "YouTube Data API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "youtube-api-3": {
-      "main": [["fetch-transcript-4"]]
+    "YouTube Data API": {
+      "main": [
+        [
+          {
+            "node": "Select Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "fetch-transcript-4": {
-      "main": [["ai-summarization-5"]]
+    "Select Prompt": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "ai-summarization-5": {
-      "main": [["linkedin-template-6"]]
+    "OpenAI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "linkedin-template-6": {
-      "main": [["webhook-response-7"]]
+    "Social Webhook": {
+      "main": [
+        [
+          {
+            "node": "Social Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Prompt": {
+      "main": [
+        [
+          {
+            "node": "Social OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Format Social Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
-  "settings": {}
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "BNHtmQt8LYdWfcTn",
+  "tags": []
 }
